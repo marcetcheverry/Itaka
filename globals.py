@@ -18,7 +18,7 @@ method = "server"
 ftphost = "ftp.usuarios.lycos.es"
 ftport = 21
 ftpuser = "cgarcia2003"
-ftpass = "infest"
+ftpass = "pass"
 # Up dir (Default: blank)
 ftpdir = "/itaka"
 # Interval between screenshots
