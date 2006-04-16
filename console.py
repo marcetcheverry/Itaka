@@ -1,11 +1,12 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka Screenshooting Server (Twisted+GTK2) (Windows/Linux)
-# Console handling
+# Itaka Console handling
+
 import globals as iglobals
 
 class Console:
 	""" Console I/O handler organized by message type. Also handle GUI logging for non-Twisted. """
+
 	def __init__(self, ginstance):
 		""" Init the console handler with the GUI instance. """
 		self.igui = ginstance
