@@ -2,8 +2,7 @@
 # -*- coding: utf8 -*-
 # Itaka Screenshooting Server
 
-"""TODO:
-	Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
+"""TODO:  Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
 		 ** Limpiada general.
 
 		Agregar ConfigParser y os.specific (ver papel)
