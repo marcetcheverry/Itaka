@@ -1,0 +1,15 @@
+	Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
+		 ** Limpiada general.
+            	 Agregar ConfigParser y os.specific (ver papel)
+		 http://www.python.org/doc/lib/ConfigParser-objects.html (Usar dict)
+		 Rediseniar dialogo de preferencias con gtk.table o ver si podemos arreglar Spread	
+		 * Usar bindings de python libnotify http://ptlo.blogspot.com/2005/11/missing-piece.html
+		 
+	Nuevas:	Local/Twisted-conch backends.
+
+	Trivial: -Agregar preferencia de Start minimized
+		 -Usar mas tracebaks
+
+	Win32: 	 Usar el tray de ellos, Usar su notifbubbles. Usar setup.py
+		 http://www.pycode.com/modules/?id=2&tab=download&PHPSESSID=c64279880833ecf64f6520967786d1fc
+		 http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/334779"""

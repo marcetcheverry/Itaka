@@ -2,24 +2,7 @@
 # -*- coding: utf8 -*-
 # Itaka
 
-"""TODO:  
-	Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
-		 ** Limpiada general.
-            	 Agregar ConfigParser y os.specific (ver papel)
-		 http://www.python.org/doc/lib/ConfigParser-objects.html (Usar dict)
-		 Rediseniar dialogo de preferencias con gtk.table o ver si podemos arreglar Spread	
-		 * Usar bindings de python libnotify http://ptlo.blogspot.com/2005/11/missing-piece.html
-		 
-	Nuevas:	Local/Twisted-conch backends.
-
-	Trivial: -Agregar preferencia de Start minimized
-		 -Usar mas tracebaks
-
-	Win32: 	 Usar el tray de ellos, Usar su notifbubbles. Usar setup.py
-		 http://www.pycode.com/modules/?id=2&tab=download&PHPSESSID=c64279880833ecf64f6520967786d1fc
-		 http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/334779"""
-		 
-# General modules
+# Import general modules
 import sys, os, datetime, traceback 
 
 try:
@@ -230,7 +213,7 @@ class Gui:
         return
 
     def logger(self, args):
-	""" Handle logging in the GUI. dict[(tuple($msg)), key: str($msg)]. """
+	""" Handle logging in the GUI. Arguments: dict[(tuple($msg)), key: str($msg)]. """
 	# We just care about the first tuple
         self.ioutput = args['message'][0]
 	# Write out the server log and stdout to the GUI	
@@ -243,8 +226,9 @@ class Gui:
         self.debugbuffer.set_text("")
 
     def pauselogger(self, widget, data=None):
-        """ Callback to pause the log. """
-	# This function is disabled on FTP mode.
+        """ Callback to pause log output. """
+	# This function is disabled on FTP mode
+	# FIXME: Does this pause Console too?
         if widget.get_active():
             log.msg("Logging paused.")
             log.removeObserver(self.logger)
@@ -253,7 +237,7 @@ class Gui:
             log.msg("Logging started.")
 
     def main(self):
-        """ Init sequence that starts the GTK+ (twisted) reactor. """
+        """ Main init function. Starts the GUI reactors."""
         # GTK Reactor and Console Handling
 	try:
         	self.console = iconsole.Console(self)
