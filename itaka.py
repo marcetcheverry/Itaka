@@ -1,28 +1,26 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka Screenshooting Server
+# Itaka
 
-"""TODO:  Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
+"""TODO:  
+	Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
 		 ** Limpiada general.
+            	 Agregar ConfigParser y os.specific (ver papel)
+		 http://www.python.org/doc/lib/ConfigParser-objects.html (Usar dict)
+		 Rediseniar dialogo de preferencias con gtk.table o ver si podemos arreglar Spread	
+		 * Usar bindings de python libnotify http://ptlo.blogspot.com/2005/11/missing-piece.html
+		 
+	Nuevas:	Local/Twisted-conch backends.
 
-		Agregar ConfigParser y os.specific (ver papel)
-		http://www.python.org/doc/lib/ConfigParser-objects.html (Usar dict)
-		Rediseniar dialogo de preferencias con gtk.table o ver si podemos arreglar Spread
-		Finalizar menu de Trayicon (ver Win32) 
-		
-		Usar bindings de python libnotify http://ptlo.blogspot.com/2005/11/missing-piece.html
+	Trivial: -Agregar preferencia de Start minimized
+		 -Usar mas tracebaks
 
-	Trivial: Agregar preferencia de Start minimized
-		 Usar mas tracebaks
-
-	Win32: Usar el tray de ellos, Usar su notif bubbles Usar setup.py
-		http://www.pycode.com/modules/?id=2&tab=download&PHPSESSID=c64279880833ecf64f6520967786d1fc
-		http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/334779
-	
-	Linux UI: +HIG. Glade? 
-"""
+	Win32: 	 Usar el tray de ellos, Usar su notifbubbles. Usar setup.py
+		 http://www.pycode.com/modules/?id=2&tab=download&PHPSESSID=c64279880833ecf64f6520967786d1fc
+		 http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/334779"""
+		 
 # General modules
-import sys, os, gc, datetime, traceback 
+import sys, os, datetime, traceback 
 
 try:
 	from twisted.internet import gtk2reactor
@@ -68,7 +66,7 @@ except:
 	print "[*] ERROR: Failed to import Itaka modules."
 	
 class Gui:
-    """ Handles the GUI. """
+    """ GUI Class. """
     def __init__(self):
 	# Workaround: pass a reference of GUI to Screenshot module for its notification handling.
 	self.sinstance = iscreenshot.ImageResource(self)
@@ -82,7 +80,7 @@ class Gui:
         	self.root.putChild('screenshot', self.sinstance)
         	self.root.putChild('', self.root)
 	
-        # GUI
+        # Start defining widget
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(iglobals.image_dir, "itaka.png"))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.connect("destroy", self.destroy)
@@ -187,11 +185,11 @@ class Gui:
         self.debugpausebutton.set_image(self.debugpausebuttonimage)
         self.debugpausebutton.connect("toggled", self.pauselogger)
 
-        # Reverse?
+        # Reverse
         self.debughbox.pack_end(self.debugclearbutton, False, False, 4)
         self.debughbox.pack_end(self.debugpausebutton, False, False, 4)
 
-        # Pack it all into a nice vbox
+        # Pack it into vbox
         self.debugvbox.pack_start(self.debugscroll, False, False, 4)
         self.debugvbox.pack_start(self.debughbox, False, False, 4)
 
@@ -232,14 +230,12 @@ class Gui:
         return
 
     def logger(self, args):
-	""" Handle logging in the GUI. dict[(tuple(MSG)), key: str()] """
-	#print "Received (logger): %s : %s" % (str(type(args)), args)
-
-        # Write out the server log and stdout to the GUI
+	""" Handle logging in the GUI. dict[(tuple($msg)), key: str($msg)]. """
+	# We just care about the first tuple
         self.ioutput = args['message'][0]
-	
-        self.debugbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
-        # Automatically scroll. We use wrap because I cant fix this.
+	# Write out the server log and stdout to the GUI	
+	self.debugbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
+        # Automatically scroll. Use wrap until fix.
         self.debugview.scroll_mark_onscreen(self.debugbuffer.get_insert())
 
     def clearlogger(self, args):
@@ -248,6 +244,7 @@ class Gui:
 
     def pauselogger(self, widget, data=None):
         """ Callback to pause the log. """
+	# This function is disabled on FTP mode.
         if widget.get_active():
             log.msg("Logging paused.")
             log.removeObserver(self.logger)
@@ -264,6 +261,7 @@ class Gui:
 		print "[*] ERROR: Console()"
 		traceback.print_exc()
 		sys.exit(1)
+		
         self.greact = reactor.run()
 
     def about(self, data=None):
@@ -282,17 +280,15 @@ class Gui:
     def __trayclicked(self, widget, event):
         """ Handle the clicks on the trayicon. """
         if event.type == gtk.gdk.BUTTON_PRESS and event.button == 1:
-            # FIXME: Find a real func instead of workaround to see if window is hidden/showing.
             if (self.window.get_property("visible")):
                 self.window.hide()
             else:
                 self.window.show()
                 self.window.set_position(gtk.WIN_POS_CENTER)
 	elif event.button == 3:
-        # Create menu
+            # Create menu
 	    self.menu.popup(None,None,None,event.button,event.time)
 	
-
     def __checkwidget(self, widget):
 	    """ Workaround to save code on menu/main startstop. """
 	    if hasattr(widget, 'get_active'):
@@ -302,13 +298,13 @@ class Gui:
 
     def startstop(self, widget, data=None):
         """ Start or stop the screenshooting/ftp server from window or menu. """
-	# FIXME: REWRITE!!
-	
+	# FIXME: Rewrite this function to something decent.
+	# Use an abstraction layer from the Tray if necessary.
+
 	if ( self.__checkwidget(widget) or data == "Start"):
-	    # Workaround to avoid collision between
-	    # setting startstopbutton.set_active and 
-	    # already started server from the menu, 
-	    # and viceversa.
+	    """Workaround to avoid collision between
+	    setting startstopbutton.set_active and 
+	    already started server from the menu and viceversa."""
 	    if (iglobals.method == 'server'):
 	    	if (hasattr(self, 'ilistener')):	return True
 	    else:
@@ -380,7 +376,6 @@ class Gui:
 	    else:
 		if hasattr(self, 'ftprunning'):
             		self.console.msg('Stopping FTP sequence...', True)
-		#	gobject.source_remove(self.ftprunning)
 			self.ftprunning.stop()
 			ftpdemandstop = True
 			if hasattr(self, 'iagotimer'):
@@ -468,32 +463,33 @@ class Gui:
 
     def talk(self, action, data1=False, data2=False, data3=False):
         """ Handler for communcations between the server, FTP backend, and the GUI. """
+	# FIXME: Cleanup
 	
-        #self.console.debug(["Gui", "talk"], "notified interface. Served:" + str(data1) + " IP: " + str(data2) + " Action: " + action + "")
-	if (iglobals.alert): self.astring = "\a"
+	# Set up alert string and console output
+        if (iglobals.alert): self.astring = "\a"
 	if (iglobals.method == 'server'):
-		self.console.msg(self.astring + "Screenshot " + str(data1) + " served to: " + str(data2))	
+		self.console.msg(self.astring + "Screenshot " + str(data1) + " served to: " + str(data2))
+		
         if ( action == "updateGuiStatus" ):
-            # Update the label on the GUI (show)
+            # Update labels
             self.labelServed.set_text("Served: " + str(data1))
-	    
-	    # FIXME: Clean up this FTP Comaptibility
 	    if (data2):
 		    self.labelLastip.set_text("IP: " + str(data2))
 	    else:
 		    self.labelLastip.set_text("Uploaded to FTP")
-	    # Call the update Time function, and add a timer
+            self.labelServed.set_text("Served: " + str(data1))
+	   
+	    # Call the update timer function, and add a timer
 	    self.__calcsince(data3)
-	
 	    # Delete the timer if its Not False
 	    # so we dont get duplicates
 	    if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
-
 	    self.iagotimer = gobject.timeout_add(60000, self.__calcsince, data3)
             	    
 	    # Notify the main interface
 	    if not iglobals.notify:
 	    	self.itakaLogo.set_from_file(os.path.join(iglobals.image_dir, "itaka-take.png"))
+		# Call Inotify
 		self.iglobals.notifyimg = gobject.timeout_add(2000, self.notify)
 		
 	# Handler for FTP errors
@@ -501,7 +497,7 @@ class Gui:
 		    	# This toggles the button, which in itself calls startstop()
 		    	self.buttonStartstop.set_active(False)	
 			self.labelLastip.set_text('Error: %s' % (str(data1)))
-		
+
 # Start the GTK reactor
 try:
 	igui = Gui()
