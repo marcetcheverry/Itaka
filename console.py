@@ -5,11 +5,11 @@
 import globals as iglobals
 
 class Console:
-	""" Console I/O handler organized by message type. Also handle GUI logging for non-Twisted. """
+	""" Console I/O handler organized by message type. Also handle GUI logging when passed an instance. """
 
-	def __init__(self, ginstance):
-		""" Init the console handler with the GUI instance. """
-		self.igui = ginstance
+	def __init__(self, ginstance=False):
+		""" Init console handler with a GUI instance. """
+		if ginstance: self.igui = ginstance
 		print "[*] Itaka %s starting up..." % (iglobals.version)
 		
 	def __del__(self):
