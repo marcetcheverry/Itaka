@@ -20,7 +20,7 @@ format = jpeg
 [ftp]
 host = ftp.usuarios.lycos.es
 user = cgarcia2003
-pass = infest
+pass = pass
 debug = 0
 port = 21
 dir = /itaka
