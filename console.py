@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 # Itaka Console handling
 
-import globals as iglobals
+import config as iconfig
 
 class Console:
 	""" Console I/O handler organized by message type. Also handle GUI logging when passed an instance. """
@@ -10,7 +10,7 @@ class Console:
 	def __init__(self, ginstance=False):
 		""" Init console handler with a GUI instance. """
 		if ginstance: self.igui = ginstance
-		print "[*] Itaka %s starting up..." % (iglobals.version)
+		print "[*] Itaka %s starting up..." % (iconfig.version)
 		
 	def __del__(self):
 		""" Destructor. """

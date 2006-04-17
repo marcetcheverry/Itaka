@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka
+""" Itaka GUI and Core """
 
 # Import general modules
 import sys, os, datetime, traceback 
@@ -15,6 +15,7 @@ try:
 	from twisted.internet import reactor
 except ImportError:
 	print "[*] ERROR: Failed to initialize Twisted."
+	sys.exit(1)
 	
 # Import GTK+
 try:
@@ -39,31 +40,35 @@ except ImportError:
 
 # Itaka modules
 try:
-	import globals as iglobals
+	import config
+	iconfig = config.ConfigParser().load()
+	print iconfig
 	import console as iconsole
 	import preferences as ipreferences
-	import screenshot as iscreenshot
-	if (iglobals.audio): import audio as iaudio
+	import server as iserver
+	if (iconfig['itaka']['audio'] == "True"): import audio as iaudio
 	import ftp as iftp
 except:
 	print "[*] ERROR: Failed to import Itaka modules."
+	traceback.print_exc()
+	sys.exit(1)
 	
 class Gui:
     """ GUI Class. """
     def __init__(self):
 	# Workaround: pass a reference of GUI to Screenshot module for its notification handling.
-	self.sinstance = iscreenshot.ImageResource(self)
+	self.sinstance = iserver.ImageResource(self)
 	
 	# Set up Server variables, if needed.
-	if (iglobals.method == 'server'):
-		self.root = static.Data(iglobals.html, 'text/html; charset=UTF-8')
+	if (iconfig['itaka']['method'] == 'server'):
+		self.root = static.Data(iconfig['html']['html'], 'text/html; charset=UTF-8')
 		# Registers an identitiy (resource, file).
-		if (iglobals.audio): self.root.putChild('audio', iaudio.AudioResource())	
+		if (iconfig['itaka']['audio'] == "True"): self.root.putChild('audio', iaudio.AudioResource())	
         	self.root.putChild('screenshot', self.sinstance)
         	self.root.putChild('', self.root)
 	
         # Start defining widget
-        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(iglobals.image_dir, "itaka.png"))
+        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png"))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.connect("destroy", self.destroy)
         self.window.set_title("Itaka")
@@ -98,7 +103,7 @@ class Gui:
 		for f in (self.menuquit, self.menustop, self.menustart, self.menuprefs, self.menuabout):	f.show()
 
       		self.itraylogo = gtk.Image()
-       		self.itraylogo.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(iglobals.image_dir, "itaka.png")).scale_simple(20, 20,gtk.gdk.INTERP_BILINEAR))
+       		self.itraylogo.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")).scale_simple(20, 20,gtk.gdk.INTERP_BILINEAR))
         	self.itraylogobox.add(self.itraylogo)
        		self.itraylogobox.connect("button_press_event", self.__trayclicked)
 
@@ -107,7 +112,7 @@ class Gui:
         self.box = gtk.HBox(False, 0)
 
         self.itakaLogo = gtk.Image()
-        self.itakaLogo.set_from_file(os.path.join(iglobals.image_dir, "itaka.png"))
+        self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
         self.itakaLogo.show()
 
 	# Add hbox and buttons and image
@@ -251,12 +256,12 @@ class Gui:
 	""" Create the About dialog. """
 	self.about = gtk.AboutDialog()
 	self.about.set_name('Itaka')
-	self.about.set_version(iglobals.version)
+	self.about.set_version(config.version.version)
 	self.about.set_copyright(u'© 2003-2006 Marc Etcheverry')
 	self.about.set_comments('Screenshooting de mercado.')
 	self.about.set_authors(['Marc Etcheverry <m4rccd@yahoo.com>'])
 	self.about.set_website('http://itaka.sourceforge.net')
-	self.about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(iglobals.image_dir, "itaka.png")))
+	self.about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")))
 	self.about.set_icon(self.icon_pixbuf)
 	self.about.show()
 
@@ -288,16 +293,16 @@ class Gui:
 	    """Workaround to avoid collision between
 	    setting startstopbutton.set_active and 
 	    already started server from the menu and viceversa."""
-	    if (iglobals.method == 'server'):
+	    if (iconfig['itaka']['method'] == 'server'):
 	    	if (hasattr(self, 'ilistener')):	return True
 	    else:
 	    	if (hasattr(self, 'ftprunning')):	pass
 		    
-	    if (iglobals.method == 'server'):
+	    if (iconfig['itaka']['method'] == 'server'):
             		# Start up the twisted site
             		self.site = server.Site(self.root)
             		# Start Server reactor. Make an instance to distinguish from self.greactor().
-            		self.ilistener = reactor.listenTCP(iglobals.port, self.site)
+            		self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
 			if (data):
 		    		self.buttonStartstop.set_active(True)
 	    else:
@@ -306,7 +311,7 @@ class Gui:
 			self.ftprunning.start()
 			
 			# Tell the user that we are uploading
-			self.labelLastip.set_text('Uploading to FTP %s:%s' % (iglobals.ftphost, iglobals.ftport))
+			self.labelLastip.set_text('Uploading to FTP %s:%s' % (iconfig['ftp']['host'], iconfig['ftp']['port']))
 		
 			# Pause does not work on FTP.
 			self.debugpausebutton.set_sensitive(False)
@@ -315,10 +320,11 @@ class Gui:
 		    		self.buttonStartstop.set_active(True)
 	    
             # Announce on log y console stdout
-	    if (iglobals.method == 'server'):
-	            	self.console.msg('Server listening on port %d TCP. Serving screenshots as %s images with %d%% quality.' % (iglobals.port, iglobals.format.upper(), iglobals.quality), True)
+	    if (iconfig['itaka']['method'] == 'server'):
+	            	self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
 	    else:
-			self.console.msg('FTP upload sequence to %s:%d started every %d seconds. Uploading screenshots as %s images with %d%% quality.' % (str(iglobals.ftphost), iglobals.ftport, iglobals.ftptime, iglobals.format.upper(), iglobals.quality), True)
+			self.console.msg('FTP upload sequence to %s:%s started every %s seconds. Uploading screenshots as %s images with %s%% quality.' % (str(iconfig['ftp']['host']), iconfig['ftp']['port'], iconfig['screenshot']['time'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
+			
 			
             # Change buttons
             self.buttonStartstop.set_label("Stop")
@@ -327,11 +333,11 @@ class Gui:
             	
 	    # Close the expander
 	    self.expander.set_sensitive(True)
-	    if iglobals.notify:
-		    self.itakaLogo.set_from_file(os.path.join(iglobals.image_dir, "itaka-take.png"))
+	    if iconfig['itaka']['notify']:
+		    self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
 
         else:
-	    if (iglobals.method == 'server'):
+	    if (iconfig['itaka']['method'] == 'server'):
 	    	if hasattr(self, 'ilistener'):
             		log.msg('Itaka shutting down...')
             		self.console.msg('Server shutting down...')
@@ -352,7 +358,7 @@ class Gui:
 	   	 	self.labelServed.set_text('')
         		self.expander.set_expanded(False)				
 	    		self.expander.set_sensitive(False)
-	    		self.itakaLogo.set_from_file(os.path.join(iglobals.image_dir, "itaka.png"))
+	    		self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
 
 		else:
 			pass
@@ -375,7 +381,7 @@ class Gui:
 	    		self.labelServed.set_text('')
         		self.expander.set_expanded(False)				
 	    		self.expander.set_sensitive(False)
-	    		self.itakaLogo.set_from_file(os.path.join(iglobals.image_dir, "itaka.png"))
+	    		self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
 
 
 		else:
@@ -384,6 +390,7 @@ class Gui:
 
     def destroy(self, *args):
 	# FIXME: Cleanup stale screenshot file
+	# FIXME closing FTP bug
         """ Callback for the main window's destroy. """
         # Stop server(s). Check so it does not complain if close while not running.
         if hasattr(self, 'ilistener'):
@@ -439,7 +446,7 @@ class Gui:
 
     def notify(self):
 	""" Change the image on the main screen, for notification purpose. """
-	self.itakaLogo.set_from_file(os.path.join(iglobals.image_dir, "itaka.png"))
+	self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
 	# Only run this event once
 	return False
 
@@ -448,8 +455,8 @@ class Gui:
 	# FIXME: Cleanup
 	
 	# Set up alert string and console output
-        if (iglobals.alert): self.astring = "\a"
-	if (iglobals.method == 'server'):
+        if (iconfig['itaka']['alert']): self.astring = "\a"
+	if (iconfig['itaka']['method'] == 'server'):
 		self.console.msg(self.astring + "Screenshot " + str(data1) + " served to: " + str(data2))
 		
         if ( action == "updateGuiStatus" ):
@@ -469,8 +476,8 @@ class Gui:
 	    self.iagotimer = gobject.timeout_add(60000, self.__calcsince, data3)
             	    
 	    # Notify the main interface
-	    if not iglobals.notify:
-	    	self.itakaLogo.set_from_file(os.path.join(iglobals.image_dir, "itaka-take.png"))
+	    if not iconfig['itaka']['notify']:
+	    	self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
 		# Call Inotify
 		self.iglobals.notifyimg = gobject.timeout_add(2000, self.notify)
 		

@@ -1,13 +1,16 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# FTP backend.
+""" Itaka FTP engine """
 
 import ftplib, threading, time, datetime, os, traceback
-import globals as iglobals
+import config as iconfig
+iconfig = iconfig.values
+
 import screenshot as iscreenshot
 
-# Local counter
+#: Local iteration counter
 lcounter = 0
+
 class Ftp(threading.Thread):
 	""" Threaded FTP uploading method. """
 	def __init__(self, ginstance, sinstance):
@@ -30,11 +33,11 @@ class Ftp(threading.Thread):
 			# Get the Console instance output from the GUI instance.
 			self.console = self.igui.console
 			self.ftp = ftplib.FTP()
-			self.ftp.set_debuglevel(iglobals.ftpdebug)
+			self.ftp.set_debuglevel(iconfig['ftp']['debug'])
 			
 			#ftplib.all_errors: (<class ftplib.Error at 0xb7d285fc>, <class socket.error at 0xb7d289ec>, <class exceptions.IOError at 0xb7d5d47c>, <class exceptions.EOFError at 0xb7d5d53c>)
 			try:
-				self.ftp.connect(iglobals.ftphost, iglobals.ftport)
+				self.ftp.connect(iconfig['ftp']['host'], iconfig['ftp']['port'])
 			except (ftplib.all_errors, ftplib.error_perm), (self.errormsg):
 				self.console.error(['Ftp', 'run'], "%s" % (str(self.errormsg)), True)
 				# Call the error handling function
@@ -42,34 +45,34 @@ class Ftp(threading.Thread):
 			
 				break
 
-			self.console.msg("Connecting to %s:%d..." % (iglobals.ftphost, iglobals.ftport), True)
+			self.console.msg("Connecting to %s:%s..." % (iconfig['ftp']['host'], iconfig['ftp']['port']), True)
 			self.console.msg(self.ftp.getwelcome(), True)
 			
 			# Login
 			try:
-				self.ftp.login(iglobals.ftpuser, iglobals.ftpass)
+				self.ftp.login(iconfig['ftp']['user'], iconfig['ftp']['pass'])
 			except (ftplib.all_errors, ftplib.error_perm, AttributeError), (self.errormsg):
 				self.console.error(['Ftp', 'run'], "%s" % (self.errormsg), True)
 				# Call the error handling function
 				self.error(self.errormsg)				
 				break
 	
-			if iglobals.ftpdir:
+			if iconfig['ftp']['dir']:
 				try:
-					self.ftp.cwd(iglobals.ftpdir)
+					self.ftp.cwd(iconfig['ftp']['dir'])
 				except:
-					self.console.msg("Creating %s directory..." % (iglobals.ftpdir), True)
-					self.ftp.mkd(iglobals.ftpdir)
-					self.ftp.cwd(iglobals.ftpdir)
+					self.console.msg("Creating %s directory..." % (iconfig['ftp']['dir']), True)
+					self.ftp.mkd(iconfig['ftp']['dir'])
+					self.ftp.cwd(iconfig['ftp']['dir'])
 
 	    		self.console.msg("Currently in: %s." % (self.ftp.pwd()), True)
 			
 			# Take the screenshot and check for file
-			self.ftpscreen = iscreenshot.ImageResource.getScreenshot(self.sinstance)
+			self.ftpscreen = iscreenshot.getScreenshot()
 			
 			# Nice output
 			self.ftpdirstr = "to"
-			if iglobals.ftpdir:	self.ftpdirstr = "to %s on" % (iglobals.ftpdir)
+			if iconfig['ftp']['dir']:	self.ftpdirstr = "to %s on" % (iconfig['ftp']['dir'])
 			self.console.msg("Uploading screenshot %s %s server..." % (self.ftpscreen, self.ftpdirstr), True)
 			
 	    		if (os.path.exists(self.ftpscreen)):
@@ -107,7 +110,7 @@ class Ftp(threading.Thread):
 						self.console.msg("Connection to the server terminated.")
 						self.finished = True
   						self.file.close()
-						time.sleep(iglobals.ftptime)
+						time.sleep(int(iconfig['screenshot']['time']))
 				# Error handler, print, close, clean and finish.		
 				except:
 					traceback.print_exc()

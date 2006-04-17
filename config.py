@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka Configuration Parser
+""" Itaka Configuration Parser and Engine """
+
+# It works by the GUI calling a main instance, and the
+# modules accessing the global values variable set up by the load() method.
 
 import ConfigParser, os, sys, traceback
 
@@ -28,99 +31,117 @@ save_path = os.getcwd()
 if (system == 'posix'): save_path = "/tmp"
 elif (system == 'nt'): path = os.environ.get('TEMP') or os.environ.get('TMP')
 
+#: Global configuration values 
+values = {}
 
-#: Location of the Configfile (search home first, then in this directory).
-configfile = None
-
-def load():
-	""" Check and read values from the configuration file. """
-	if (system == "posix"):
-		if (os.path.exists(os.path.join(os.environ['HOME'], "itaka/config.xml"))):
-			configfile = os.path.join(os.environ['HOME'], "itaka/config.xml")
-		elif (os.path.exists(local_config)):
-			configfile = local_config
-		else:
-			# Create the config
-			create(local_config)
-	elif (system == "nt"): 
-		if (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/config.xml"))):
-				configfile = os.path.join(os.environ['APPDATA'], "itaka/config.xml")
-		elif (os.path.exists(local_config)):
-				configfile = local_config
-		else:
-			# Create the config
-			create(local_config)
-	else:
-		# Generic system/values	
-		if (os.path.exists(local_config)): 
-			configfile = local_config
-		else:	
-			# Create the config
-			create(local_config)
-	
-	# Read and assign values from the configuration file 
-	try:
-		config.read(configfile)
-		print "[*] Read configuration (%s)" % (configfile)
-	except:
-		print "[*] ERROR: Could not read config! (%s)" % (configfile)
-		traceback.print_exc()
+class ConfigParser:
+	def load(self):
+		""" Set up ConfigParser instance and configuration file. """
+		self.configfile = None
 		
-	values = {}
-	mydict = {}	
-	# Get values as a dict and return it
-	for section in config.sections():
-			values[section] = dict(config.items(section))
-
-	return values
-
-def save(values):
-	""" Saves a dict containing the configuration. """
+		# Check for the location of the file, or create it
+		if (system == "posix"):
+			if (os.path.exists(os.path.join(os.environ['HOME'], "itaka/config.xml"))):
+				self.configfile = os.path.join(os.environ['HOME'], "itaka/config.xml")
+			elif (os.path.exists(local_config)):
+				self.configfile = local_config
+			else:
+				# Create the config
+				create(local_config)
+		elif (system == "nt"): 
+			if (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/config.xml"))):
+					self.configfile = os.path.join(os.environ['APPDATA'], "itaka/config.xml")
+			elif (os.path.exists(local_config)):
+					self.configfile = local_config
+			else:
+				# Create the config
+				create(local_config)
+		else:
+			# Generic system/values	
+			if (os.path.exists(local_config)): 
+				self.configfile = local_config
+			else:	
+				# Create the config
+				create(local_config)
 	
-	print "[*] Saving configuration... "
-	# Unpack the dict into section, option, value
-	for section in lista.keys():
-		for item, value in lista[section].items():
-			config.set(section, key, value)
+		# Read and assign values from the configuration file 
+		try:
+			config.read(self.configfile)
+			print "[*] Read configuration (%s)" % (self.configfile)
+		except:
+			print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
+			traceback.print_exc()
+
+		""" Retrieve values and return them as a dict."""
+		global values
+		values = {}
+		# Get values as a dict and return it
+		for section in config.sections():
+				values[section] = dict(config.items(section))
+		return values
+
+	def save(self, values):
+		""" Saves a dict containing the configuration."""
+		
+		# Unpack the dict into section, option, value
+		for section in values.keys():
+			for key, value in values[section].items():
+				config.set(section, key, value)
+	
+		# Save
+		try:
+			config.write(open(self.configfile, 'w'))
+			print "[*] Saving configuration... "	
+		except:		
+			print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+			traceback.print_exc()
 			
-def update(section, key, value):
-	""" Update a specific key's value """
-	config.set(section, key, value)
+	def update(self, section, key, value):
+		""" Update a specific key's value."""	
+		config.set(section, key, value)
+		# Save
+		try:
+			config.write(open(self.configfile, 'w'))
+			print "[*] Updating configuration"	
+		except:
+			print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+			traceback.print_exc()
 
-def create(path):
-	""" Create a configuration file from default values. """
-	# Create sections
-	for section in ('itaka', 'screenshot', 'ftp', 'server', 'html'): config.add_section(section)
-	
-	print "[*] Creating default configuration..."
-	# Set default values
-	config.set("itaka", "method", "server")
-	config.set("itaka", "alert", True)
-	config.set("itaka", "audio", False)
-	config.set("itaka", "notify", False)
-	
-	config.set("screenshot", "format", "jpeg")
-	config.set("screenshot", "quality", 80)
-	config.set("screenshot", "path", save_path)
-	config.set("screenshot", "time", 8)
-	
-	config.set("ftp", "host", "ftp.host.com")
-	config.set("ftp", "port", 21)
-	config.set("ftp", "user", "user")
-	config.set("ftp", "pass", "pass")
-	config.set("ftp", "dir", "/itaka")
-	config.set("ftp", "debug", 0)
-	
-	config.set("server", "port", 8000)
+	def create(self, path):
+		""" Create a configuration file from default values. """
+		# Create sections
+		for section in ('itaka', 'screenshot', 'ftp', 'server', 'html'): config.add_section(section)
+		
+		print "[*] Creating default configuration..."
+		# Set default values
+		config.set("itaka", "method", "server")
+		config.set("itaka", "alert", True)
+		config.set("itaka", "audio", False)
+		config.set("itaka", "notify", False)
+		
+		config.set("screenshot", "format", "jpeg")
+		config.set("screenshot", "quality", 80)
+		config.set("screenshot", "path", save_path)
+		config.set("screenshot", "time", 8)
+		
+		config.set("ftp", "host", "ftp.host.com")
+		config.set("ftp", "port", 21)
+		config.set("ftp", "user", "user")
+		config.set("ftp", "pass", "pass")
+		config.set("ftp", "dir", "/itaka")
+		config.set("ftp", "debug", 0)
+		
+		config.set("server", "port", 8000)
 
-	# FIXME: Audio
-	config.set("html", "audio", '<iframe src="audio" width="100%" height="30" style="border: 0;" border="0">Your browser does not support IFRAME. <a href="audio">Click here</a></iframe><br />')
-	config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
+		# FIXME: Audio
+		config.set("html", "audio", '<iframe src="audio" width="100%" height="30" style="border: 0;" border="0">Your browser does not support IFRAME. <a href="audio">Click here</a></iframe><br />')
+		config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
 
-	# Write it
-	try:
-		config.write(open(path, 'w'))
-	except:
-		print "[*] ERROR: Could not write configuration file %s" % (path)
-		traceback.print_exc()
-load()
+		# Write it and set the variable
+		try:
+			config.write(open(path, 'w'))
+		except:
+			print "[*] ERROR: Could not write configuration file %s" % (path)
+			traceback.print_exc()
+			
+		self.configfile = path		

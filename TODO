@@ -1,10 +1,10 @@
 	Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
 		 ** Limpiada general.
-            	 Agregar ConfigParser y os.specific (ver papel)
-		 http://www.python.org/doc/lib/ConfigParser-objects.html (Usar dict)
-		 Rediseniar dialogo de preferencias con gtk.table o ver si podemos arreglar Spread	
+		  Rediseniar dialogo de preferencias con gtk.table o ver si podemos arreglar Spread	
 		 * Usar bindings de python libnotify http://ptlo.blogspot.com/2005/11/missing-piece.html
 		 
+ 	Bugs: 	Re escribir todos las condicionales a los boleanos.
+
 	Nuevas:	Local/Twisted-conch backends.
 
 	Trivial: -Agregar preferencia de Start minimized
