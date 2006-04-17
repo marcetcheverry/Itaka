@@ -42,7 +42,7 @@ except ImportError:
 try:
 	import config
 	iconfig = config.ConfigParser().load()
-	print iconfig
+
 	import console as iconsole
 	import preferences as ipreferences
 	import server as iserver
