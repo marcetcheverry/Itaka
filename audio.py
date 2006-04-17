@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf8 -*-
 """ Itaka audio engine """
 
@@ -22,13 +22,11 @@ class AudioResource(Resource):
 		""" This class should return a string with what you
 		want the Now Listening: tag to display. """
 		self.playing = rbplayer.getPlayingUri().replace('%20', ' ').replace('file://', '').replace('%F1', 'n').replace('%E9', 'e').replace('%C3%AD', 'i').replace('%C3%A9', 'e')
-		#self.playing = urllib.unquote(rbplayer.getPlayingUri())
 		return self.playing
 	
 	def render_GET(self, request):
 		""" Handle GET requests for audio.html. """
 		request.setHeader("Content-type", "text/html; charset=UTF-8'")
 		self.getAudiodata()
-		#igui.talk('updateSongStatus', str(self.playingi), None)
 		return "<strong>Escuchando: %s.</strong>" % (str(self.playing))
 
