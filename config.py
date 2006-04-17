@@ -29,7 +29,7 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "conf
 #: Save path for screenshots (system-specific)
 save_path = os.getcwd()
 if (system == 'posix'): save_path = "/tmp"
-elif (system == 'nt'): path = os.environ.get('TEMP') or os.environ.get('TMP')
+elif (system == 'nt'): save_path = os.environ.get('TEMP') or os.environ.get('TMP')
 
 #: Global configuration values 
 values = {}
