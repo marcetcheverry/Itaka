@@ -41,28 +41,29 @@ class ConfigParser:
 		
 		# Check for the location of the file, or create it
 		if (system == "posix"):
-			if (os.path.exists(os.path.join(os.environ['HOME'], "itaka/config.xml"))):
-				self.configfile = os.path.join(os.environ['HOME'], "itaka/config.xml")
+			if (os.path.exists(os.path.join(os.environ['HOME'], ".itaka/config.xml"))):
+				self.configfile = os.path.join(os.environ['HOME'], ".itaka/config.xml")
 			elif (os.path.exists(local_config)):
 				self.configfile = local_config
 			else:
 				# Create the config
-				create(local_config)
-		elif (system == "nt"): 
+				self.create(local_config)
+		elif (system == "nt"):
+			print "nt"
 			if (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/config.xml"))):
 					self.configfile = os.path.join(os.environ['APPDATA'], "itaka/config.xml")
 			elif (os.path.exists(local_config)):
 					self.configfile = local_config
 			else:
 				# Create the config
-				create(local_config)
+				self.create(local_config)
 		else:
 			# Generic system/values	
 			if (os.path.exists(local_config)): 
 				self.configfile = local_config
 			else:	
 				# Create the config
-				create(local_config)
+				self.create(local_config)
 	
 		# Read and assign values from the configuration file 
 		try:
