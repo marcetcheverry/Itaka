@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka Screenshooting Server (Twisted+GTK2) (Windows/Linux)
+# Itaka 
 # Global variables
 import os, sys
 
@@ -25,9 +25,9 @@ ftpuser = "cgarcia2003"
 ftpass = "pass"
 #: FTP directory (default: blank)
 ftpdir = "/itaka"
-#: FTP Interval between uploads
+#: FTP Interval between uploads (seconds)
 ftptime = 8
-# Debug level (From ftplib.set_debuglevel) 0-2
+#: Debug level (From ftplib.set_debuglevel) 0-2
 ftpdebug = 0
 
 #: Server TCP port

@@ -14,7 +14,7 @@ try:
 	from twisted.web.resource import Resource
 	from twisted.internet import reactor
 except ImportError:
-	print "[*] ERROR: Failed to initialize Twisted. Is it installed?."
+	print "[*] ERROR: Failed to initialize Twisted."
 	
 # Import GTK+
 try:
@@ -57,8 +57,7 @@ class Gui:
 	# Set up Server variables, if needed.
 	if (iglobals.method == 'server'):
 		self.root = static.Data(iglobals.html, 'text/html; charset=UTF-8')
-		""" Registers an identitiy (resource, file)
-		as putcChild('name', HandlerClass()). """
+		# Registers an identitiy (resource, file).
 		if (iglobals.audio): self.root.putChild('audio', iaudio.AudioResource())	
         	self.root.putChild('screenshot', self.sinstance)
         	self.root.putChild('', self.root)
@@ -419,7 +418,6 @@ class Gui:
 	self.hour = "hours"
 	self.min = "minutes"
 
-	""" I have to admit, I can't even understand this code..., but it works."""
 	# If an hour passed already
 	if ("0" not in self.idiff[0]):
 		if (self.idiff[0] == "1"): self.hour = "hour"
