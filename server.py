@@ -37,7 +37,7 @@ class ImageResource(Resource):
 		global lcounter
 		lcounter += 1
 		# Call libnotify manually FIXME
-		if (iconfig['itaka']['notify']): 
+		if (iconfig['itaka']['notify'] == "True"): 
 			self.notifyseq = ["notifyit", str(self.icip), str(lcounter)]
 			self.notifyinstance = gobject.spawn_async(self.notifyseq, flags=gobject.SPAWN_SEARCH_PATH)
 				

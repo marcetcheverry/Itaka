@@ -333,7 +333,7 @@ class Gui:
             	
 	    # Close the expander
 	    self.expander.set_sensitive(True)
-	    if iconfig['itaka']['notify']:
+	    if (iconfig['itaka']['notify'] == "True"):
 		    self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
 
         else:
@@ -455,7 +455,7 @@ class Gui:
 	# FIXME: Cleanup
 	
 	# Set up alert string and console output
-        if (iconfig['itaka']['alert']): self.astring = "\a"
+        if (iconfig['itaka']['alert'] == "True"): self.astring = "\a"
 	if (iconfig['itaka']['method'] == 'server'):
 		self.console.msg(self.astring + "Screenshot " + str(data1) + " served to: " + str(data2))
 		
@@ -476,10 +476,10 @@ class Gui:
 	    self.iagotimer = gobject.timeout_add(60000, self.__calcsince, data3)
             	    
 	    # Notify the main interface
-	    if not iconfig['itaka']['notify']:
+	    if (iconfig['itaka']['notify'] == "True"):
 	    	self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
 		# Call Inotify
-		self.iglobals.notifyimg = gobject.timeout_add(2000, self.notify)
+		self.notifyimg = gobject.timeout_add(2000, self.notify)
 		
 	# Handler for FTP errors
 	elif ( action == "updateFtpStatus"):
