@@ -1,11 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# Preliminary audio engine (Rhythmbox)
-import globals as iglobals
+""" Itaka audio engine """
+
+import config as iconfig
+iconfig = iconfig.values
 
 from twisted.web.resource import Resource
 
-if (iglobals.audio):
+if (iconfig['itaka']['audio']):
 	import dbus	
 	bus = dbus.SessionBus()
 	rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')

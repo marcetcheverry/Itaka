@@ -1,8 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka Preferences dialog
+""" Itaka preferences dialog """
 
-import globals as iglobals
 # Import GTK+
 try:
 	import pygtk

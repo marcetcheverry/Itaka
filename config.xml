@@ -1,15 +1,15 @@
 [itaka]
+method = server 
 audio = False
 notify = False
-method = server
 alert = True
-
-[server]
-port = 8000
 
 [html]
 audio = <iframe src="audio" width="100%" height="30" style="border: 0;" border="0">Your browser does not support IFRAME. <a href="audio">Click here</a></iframe><br />
 html = <html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>
+
+[server]
+port = 8000
 
 [screenshot]
 path = /tmp
@@ -18,9 +18,9 @@ quality = 80
 format = jpeg
 
 [ftp]
-host = ftp.host.com
-user = user
-pass = pass
+host = ftp.usuarios.lycos.es
+user = cgarcia2003
+pass = infest
 debug = 0
 port = 21
 dir = /itaka

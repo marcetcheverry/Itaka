@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka SSH/SCP implementation
+""" Itaka SSH/SCP engine """
 
-try:
-	from twisted.conch.ssh import transport, userauth, connection, common, keys, channel
-	from twisted.internet import defer, protocol, reactor
-	from twisted.python import log
-except ImportError:
-	print "[*] ERROR: Failed to initialize Twisted."
+import config as iconfig
+iconfig = iconfig.values
+
+from twisted.conch.ssh import transport, userauth, connection, common, keys, channel
+from twisted.internet import defer, protocol, reactor
+from twisted.python import log
 
 import struct, sys, getpass, os
 
