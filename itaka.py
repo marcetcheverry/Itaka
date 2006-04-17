@@ -487,11 +487,12 @@ class Gui:
 		    	self.buttonStartstop.set_active(False)	
 			self.labelLastip.set_text('Error: %s' % (str(data1)))
 
-# Start the GTK reactor
-try:
-	igui = Gui()
-	igui.main()
-except AttributeError:
-	print "[*] ERROR: Gui()"
-	traceback.print_exc()
-	sys.exit(1)
+if __name__ == "__main__":
+	# Start the GTK reactor
+	try:
+		igui = Gui()
+		igui.main()
+	except AttributeError:
+		print "[*] ERROR: Gui()"
+		traceback.print_exc()
+		sys.exit(1)
