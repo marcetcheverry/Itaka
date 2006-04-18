@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-# Itaka Console handling
+""" Itaka console handling engine """
 
 import config as iconfig
 

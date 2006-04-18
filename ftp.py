@@ -3,10 +3,17 @@
 """ Itaka FTP engine """
 
 import ftplib, threading, time, datetime, os, traceback
-import config as iconfig
-iconfig = iconfig.values
 
-import screenshot as iscreenshot
+# Itaka core modules
+try:
+	import config as iconfig
+	iconfig = iconfig.values
+	
+	import screenshot as iscreenshot
+except ImportError:
+	print "[*] ERROR: Failed to import Itaka modules."
+	traceback.print_exc()
+	sys.exit(1)
 
 #: Local iteration counter
 lcounter = 0
@@ -33,7 +40,10 @@ class Ftp(threading.Thread):
 			# Get the Console instance output from the GUI instance.
 			self.console = self.igui.console
 			self.ftp = ftplib.FTP()
-			self.ftp.set_debuglevel(iconfig['ftp']['debug'])
+
+			# Set debug 
+			if (int(iconfig['ftp']['debug']) > 0):
+				self.ftp.set_debuglevel(iconfig['ftp']['debug'])
 			
 			#ftplib.all_errors: (<class ftplib.Error at 0xb7d285fc>, <class socket.error at 0xb7d289ec>, <class exceptions.IOError at 0xb7d5d47c>, <class exceptions.EOFError at 0xb7d5d53c>)
 			try:
