@@ -12,10 +12,7 @@ try:
 	iconfig = iconfig.values
 	import console as iconsole
 
-	import server as iserver
 	import ftp as iftp
-	
-	if (iconfig['itaka']['audio'] == "True"): import audio as iaudio
 except ImportError:
 	print "[*] ERROR: Failed to import Itaka modules."
 	traceback.print_exc()
@@ -31,68 +28,25 @@ except ImportError:
 	print "[*] ERROR: PyObjC bindings are missing."
 	sys.exit(1)
 
+# Set up global console instance
+console = iconsole.Console()
+
 class AppDelegate (NSObject):
 	def applicationDidFinishLaunching_(self, aNotification):
-		""" FIXME: I do not know what this event
-		does or when it does it. """
-		print "[*] ItakaX Cocoa+FTP"
-		
-	def takeshot(self):
-		""" Takethe screenshot. """
-		print "[*] Taking screenshot to %s " % (iscreenshot)
-		os.system("screencapture -S %s" % (iscreenshot))
-	
-	def upload(self, host, port, username, password, updir):
-		""" Call self.takeshot() and upload iscreenshot. """
-		ftp = ftplib.FTP()
-		ftp.connect(host, port)
-		print "[*] Connecting to %s:%s..." % (host, port)
-		print "[*} %s" % (ftp.getwelcome())
-		try:
-	  	  try:
-	    	        ftp.login(username, password)
-	    		# FIXME: Add a check to see 
-			# if updir exists, then ftp.mkd()
-			if updir:
-	    			ftp.cwd(updir)
-			print "[*] Currently in:", ftp.pwd()
-			print "[*] Uploading: %s..." % (iscreenshot)
-			self.takeshot()
-	    		if (os.path.exists(iscreenshot)):
-				file = open(iscreenshot, "rb")
-				try:
-					""" The second argument is the name of 
-					the file on the server. """
-	    				ftp.storbinary('STOR ' + iscreenshot.split('/')[2], file)
-  	    				print "[*] Success!"
-				except:
-					""" Print traceback since we do not do
-					error handling yet. """
-					traceback.print_exc()
- 	    			file.close()
-			else:
-	    			print "[*] %s doesnt exist. It wasnt taken." % (iscreenshot)
-		  finally:
-		        print "[*] Quitting..."
-			ftp.quit()
-        	except:
-			ftp.quit()
- 	  		traceback.print_exc()
+		pass
 
 	def start_(self, sender):
-		print "[*] %s: Starting infinite upload loop..." % (sender)
-		self.run = True
-		while(self.run):
-			# TODO: Add countdown with for and range()
-			time.sleep(itime)
-			self.upload(ihost, iport, iuser, ipasswd, iupdir)
+		console.msg("Starting FTP upload sequence every %s to %s:%s..." % (iconfig['screenshot']['time'], iconfig['ftp']['host'], iconfig['ftp']['port']))
+		# Start a ftp instance with a console instance
+		self.ftprunning = iftp.Ftp(self, console, False)
+		self.ftprunning.start()
 
 	def stop_(self, sender):
-		print "[*] %s: Stop() called..." % (sender)
-		self.run = False
+		console.msg("Stopping FTP sequence...")
+		self.ftprunning.stop()
 
 def main():
-	""" Set up the main cocoa gui """
+	""" Set up the GUI """
 	app = NSApplication.sharedApplication()
 	delegate = AppDelegate.alloc().init()
 	NSApp().setDelegate_(delegate)
@@ -131,4 +85,3 @@ def main():
     	window.orderFrontRegardless()          ## but this one does
 
     	AppHelper.runEventLoop()
-	

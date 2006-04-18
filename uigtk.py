@@ -55,7 +55,7 @@ try:
 	from egg import trayicon
 	trayiconSupport = True
 except ImportError:
-	print "[*] WARNING: GTK+ Python TrayIcon bindings are missing, disabling trayicon."
+print "[*] WARNING: GTK+ Python TrayIcon bindings are missing, disabling trayicon."
 	trayiconSupport = False
 	pass
 
