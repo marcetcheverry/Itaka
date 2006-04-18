@@ -23,7 +23,7 @@ class Ftp(threading.Thread):
 	""" Threaded FTP uploading method. """
 	def __init__(self, ginstance=False, sinstance=False):
 		""" Set up the threading event (stop/start) handler. """
-		if (iconfig.system != 'darwin'):
+		if (config.system != 'darwin'):
 			# Set up GUI instance (console implied), and ImageResource
 			self.igui = ginstance
 			self.sinstance = sinstance
@@ -117,12 +117,15 @@ class Ftp(threading.Thread):
 						global lcounter
 						lcounter += 1
 	  	    				self.console.msg("Screenshot " + str(lcounter) + " uploaded",  True)
-						if (system != "darwin"):
+						if (config.system != "darwin"):
 							self.igui.talk('updateGuiStatus', str(lcounter), None, datetime.datetime.now())
 						""" This marks the end of a clean connection, closes the file,
 						sets the flag for a clean & finished connection, and sets the
 						timer for a new one. """
+						
+						# FIXME: Add checking if connection is alive
 						self.ftp.quit()
+
 						self.console.msg("Connection to the server terminated.")
 						self.finished = True
   						self.file.close()
