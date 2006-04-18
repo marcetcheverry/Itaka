@@ -11,13 +11,16 @@ import ConfigParser, os, sys, traceback
 config = ConfigParser.ConfigParser()
 
 # Set up specific variables
-os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "config.xml")
+local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "config.xml")
 
 #: Version (do not change)
 version = "Devel"
 
 #: Check system or specify per os.name standard
 system = os.name
+
+# Support darwin
+if (system == "posix" and sys.platform.startswith("darwin")): system = darwin
 
 #: Itaka images/ directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")
@@ -27,8 +30,8 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "conf
 
 #: Save path for screenshots (system-specific)
 save_path = os.getcwd()
-if (system == 'posix'): save_path = "/tmp"
-elif (system == 'nt'): save_path = os.environ.get('TMP') or os.environ.get('TEMP')
+if (system == 'posix' or 'darwin'): save_path = "/tmp"
+elif (system == 'win32'): save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
 #: Global configuration values 
 values = {}
@@ -39,15 +42,14 @@ class ConfigParser:
 		self.configfile = None
 
 		# Check routine
-		if (system == "posix"):
+		if (system == "posix" or "darwin"):
 			if (os.path.exists(os.path.join(os.environ['HOME'], ".itaka/config.xml"))):
 				self.configfile = os.path.join(os.environ['HOME'], ".itaka/config.xml")
 			elif (os.path.exists(local_config)):
 				self.configfile = local_config
 			else:
 				self.create(local_config)
-		elif (system == "nt"):
-			print "nt"
+		elif (system == "win32"):
 			if (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/config.xml"))):
 					self.configfile = os.path.join(os.environ['APPDATA'], "itaka/config.xml")
 			elif (os.path.exists(local_config)):
