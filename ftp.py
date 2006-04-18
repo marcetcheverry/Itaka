@@ -7,6 +7,7 @@ import ftplib, threading, time, datetime, os, traceback
 # Itaka core modules
 try:
 	import config as iconfig
+	config = iconfig
 	iconfig = iconfig.values
 	
 	import screenshot as iscreenshot
@@ -20,11 +21,15 @@ lcounter = 0
 
 class Ftp(threading.Thread):
 	""" Threaded FTP uploading method. """
-	def __init__(self, ginstance, sinstance):
+	def __init__(self, ginstance=False, sinstance=False):
 		""" Set up the threading event (stop/start) handler. """
-		# Set up GUI instance (console implied), and ImageResource
-		self.igui = ginstance
-		self.sinstance = sinstance
+		if (iconfig.system != 'darwin'):
+			# Set up GUI instance (console implied), and ImageResource
+			self.igui = ginstance
+			self.sinstance = sinstance
+		else:
+			self.igui.console = ginstance
+
 		threading.Thread.__init__(self)
 		self.stopthread = threading.Event()
 		
@@ -78,7 +83,7 @@ class Ftp(threading.Thread):
 	    		self.console.msg("Currently in: %s." % (self.ftp.pwd()), True)
 			
 			# Take the screenshot and check for file
-			self.ftpscreen = iscreenshot.getScreenshot()
+			self.ftpscreen = iscreenshot.Screenshot()
 			
 			# Nice output
 			self.ftpdirstr = "to"
@@ -112,7 +117,8 @@ class Ftp(threading.Thread):
 						global lcounter
 						lcounter += 1
 	  	    				self.console.msg("Screenshot " + str(lcounter) + " uploaded",  True)
-						self.igui.talk('updateGuiStatus', str(lcounter), None, datetime.datetime.now())
+						if (system != "darwin"):
+							self.igui.talk('updateGuiStatus', str(lcounter), None, datetime.datetime.now())
 						""" This marks the end of a clean connection, closes the file,
 						sets the flag for a clean & finished connection, and sets the
 						timer for a new one. """
@@ -142,6 +148,7 @@ class Ftp(threading.Thread):
 		""" Handle FTP connection errors. """
 		# Stop the thread, connection, and warn the GUI.
 		self.console.msg("Connection to the server terminated.", True)
-		self.stopthread.set()	
-		self.igui.talk('updateFtpStatus', errorstring, None, None)
+		self.stopthread.set()
+		if (config.system != 'darwin'):
+			self.igui.talk('updateFtpStatus', errorstring, None, None)
 
