@@ -91,7 +91,8 @@ class CocoaScreenshot(NSObject):
 
 		# JPEG quality support
 		if iconfig['screenshot']['format'] in ('jpeg', 'jpg', 'JPEG', 'JPG'):
-			data = screenRep.representationUsingType_properties_(representation, {'NSImageCompressionFactor': int(iconfig['screenshot']['quality'])/100.0})
+			liquality = int(iconfig['screenshot']['quality'])/100.0
+			data = screenRep.representationUsingType_properties_(representation, {'NSImageCompressionFactor': liquality})
 		else:
 			data = screenRep.representationUsingType_properties_(representation, None)
 
