@@ -256,8 +256,9 @@ class Gui:
 		print "[*] ERROR: Could not initiate Console engine."
 		traceback.print_exc()
 		sys.exit(1)
-		
-        self.greact = reactor.run()
+
+	# Server reactor (interacts with the Twisted reactor)	
+        self.sreact = reactor.run()
 
     def about(self, data=None):
 	""" Create the About dialog. """
@@ -306,9 +307,9 @@ class Gui:
 	    	if (hasattr(self, 'ftprunning')):	pass
 		    
 	    if (iconfig['itaka']['method'] == 'server'):
-            		# Start up the twisted site
+            		# Set up the twisted site
             		self.site = server.Site(self.root)
-            		# Start Server reactor. Make an instance to distinguish from self.greactor().
+            		# Start the server. Make an instance to distinguish from self.sreactor().
             		self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
 			if (data):
 		    		self.buttonStartstop.set_active(True)
@@ -493,13 +494,3 @@ class Gui:
 		    	# This toggles the button, which in itself calls startstop()
 		    	self.buttonStartstop.set_active(False)	
 			self.labelLastip.set_text('Error: %s' % (str(data1)))
-
-if __name__ == "__main__":
-	# Start the GTK reactor
-	try:
-		igui = Gui()
-		igui.main()
-	except AttributeError:
-		print "[*] ERROR: Gui()"
-		traceback.print_exc()
-		sys.exit(1)

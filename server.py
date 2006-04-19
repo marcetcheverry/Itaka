@@ -33,7 +33,7 @@ class ImageResource(Resource):
 		self.time = datetime.datetime.now()
 		# self.icbrowser = request.getClient()
 
-		self.shotFile = iscreenshot.getScreenshot()
+		self.shotFile = iscreenshot.Screenshot()
 		global lcounter
 		lcounter += 1
 		# Call libnotify manually FIXME

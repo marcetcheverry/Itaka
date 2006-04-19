@@ -20,7 +20,7 @@ version = "Devel"
 system = os.name
 
 # Support darwin
-if (system == "posix" and sys.platform.startswith("darwin")): system = darwin
+if (system == "posix" and sys.platform.startswith("darwin")): system = "darwin"
 
 #: Itaka images/ directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")

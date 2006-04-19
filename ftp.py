@@ -5,19 +5,19 @@
 import ftplib, threading, time, datetime, os, traceback
 
 # Itaka core modules
-try:
-	import config as iconfig
-	config = iconfig
-	iconfig = iconfig.values
-	
-	import screenshot as iscreenshot
-except ImportError:
-	print "[*] ERROR: Failed to import Itaka modules."
-	traceback.print_exc()
-	sys.exit(1)
+import config as iconfig
+config = iconfig
+iconfig = iconfig.values
+
+import screenshot as iscreenshot
 
 #: Local iteration counter
 lcounter = 0
+
+# Temporary fix for Cocoa GUI
+notifygui = True
+if (config.system == 'darwin'):
+	notifygui = False
 
 class Ftp(threading.Thread):
 	""" Threaded FTP uploading method. """
@@ -28,7 +28,7 @@ class Ftp(threading.Thread):
 			self.igui = ginstance
 			self.sinstance = sinstance
 		else:
-			self.igui.console = ginstance
+			self.console = ginstance
 
 		threading.Thread.__init__(self)
 		self.stopthread = threading.Event()
@@ -41,9 +41,10 @@ class Ftp(threading.Thread):
 			
 			# Safeguard for canceling ongoing transfers
 			self.canceled = False
-			
-			# Get the Console instance output from the GUI instance.
-			self.console = self.igui.console
+
+			if (config.system != 'darwin'):
+				self.console = self.igui.console
+
 			self.ftp = ftplib.FTP()
 
 			# Set debug 
@@ -54,20 +55,20 @@ class Ftp(threading.Thread):
 			try:
 				self.ftp.connect(iconfig['ftp']['host'], iconfig['ftp']['port'])
 			except (ftplib.all_errors, ftplib.error_perm), (self.errormsg):
-				self.console.error(['Ftp', 'run'], "%s" % (str(self.errormsg)), True)
+				self.console.error(['Ftp', 'run'], "%s" % (str(self.errormsg)))
 				# Call the error handling function
-				self.error(self.errormsg)				
-			
+				self.error(self.errormsg)		
 				break
 
-			self.console.msg("Connecting to %s:%s..." % (iconfig['ftp']['host'], iconfig['ftp']['port']), True)
-			self.console.msg(self.ftp.getwelcome(), True)
+			self.console.msg("Connecting to %s:%s..." % (iconfig['ftp']['host'], iconfig['ftp']['port']), notifygui)
+
+			self.console.msg(self.ftp.getwelcome(), notifygui)
 			
 			# Login
 			try:
 				self.ftp.login(iconfig['ftp']['user'], iconfig['ftp']['pass'])
 			except (ftplib.all_errors, ftplib.error_perm, AttributeError), (self.errormsg):
-				self.console.error(['Ftp', 'run'], "%s" % (self.errormsg), True)
+				self.console.error(['Ftp', 'run'], "%s" % (self.errormsg), notifygui)
 				# Call the error handling function
 				self.error(self.errormsg)				
 				break
@@ -76,11 +77,11 @@ class Ftp(threading.Thread):
 				try:
 					self.ftp.cwd(iconfig['ftp']['dir'])
 				except:
-					self.console.msg("Creating %s directory..." % (iconfig['ftp']['dir']), True)
+					self.console.msg("Creating %s directory..." % (iconfig['ftp']['dir']), notifygui)
 					self.ftp.mkd(iconfig['ftp']['dir'])
 					self.ftp.cwd(iconfig['ftp']['dir'])
 
-	    		self.console.msg("Currently in: %s." % (self.ftp.pwd()), True)
+	    		self.console.msg("Currently in: %s." % (self.ftp.pwd()), notifygui)
 			
 			# Take the screenshot and check for file
 			self.ftpscreen = iscreenshot.Screenshot()
@@ -88,7 +89,7 @@ class Ftp(threading.Thread):
 			# Nice output
 			self.ftpdirstr = "to"
 			if iconfig['ftp']['dir']:	self.ftpdirstr = "to %s on" % (iconfig['ftp']['dir'])
-			self.console.msg("Uploading screenshot %s %s server..." % (self.ftpscreen, self.ftpdirstr), True)
+			self.console.msg("Uploading screenshot %s %s server..." % (self.ftpscreen, self.ftpdirstr), notifygui)
 			
 	    		if (os.path.exists(self.ftpscreen)):
 	    			self.file = open(self.ftpscreen, "rb")
@@ -104,10 +105,10 @@ class Ftp(threading.Thread):
 						# Warning is displayed on the console
 						self.canceled = True
 						self.console.warn(['Ftp', 'run'], str(self.error))
-						self.console.msg("Ongoing transfer canceled. Connection terminated.", True)
+						self.console.msg("Ongoing transfer canceled. Connection terminated.")
 
 					except (ftplib.all_errors, ftplib.error_perm), (self.errormsg):
-						self.console.error(['Ftp', 'run'], "%s" % (self.errormsg), True)
+						self.console.error(['Ftp', 'run'], "%s" % (self.errormsg))
 						# Call the error handling function
 						self.error(self.errormsg)				
 						break
@@ -116,8 +117,8 @@ class Ftp(threading.Thread):
 					if not self.canceled:
 						global lcounter
 						lcounter += 1
-	  	    				self.console.msg("Screenshot " + str(lcounter) + " uploaded",  True)
-						if (config.system != "darwin"):
+	  	    				self.console.msg("Screenshot " + str(lcounter) + " uploaded", notifygui)
+						if (notifygui):
 							self.igui.talk('updateGuiStatus', str(lcounter), None, datetime.datetime.now())
 						""" This marks the end of a clean connection, closes the file,
 						sets the flag for a clean & finished connection, and sets the
@@ -126,7 +127,7 @@ class Ftp(threading.Thread):
 						# FIXME: Add checking if connection is alive
 						self.ftp.quit()
 
-						self.console.msg("Connection to the server terminated.")
+						self.console.msg("Connection to the server terminated.", notifygui)
 						self.finished = True
   						self.file.close()
 						time.sleep(int(iconfig['screenshot']['time']))
@@ -135,23 +136,24 @@ class Ftp(threading.Thread):
 					traceback.print_exc()
  	    				self.file.close()
 					self.ftp.quit()
-					self.console.msg("Connection to the server terminated.", True)
+					self.console.msg("Connection to the server terminated.", notifygui)
 			# File not found handler. Close the connection.
 			else:
 				self.ftp.quit()
-				self.console.msg("Connection to the server terminated.", True)
-				self.console.error(["Ftp", "run"], "Cant find %s" % (screenshot), True)
+				self.console.msg("Connection to the server terminated.", notifygui)
+				self.console.error(["Ftp", "run"], "Cant find %s" % (screenshot))
 	def stop(self):
 		""" Handles stoping, including cancelling ongoing tranfers. """
-		self.stopthread.set()	
+		self.stopthread.set()
+		self.ftp.quit()
 		# Unorthodox fix: kill the connection
 		self.ftp.close()
 	
 	def error(self, errorstring):
 		""" Handle FTP connection errors. """
 		# Stop the thread, connection, and warn the GUI.
-		self.console.msg("Connection to the server terminated.", True)
+		self.console.msg("Connection to the server terminated.")
 		self.stopthread.set()
-		if (config.system != 'darwin'):
+		if (notifygui):
 			self.igui.talk('updateFtpStatus', errorstring, None, None)
 

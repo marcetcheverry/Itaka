@@ -29,20 +29,19 @@ except ImportError:
 	sys.exit(1)
 
 # Set up global console instance
-console = iconsole.Console()
 
 class AppDelegate (NSObject):
 	def applicationDidFinishLaunching_(self, aNotification):
-		pass
+		self.console = iconsole.Console(self)
 
 	def start_(self, sender):
-		console.msg("Starting FTP upload sequence every %s to %s:%s..." % (iconfig['screenshot']['time'], iconfig['ftp']['host'], iconfig['ftp']['port']))
+		self.console.msg("Starting FTP upload sequence every %s to %s:%s..." % (iconfig['screenshot']['time'], iconfig['ftp']['host'], iconfig['ftp']['port']))
 		# Start a ftp instance with a console instance
 		self.ftprunning = iftp.Ftp(self, console, False)
 		self.ftprunning.start()
 
 	def stop_(self, sender):
-		console.msg("Stopping FTP sequence...")
+		self.console.msg("Stopping FTP sequence...")
 		self.ftprunning.stop()
 
 def main():
