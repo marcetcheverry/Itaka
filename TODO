@@ -4,7 +4,10 @@
 		 * Usar bindings de python libnotify http://ptlo.blogspot.com/2005/11/missing-piece.html
 		 
 	Nuevas:	Local/Twisted-conch backends.
-
+		Config necesita crear directorio en el home !
+		Cocoa + Twisted
+		Cocoa Prefs
+	Ver: remover twisted de la gui cuando no se usa
 	Trivial: -Agregar preferencia de Start minimized
 		 -Usar mas tracebaks
 
