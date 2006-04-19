@@ -93,7 +93,7 @@ class CocoaScreenshot(NSObject):
 		if iconfig['screenshot']['format'] in ('jpeg', 'jpg', 'JPEG', 'JPG'):
 			# liquality = int(iconfig['screenshot']['quality'])/100.0 ValueError: depythonifying 'int', got 'str' of 14
 			# FIXME	
-			data = screenRep.representationUsingType_properties_(NSJPEGFileType)
+			data = screenRep.representationUsingType_properties_(NSJPEGFileType, None)
 			#data = screenRep.representationUsingType_properties_(representation, {'NSImageCompressionFactor': 0.7})
 		else:
 			data = screenRep.representationUsingType_properties_(representation, None)
