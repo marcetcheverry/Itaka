@@ -6,12 +6,12 @@ import sys, os, traceback
 
 # Itaka core modules
 try:
-	# Initiate the Configuration engine.
+	# Initiate the configuration engine.
 	import config as iconfig
 	iconfig.ConfigParser().load()
 
 	# Import our GUI toolkit 
-	if (iconfig.system == 'posix' or 'nt'): import uigtk as igui
+	if iconfig.system in ('posix', 'nt'): import uigtk as igui
 	elif (iconfig.system == 'darwin'): import uicocoa as igui
 except ImportError:
 	print "[*] ERROR: Failed to import Itaka modules."
@@ -20,8 +20,12 @@ except ImportError:
 	
 if __name__ == "__main__":
 	try:
-		gui = igui.Gui()
-		gui.main()
+		# Fire up the choosen GUI.
+		if (iconfig.system == 'darwin'):
+			igui.main()
+		else:
+			gui = igui.Gui()
+			gui.main()
 	except AttributeError:
 		print "[*] ERROR: Could not initiate GUI."
 		traceback.print_exc()
