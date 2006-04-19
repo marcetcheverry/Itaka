@@ -23,71 +23,70 @@ else:
 shotFile = os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))
 
 
-if (config.system == 'darwin'):
-	class CocoaScreenshot(NSObject):
-		""" NSObject wrapper for the Cocoa screenshooting code """
+class CocoaScreenshot(NSObject):
+	""" NSObject wrapper for the Cocoa screenshooting code """
 
-		#: Cocoa filetype representation mapping dictionary
-		_fileRepresentationMapping = {
-		'.png': 'NSPNGFileType',
-		'.gif': 'NSGIFFileType',
-		'.jpg': 'NSJPEGFileType',
-		'.jpeg': 'NSJPEGFileType',
-		'.bmp': 'NSBMPFileType',
-		'.tif': 'NSTIFFFileType',
-		'.tiff': 'NSTIFFFileType',
-		}
+	#: Cocoa filetype representation mapping dictionary
+	_fileRepresentationMapping = {
+	'.png': 'NSPNGFileType',
+	'.gif': 'NSGIFFileType',
+	'.jpg': 'NSJPEGFileType',
+	'.jpeg': 'NSJPEGFileType',
+	'.bmp': 'NSBMPFileType',
+	'.tif': 'NSTIFFFileType',
+	'.tiff': 'NSTIFFFileType',
+	}
 
-		def init(self):
-			""" Initializer class for NSObject """
-			self = super(MyClass, self).init()
-        		if self is None: return None
-			return self
+	def init(self):
+		""" Initializer class for NSObject """
+		self = super(MyClass, self).init()
+		if self is None: return None
+		return self
 
-		def _getFileRepresentationType(self):
-			""" Cocoa filetype representation function to mach the filetype with the _fileRepresentationMapping dictionary"""
-			base, ext = os.path.splitext(shotFile)
-			return _fileRepresentationMapping[ext.lower()]
+	def _getFileRepresentationType(self):
+		""" Cocoa filetype representation function to mach the filetype with the _fileRepresentationMapping dictionary"""
+		base, ext = os.path.splitext(shotFile)
+		return _fileRepresentationMapping[ext.lower()]
 
-		def Screenshot(self):
-			""" Cocoa screenshot implementation """
-			# FIXME: See http://www.cocoadev.com/index.pl?NSImageToJPEG for JPEG compressiom
-			# http://www.paulhammond.org/2005/08/webkit2png/webkit2png-0.4.txt
+	def Screenshot(self):
+		""" Cocoa screenshot implementation """
+		# FIXME: See http://www.cocoadev.com/index.pl?NSImageToJPEG for JPEG compressiom
+		# http://www.paulhammond.org/2005/08/webkit2png/webkit2png-0.4.txt
 
-			# Initialize screen frame and allocate image in memory
-			rect = NSScreen.mainScreen().frame()
-			image = NSImage.alloc().initWithSize_((rect.size.width, rect.size.height))
-			# Create a transparent fullsize window
-			window = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
-							rect, 
-							NSBorderlessWindowMask, 
-							NSBackingStoreNonretained, 
-							False)
-			view = NSView.alloc().initWithFrame_(rect)
-			window.setLevel_(NSScreenSaverWindowLevel + 100)
-			window.setHasShadow_(False)
-			window.setAlphaValue_(0.0)
-			window.setContentView_(view)
-			# Send the window to the front, focus NSView to execute an action action with 
-			window.orderFront_(self)
-			view.lockFocus()
-			# Create a Bitmap representation of the focused screen frame and make it an image
-			screenRep = NSBitmapImageRep.alloc().initWithFocusedViewRect_(rect)
-			image.addRepresentation_(screenRep)
-			view.unlockFocus()
-			window.orderOut_(self)
-			window.close()
+		# Initialize screen frame and allocate image in memory
+		rect = NSScreen.mainScreen().frame()
+		image = NSImage.alloc().initWithSize_((rect.size.width, rect.size.height))
+		# Create a transparent fullsize window
+		window = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
+						rect, 
+						NSBorderlessWindowMask, 
+						NSBackingStoreNonretained, 
+						False)
+		view = NSView.alloc().initWithFrame_(rect)
+		window.setLevel_(NSScreenSaverWindowLevel + 100)
+		window.setHasShadow_(False)
+		window.setAlphaValue_(0.0)
+		window.setContentView_(view)
+		# Send the window to the front, focus NSView to execute an action action with 
+		window.orderFront_(self)
+		view.lockFocus()
+		# Create a Bitmap representation of the focused screen frame and make it an image
+		screenRep = NSBitmapImageRep.alloc().initWithFocusedViewRect_(rect)
+		image.addRepresentation_(screenRep)
+		view.unlockFocus()
+		window.orderOut_(self)
+		window.close()
 
-			# Determine filetype, and create a representation (export to filetype)
-			representation = self._getFileRepresentationType()
+		# Determine filetype, and create a representation (export to filetype)
+		representation = self._getFileRepresentationType()
 
-			# JPEG quality support
-			if iconfig['screenshot']['format'] in ('jpeg', 'jpg', 'JPEG', 'JPG'):
-				data = screenRep.representationUsingType_properties_(representation, {'NSImageCompressionFactor': int(iconfig['screenshot']['quality'])/100.0})
-			else:
-				data = screenRep.representationUsingType_properties_(representation, None)
+		# JPEG quality support
+		if iconfig['screenshot']['format'] in ('jpeg', 'jpg', 'JPEG', 'JPG'):
+			data = screenRep.representationUsingType_properties_(representation, {'NSImageCompressionFactor': int(iconfig['screenshot']['quality'])/100.0})
+		else:
+			data = screenRep.representationUsingType_properties_(representation, None)
 
-			data.writeToFile_atomically_(shotFile, False)
+		data.writeToFile_atomically_(shotFile, False)
 
 def Screenshot():
 	""" Returns a screenshot file. """
@@ -113,7 +112,7 @@ def Screenshot():
 		del screenshot
 		gc.collect()
 	else:
-		cscreenshot = CocoaScrenshot.alloc().init()
+		cscreenshot = CocoaScrenshot.new()
 		cscreenshot.Screenshot()
 		
 		#os.popen2("screencapture -S %s" % (shotFile))
