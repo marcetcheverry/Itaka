@@ -22,6 +22,15 @@ else:
 #: Final absolute path to the screenshot file
 shotFile = os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))
 
+mapping = {
+'.png': 'NSPNGFileType',
+'.gif': 'NSGIFFileType',
+'.jpg': 'NSJPEGFileType',
+'.jpeg': 'NSJPEGFileType',
+'.bmp': 'NSBMPFileType',
+'.tif': 'NSTIFFFileType',
+'.tiff': 'NSTIFFFileType',
+}
 
 class CocoaScreenshot(NSObject):
 	""" NSObject wrapper for the Cocoa screenshooting code """
@@ -46,7 +55,7 @@ class CocoaScreenshot(NSObject):
 	def _getFileRepresentationType(self):
 		""" Cocoa filetype representation function to mach the filetype with the _fileRepresentationMapping dictionary"""
 		base, ext = os.path.splitext(shotFile)
-		return _fileRepresentationMapping[ext.lower()]
+		return mapping[ext.lower()]
 
 	def Screenshot(self):
 		""" Cocoa screenshot implementation """
