@@ -37,7 +37,7 @@ class AppDelegate (NSObject):
 	def start_(self, sender):
 		self.console.msg("Starting FTP upload sequence every %s to %s:%s..." % (iconfig['screenshot']['time'], iconfig['ftp']['host'], iconfig['ftp']['port']))
 		# Start a ftp instance with a console instance
-		self.ftprunning = iftp.Ftp(self, console, False)
+		self.ftprunning = iftp.Ftp(self, self.console, False)
 		self.ftprunning.start()
 
 	def stop_(self, sender):
