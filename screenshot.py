@@ -99,6 +99,8 @@ class CocoaScreenshot(NSObject):
 			data = screenRep.representationUsingType_properties_(representation, None)
 
 		data.writeToFile_atomically_(shotFile, False)
+		
+		return shotFile
 
 def Screenshot():
 	""" Returns a screenshot file. """
@@ -125,8 +127,6 @@ def Screenshot():
 		gc.collect()
 	else:
 		cscreenshot = CocoaScreenshot.new()
-		cscreenshot.Screenshot()
+		return cscreenshot.Screenshot()
 		
 		#os.popen2("screencapture -S %s" % (shotFile))
-
-	return shotFile
