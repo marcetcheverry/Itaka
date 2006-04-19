@@ -39,7 +39,7 @@ class CocoaScreenshot(NSObject):
 
 	def init(self):
 		""" Initializer class for NSObject """
-		self = super(MyClass, self).init()
+		self = super(CocoaScreenshot, self).init()
 		if self is None: return None
 		return self
 
