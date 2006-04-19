@@ -112,7 +112,7 @@ def Screenshot():
 		del screenshot
 		gc.collect()
 	else:
-		cscreenshot = CocoaScrenshot.new()
+		cscreenshot = CocoaScreenshot.new()
 		cscreenshot.Screenshot()
 		
 		#os.popen2("screencapture -S %s" % (shotFile))
