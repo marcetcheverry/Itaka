@@ -22,28 +22,19 @@ else:
 #: Final absolute path to the screenshot file
 shotFile = os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))
 
-mapping = {
-'.png': 'NSPNGFileType',
-'.gif': 'NSGIFFileType',
-'.jpg': 'NSJPEGFileType',
-'.jpeg': 'NSJPEGFileType',
-'.bmp': 'NSBMPFileType',
-'.tif': 'NSTIFFFileType',
-'.tiff': 'NSTIFFFileType',
-}
 
 class CocoaScreenshot(NSObject):
 	""" NSObject wrapper for the Cocoa screenshooting code """
 
 	#: Cocoa filetype representation mapping dictionary
-	_fileRepresentationMapping = {
-	'.png': 'NSPNGFileType',
-	'.gif': 'NSGIFFileType',
-	'.jpg': 'NSJPEGFileType',
-	'.jpeg': 'NSJPEGFileType',
-	'.bmp': 'NSBMPFileType',
-	'.tif': 'NSTIFFFileType',
-	'.tiff': 'NSTIFFFileType',
+	self.fileRepresentationMapping = {
+	'.png': NSPNGFileType',
+	'.gif': NSGIFFileType',
+	'.jpg': NSJPEGFileType',
+	'.jpeg': NSJPEGFileType',
+	'.bmp': NSBMPFileType,
+	'.tif': NSTIFFFileType',
+	'.tiff': NSTIFFFileType,
 	}
 
 	def init(self):
@@ -55,7 +46,7 @@ class CocoaScreenshot(NSObject):
 	def _getFileRepresentationType(self):
 		""" Cocoa filetype representation function to mach the filetype with the _fileRepresentationMapping dictionary"""
 		base, ext = os.path.splitext(shotFile)
-		return mapping[ext.lower()]
+		return self.fileRepresentationMapping[ext.lower()]
 
 	def Screenshot(self):
 		""" Cocoa screenshot implementation """
@@ -71,6 +62,7 @@ class CocoaScreenshot(NSObject):
 						NSBorderlessWindowMask, 
 						NSBackingStoreNonretained, 
 						False)
+
 		view = NSView.alloc().initWithFrame_(rect)
 		window.setLevel_(NSScreenSaverWindowLevel + 100)
 		window.setHasShadow_(False)
@@ -99,7 +91,7 @@ class CocoaScreenshot(NSObject):
 			data = screenRep.representationUsingType_properties_(representation, None)
 
 		data.writeToFile_atomically_(shotFile, False)
-		
+	
 		return shotFile
 
 def Screenshot():
@@ -125,6 +117,7 @@ def Screenshot():
 		# http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp
 		del screenshot
 		gc.collect()
+		return shotFile
 	else:
 		cscreenshot = CocoaScreenshot.new()
 		return cscreenshot.Screenshot()

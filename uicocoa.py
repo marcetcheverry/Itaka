@@ -61,6 +61,7 @@ def main():
     	startbutton.setBezelStyle_( 4 )
     	startbutton.setTitle_( 'Start' )
     	startbutton.setTarget_( app.delegate() )
+	# Call the delegate's start_
     	startbutton.setAction_( "start:" )
         
 	beep = NSSound.alloc()
