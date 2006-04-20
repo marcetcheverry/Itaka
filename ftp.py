@@ -31,11 +31,18 @@ class Ftp(threading.Thread):
 			self.console = ginstance
 
 		threading.Thread.__init__(self)
+			
 		self.stopthread = threading.Event()
 		
 	def run(self):
 		""" Upload code, inside a loop waiting for an event (self.stopthread). """
-
+		
+		# Use PyObjC threading
+		if (config.system == "darwin")
+			#: Create a Pool since we are outside the Main Application Thread
+			self.pool = NSAutoreleasePool.new()	
+			# See NSRunLoop for better memory management
+		
 		# Begin the upload loop.
 		while not self.stopthread.isSet():
 			
@@ -83,6 +90,7 @@ class Ftp(threading.Thread):
 
 	    		self.console.msg("Currently in: %s." % (self.ftp.pwd()), notifygui)
 			
+
 			# Take the screenshot and check for file
 			self.ftpscreen = iscreenshot.Screenshot()
 			
@@ -140,11 +148,14 @@ class Ftp(threading.Thread):
 			# File not found handler. Close the connection.
 			else:
 				self.ftp.quit()
-				self.console.msg("Connection to the server terminated.", notifygui)
+				self.console.msg("Error taking screenshot. Connection to the server terminated.", notifygui)
 				self.console.error(["Ftp", "run"], "Cant find %s" % (screenshot))
 	def stop(self):
 		""" Handles stoping, including cancelling ongoing tranfers. """
 		self.stopthread.set()
+		# Cocoa threading
+		if (config.system == "darwin"):
+			del self.pool
 		self.ftp.quit()
 		# Unorthodox fix: kill the connection
 		self.ftp.close()
