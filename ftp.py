@@ -9,6 +9,11 @@ import config as iconfig
 config = iconfig
 iconfig = iconfig.values
 
+# Cocoa modules for Threading
+if (config.system == 'darwin'):
+	import objc
+	from Foundation import *
+
 import screenshot as iscreenshot
 
 #: Local iteration counter
@@ -38,9 +43,9 @@ class Ftp(threading.Thread):
 		""" Upload code, inside a loop waiting for an event (self.stopthread). """
 		
 		# Use PyObjC threading
-		if (config.system == "darwin")
+		if (config.system == "darwin"):
 			#: Create a Pool since we are outside the Main Application Thread
-			self.pool = NSAutoreleasePool.new()	
+			self.pool = NSObject.NSAutoreleasePool.new()	
 			# See NSRunLoop for better memory management
 		
 		# Begin the upload loop.
@@ -156,9 +161,14 @@ class Ftp(threading.Thread):
 		# Cocoa threading
 		if (config.system == "darwin"):
 			del self.pool
-		self.ftp.quit()
+	
+		try:
+			self.ftp.quit()
+			self.ftp.close()
+		except:
+			self.ftp.close()
+			pass
 		# Unorthodox fix: kill the connection
-		self.ftp.close()
 	
 	def error(self, errorstring):
 		""" Handle FTP connection errors. """
