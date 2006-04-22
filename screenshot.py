@@ -82,7 +82,7 @@ if (config.system == 'darwin'):
 			representation = self._getFileRepresentationType()
 
 			# JPEG quality support
-			if iconfig['screenshot']['format'] in ('jpeg', 'jpg', 'JPEG', 'JPG'):
+			if iconfig['screenshot']['format'] in ('jpeg', 'png', 'JPEG', 'JPG'):
 				# liquality = int(iconfig['screenshot']['quality'])/100.0 ValueError: depythonifying 'int', got 'str' of 14
 				# FIXME	
 				data = screenRep.representationUsingType_properties_(NSJPEGFileType, None)
@@ -108,7 +108,7 @@ def Screenshot():
 		shotFile = os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))
 
 		# Save the screnshot, checking before if to set JPEG quality
-		if iconfig['screenshot']['format'] in ('jpeg', 'jpg', 'JPEG', 'JPG'):
+		if iconfig['screenshot']['format'] == 'jpeg':
 			screenshot.save(shotFile, iconfig['screenshot']['format'].lower(), {"quality":str(iconfig['screenshot']['quality'])})
 		else:
 			screenshot.save(shotFile, iconfig['screenshot']['format'].lower())
@@ -117,6 +117,7 @@ def Screenshot():
 		# http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp
 		del screenshot
 		gc.collect()
+
 		return shotFile
 	else:
 		cscreenshot = CocoaScreenshot.new()
