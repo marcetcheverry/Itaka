@@ -44,7 +44,7 @@ class ConfigParser:
 		# Check routine
 		if system in ("posix", "darwin"):
 			if not (os.path.exists(os.path.join(os.environ['HOME'], ".itaka/itaka.conf"))):
-				self.create(os.path.join(os.environ['HOME'], "itaka/itaka.conf"))
+				self.create(os.path.join(os.environ['HOME'], ".itaka/itaka.conf"))
 			else:
 				self.configfile = os.path.join(os.environ['HOME'], ".itaka/itaka.conf")
 		elif (system == "nt"):
