@@ -193,7 +193,6 @@ class Preferences:
 		if ( who == "Type"):
 		# The following codes handles showing the extra boxes
 		 if ( self.preferencesCombotype.get_active_text() == "FTP"):
-			print "FTP called"
 	 	 	self.preferencesHBox3.show_all()
 		 	self.preferencesHBox4.show_all()
 		 	self.preferencesHBox5.show_all()

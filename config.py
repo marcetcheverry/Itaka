@@ -5,13 +5,13 @@
 # It works by the core initiating the main instance, and the
 # modules accessing the global values variables set up by the initation.
 
-import ConfigParser, os, sys, traceback
+import ConfigParser, os, sys, shutil, traceback
 
 # Set up instance
 config = ConfigParser.ConfigParser()
 
 # Set up specific variables
-local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "config.xml")
+local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
 #: Version (do not change)
 version = "Devel"
@@ -26,7 +26,7 @@ if (system == "posix" and sys.platform.startswith("darwin")): system = "darwin"
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")
 
 #: Local configuration file
-local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "config.xml")
+local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
 #: Save path for screenshots (system-specific)
 save_path = os.getcwd()
@@ -42,22 +42,18 @@ class ConfigParser:
 		self.configfile = None
 
 		# Check routine
-		if (system == "posix" or "darwin"):
-			if (os.path.exists(os.path.join(os.environ['HOME'], ".itaka/config.xml"))):
-				self.configfile = os.path.join(os.environ['HOME'], ".itaka/config.xml")
-			elif (os.path.exists(local_config)):
-				self.configfile = local_config
+		if system in ("posix", "darwin"):
+			if not (os.path.exists(os.path.join(os.environ['HOME'], ".itaka/itaka.conf"))):
+				self.create(os.path.join(os.environ['APPDATA'], "itaka/itaka.conf"))
 			else:
-				self.create(local_config)
-		elif (system == "win32"):
-			if (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/config.xml"))):
-					self.configfile = os.path.join(os.environ['APPDATA'], "itaka/config.xml")
-			elif (os.path.exists(local_config)):
-					self.configfile = local_config
+				self.configfile = os.path.join(os.environ['HOME'], ".itaka/itaka.conf")
+		elif (system == "nt"):
+			if not (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/itaka.ini"))):
+				self.create(os.path.join(os.environ['APPDATA'], "itaka/itaka.ini"))
 			else:
-				self.create(local_config)
+				self.configfile = os.path.join(os.environ['APPDATA'], "itaka/itaka.ini")
 		else:
-			# Generic system/values	
+			# Generic system/paths (using local)	
 			if (os.path.exists(local_config)): 
 				self.configfile = local_config
 			else:	
@@ -117,6 +113,8 @@ class ConfigParser:
 		config.set("itaka", "audio", False)
 		config.set("itaka", "notify", False)
 		
+		config.set("server", "port", 8000)
+		
 		config.set("screenshot", "format", "jpeg")
 		config.set("screenshot", "quality", 80)
 		config.set("screenshot", "path", save_path)
@@ -129,13 +127,16 @@ class ConfigParser:
 		config.set("ftp", "dir", "/itaka")
 		config.set("ftp", "debug", 0)
 		
-		config.set("server", "port", 8000)
 
 		# FIXME: Audio
 		config.set("html", "audio", '<iframe src="audio" width="100%" height="30" style="border: 0;" border="0">Your browser does not support IFRAME. <a href="audio">Click here</a></iframe><br />')
 		config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
 
-		# Write it and set the variable
+		# Check if the directory exists, if not create it
+		# and write the config file with its variables
+		if not (os.path.exists(os.path.dirname(path))):
+			shutil.os.mkdir(os.path.dirname(path))
+
 		try:
 			config.write(open(path, 'w'))
 		except:
