@@ -16,8 +16,12 @@ except ImportError:
 	sys.exit(1)
 
 class Preferences:
-	def prefwindow(self, widget, configinstance, icon):
+	def prefwindow(self, widget, configinstance, guiinstance, icon):
+		# Initate our configuration and gui instances
 		self.config = configinstance
+		self.gui = guiinstance
+
+		# Reload the configuration each time the window pops up
 		self.vconfig = configinstance.load(False)
 		""" Set up the preferences window. """
 	        self.icon_pixbuf = icon	
@@ -245,7 +249,8 @@ class Preferences:
 					'dir': '/itaka'}
 				}
 
-
-		self.config.save(self.configurationdict)
-		
+		# Check if the configuration changed
+		if (self.configurationdict != self.vconfig):
+			self.config.save(self.configurationdict)
+			self.gui.talk(self.gui, "updateConfig")	
 		self.preferences.hide()
