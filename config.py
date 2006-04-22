@@ -74,12 +74,11 @@ class ConfigParser:
 				values[section] = dict(config.items(section))
 		return values
 
-	def save(self, values):
+	def save(self, valuesdict):
 		""" Saves a dict containing the configuration."""
-		
 		# Unpack the dict into section, option, value
-		for section in values.keys():
-			for key, value in values[section].items():
+		for section in valuesdict.keys():
+			for key, value in valuesdict[section].items():
 				config.set(section, key, value)
 	
 		# Save

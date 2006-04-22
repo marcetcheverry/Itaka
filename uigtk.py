@@ -21,7 +21,7 @@ except ImportError:
 # Itaka core modules
 try:
 	import config as iconfig
-	# Global values
+	# Read the configuration (loaded by the core)
 	config = iconfig
 	iconfig = iconfig.values
 	import console as iconsole
@@ -104,7 +104,7 @@ class Gui:
 		# Connect
 		self.menustart.connect("activate", self.startstop, "Start")
 		self.menustop.connect("activate", self.startstop, "Stop")
-		self.menuprefs.connect("activate", ipreferences.Preferences().prefwindow, self.icon_pixbuf)
+		self.menuprefs.connect("activate", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
 		self.menuabout.connect("activate", self.about)
 		self.menuquit.connect("activate", self.destroy)
 		
@@ -137,7 +137,7 @@ class Gui:
 
         # Preferences button
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, self.configinstance, self.icon_pixbuf)
+        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
 	
         self.ibox.pack_start(self.preferencesButton, True, True, 4)
 
@@ -496,3 +496,9 @@ class Gui:
 		    	# This toggles the button, which in itself calls startstop()
 		    	self.buttonStartstop.set_active(False)	
 			self.labelLastip.set_text('Error: %s' % (str(data1)))
+
+	# Handler for Preferences signal to reload the config
+	elif ( action == "updateConfig"):
+			self.cout.msg("Updating configuration...")
+			global iconfig
+			iconfig = self.configinstance.load()
