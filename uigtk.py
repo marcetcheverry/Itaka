@@ -61,9 +61,11 @@ except ImportError:
 
 class Gui:
     """ GTK GUI """
-    def __init__(self):
-	# Workaround: pass a reference of GUI to Screenshot module for its notification handling.
+    def __init__(self, configinstance):
+	# Pas a reference of GUI to Screenshot module for its notification handling.
 	self.sinstance = iserver.ImageResource(self)
+	# Get a reference of the configuration instance
+	self.configinstance = configinstance
 
 	# Set up Server variables, if needed.
 	if (iconfig['itaka']['method'] == 'server'):
@@ -135,7 +137,7 @@ class Gui:
 
         # Preferences button
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, self.icon_pixbuf)
+        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, self.configinstance, self.icon_pixbuf)
 	
         self.ibox.pack_start(self.preferencesButton, True, True, 4)
 
@@ -248,7 +250,7 @@ class Gui:
 
     def main(self):
         """ Main init function. Starts the GUI reactors."""
-        # GTK Reactor and Console Handling
+	# GTK Reactor and Console Handling
 	try:
 		# Init console with a reference to our gui instance
         	self.console = iconsole.Console(self)

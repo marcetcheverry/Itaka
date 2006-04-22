@@ -8,7 +8,8 @@ import sys, os, traceback
 try:
 	# Initiate the configuration engine.
 	import config as iconfig
-	iconfig.ConfigParser().load()
+	configinstance = iconfig.ConfigParser()
+	configinstance.load()
 
 	# Import our GUI toolkit 
 	if iconfig.system in ('posix', 'nt'): import uigtk as igui
@@ -24,7 +25,7 @@ if __name__ == "__main__":
 		if (iconfig.system == 'darwin'):
 			igui.main()
 		else:
-			gui = igui.Gui()
+			gui = igui.Gui(configinstance)
 			gui.main()
 	except AttributeError:
 		print "[*] ERROR: Could not initiate GUI."
