@@ -37,7 +37,7 @@ elif (system == 'nt'): save_path = os.environ.get('TMP') or os.environ.get('TEMP
 values = {}
 
 class ConfigParser:		
-	def load(self):
+	def load(self, notify=True):
 		"""Set up and load configuration. """
 		self.configfile = None
 
@@ -65,9 +65,9 @@ class ConfigParser:
 		# Read and assign values from the configuration file 
 		try:
 			config.read(self.configfile)
-			print "[*] Read configuration (%s)" % (self.configfile)
+			if notify: print "[*] Read configuration (%s)" % (self.configfile)
 		except:
-			print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
+			if notify: print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
 			traceback.print_exc()
 
 		""" Retrieve values and return them as a dict."""
@@ -100,7 +100,7 @@ class ConfigParser:
 		# Save
 		try:
 			config.write(open(self.configfile, 'w'))
-			print "[*] Updating configuration"	
+			print "[*] Updating configuration key %s to %s" % (key, value)	
 		except:
 			print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
 			traceback.print_exc()

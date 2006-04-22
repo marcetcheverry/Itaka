@@ -16,7 +16,9 @@ except ImportError:
 	sys.exit(1)
 
 class Preferences:
-	def prefwindow(self, widget, icon):
+	def prefwindow(self, widget, configinstance, icon):
+		self.config = configinstance
+		self.vconfig = configinstance.load(False)
 		""" Set up the preferences window. """
 	        self.icon_pixbuf = icon	
 		self.preferences = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -82,27 +84,40 @@ class Preferences:
 
 		# Entries
 		self.preferencesEntryhost = gtk.Entry()
+		self.preferencesEntryhost.set_text(self.vconfig['ftp']['host'])
 		self.preferencesEntryusername = gtk.Entry()
+		self.preferencesEntryusername.set_text(self.vconfig['ftp']['user'])
 		self.preferencesEntrypassword = gtk.Entry()
+		self.preferencesEntrypassword.set_text(self.vconfig['ftp']['pass'])		
 		self.preferencesEntrypassword.set_visibility(False)
 		self.preferencesEntryapplication = gtk.Entry()
+		self.preferencesEntryapplication.set_sensitive(False)
 
-		# Spinbuttons (FIXME)
-		self.preferencesSpinport = gtk.SpinButton()
-		self.preferencesSpinport.set_value(8000)
-		#self.preferencesSpinport.set_range(1, 65550)
-		self.preferencesSpintime = gtk.SpinButton()
-		self.preferencesSpintime.set_value(5)
-		#self.preferencesSpintime.set_range(1, 65550)
-		self.preferencesSpinamount = gtk.SpinButton()
-		#self.preferencesSpinamount.set_range(1, 65550)
+		# Spinbuttons
+		self.adjustmentport = gtk.Adjustment(float(self.vconfig['server']['port']), 0, 65535, 1, 0, 0)
+		self.adjustmenttime = gtk.Adjustment(float(self.vconfig['screenshot']['time']), 0, 65535, 1, 0, 0)
+		self.adjustmentamount = gtk.Adjustment(value=0, lower=0, upper=0, step_incr=1, page_incr=0, page_size=1)
+
+		self.preferencesSpinport = gtk.SpinButton(self.adjustmentport)
+		self.preferencesSpinport.set_numeric(True)
+
+		self.preferencesSpintime = gtk.SpinButton(self.adjustmenttime)
+		self.preferencesSpintime.set_numeric(True)
+
+		self.preferencesSpinamount = gtk.SpinButton(self.adjustmentamount)
+		self.preferencesSpinamount.set_numeric(True)
+		self.preferencesSpinamount.set_sensitive(False)
 
 		# Combos
 		# Using simple method http://www.pygtk.org/pygtk2tutorial/sec-ComboBoxAndComboboxEntry.html
 		self.preferencesCombotype = gtk.combo_box_new_text()
 		self.preferencesCombotype.append_text("Itaka")
 		self.preferencesCombotype.append_text("FTP")
-		self.preferencesCombotype.set_active(0)
+		if (self.vconfig['itaka']['method'] == "server"):
+			self.preferencesCombotype.set_active(0)
+		else: 
+			self.preferencesCombotype.set_active(1)
+			self.__preferencesComboHandler(None, "Type")
 		self.preferencesCombotype.connect("changed", self.__preferencesComboHandler, "Type")
 
 		self.preferencesCombomethod = gtk.combo_box_new_text()
@@ -113,7 +128,7 @@ class Preferences:
 		
 		# Close button
 		self.preferencesButtonclose = gtk.Button("Close", gtk.STOCK_CLOSE)
-		self.preferencesButtonclose.connect("clicked", lambda wid: self.preferences.hide())
+		self.preferencesButtonclose.connect("clicked", lambda wid: self.save())
 
 		# Add labels to hboxes
 		self.preferencesHBox1.pack_start(self.preferencesLabeltype, False, False, 12)
@@ -178,6 +193,7 @@ class Preferences:
 		if ( who == "Type"):
 		# The following codes handles showing the extra boxes
 		 if ( self.preferencesCombotype.get_active_text() == "FTP"):
+			print "FTP called"
 	 	 	self.preferencesHBox3.show_all()
 		 	self.preferencesHBox4.show_all()
 		 	self.preferencesHBox5.show_all()
@@ -194,3 +210,43 @@ class Preferences:
 		 	self.preferencesHBox9.show_all()
 		 else:
 			self.preferencesHBox9.hide_all()
+
+	def save(self):
+		""" Save and hide the preferences dialog """
+		# Determine the method
+		if ( self.preferencesCombotype.get_active_text() == "Itaka"):
+			self.configurationmethod = "server"
+		else:	self.configurationmethod = "ftp"
+
+
+		# Build a configuration dictionary to send to the configuration engine's
+		# save method
+		self.configurationdict = {
+				'itaka':
+					{'audio': 'False', 
+				 	'method': self.configurationmethod,
+				 	'alert': 'True',
+				 	'notify': 'False'},
+				'html': 
+					{'audio': '<iframe src="audio" width="100%" height="30" style="border: 0;" border="0">Your browser does not support IFRAME. <a href="audio">Click here</a></iframe><br />', 
+					'html': '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>'}, 
+				'server': 
+					{'port': str(self.preferencesSpinport.get_value_as_int())}, 
+				'screenshot': 
+					{'path': '/tmp', 
+					'format': 'png',
+					'quality': '20',
+					'time': str(self.preferencesSpintime.get_value_as_int())},
+				'ftp':
+					{'host': self.preferencesEntryhost.get_text(),
+					'user': self.preferencesEntryusername.get_text(),
+					'pass': self.preferencesEntrypassword.get_text(),
+					'debug': '0',
+					'port': '21',
+					'dir': '/itaka'}
+				}
+
+
+		self.config.save(self.configurationdict)
+		
+		self.preferences.hide()
