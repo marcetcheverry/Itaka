@@ -30,8 +30,11 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itak
 
 #: Save path for screenshots (system-specific)
 save_path = os.getcwd()
-if (system == 'posix' or 'darwin'): save_path = "/tmp"
-elif (system == 'nt'): save_path = os.environ.get('TMP') or os.environ.get('TEMP')
+
+if system in ('posix', 'darwin'): 
+	save_path = "/tmp"
+elif system == 'nt': 
+	save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
 #: Global configuration values 
 values = {}
