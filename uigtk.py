@@ -416,7 +416,6 @@ class Gui:
 	    if hasattr(self, 'console'):	del self.console
 	gtk.main_quit()
 
-
 #    def __calcsince(self, stime):
 #	""" Function to calculate the time difference from the last request to 
 #	the current time."""
@@ -456,26 +455,25 @@ class Gui:
 	the current time. Express a datetime.timedelta using a
 	phrase such as "1 hour, 20 minutes". """
 
-	# Create a timedelta from the datetime.datetime and the
-	# current time
-	
+	# Create a timedelta from the datetime.datetime and the current time
+	# (you can create your own timedeltas with datetime.timedelta(5, (650 *
+	# 60) * 2, 12) for testing.
 	self.td = datetime.datetime.now() - dtime
 
 	self.pieces = []
 	if self.td.days:
-		self.pieces.append(self.plural(self.td.days, 'day'))
+		self.pieces.append(self.__plural(self.td.days, 'day'))
 
 	self.minutes, self.seconds = divmod(self.td.seconds, 60)
 	self.hours, self.minutes = divmod(self.minutes, 60)
 	if self.hours:
-		pieces.append(plural(self.hours, 'hour'))
-	if minutes or len(pieces) == 0:
-		self.pieces.append(self.plural(self.minutes, 'minute'))
+		self.pieces.append(self.__plural(self.hours, 'hour'))
+	if self.minutes or len(self.pieces) == 0:
+		self.pieces.append(self.__plural(self.minutes, 'minute'))
 
-	if len(self.pieces) == 1:
-		return self.pieces[0]
+	# "Time: " + ", ".join(self.pieces[:-1]) + "and" + self.pieces[-1] + " ago" 
 
-	self.labelTime.set_text("Time: " + ", ".join(self.pieces[:-1]) + " and " + self.pieces[-1] + " ago")
+	self.labelTime.set_text("Time: " + ", ".join(self.pieces) + " ago")
 
 	# Need this so it runs more than once. Weird.
 	return True
