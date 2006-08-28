@@ -416,43 +416,77 @@ class Gui:
 	    if hasattr(self, 'console'):	del self.console
 	gtk.main_quit()
 
-    def __calcsince(self, stime):
+
+#    def __calcsince(self, stime):
+#	""" Function to calculate the time difference from the last request to 
+#	the current time."""
+#
+#	
+#	# Change now() for a date tuple to test the date parser
+#	self.isetdiff = datetime.datetime.now() - stime
+#	
+#	# Lets make it a string and split it for easier manipulation
+#	self.idiff = str(self.isetdiff).split(':')
+#	
+#	# Set up singular/plural checks
+#	self.hour = "hours"
+#	self.min = "minutes"
+#
+#	# If an hour passed already
+#	if ("0" not in self.idiff[0]):
+#		if (self.idiff[0] == "1"): self.hour = "hour"
+#		# Remove the 0 prefix
+#		if ("0" in self.idiff[1][:1]): self.idiff[1] = self.idiff[1][1:]
+#		if (self.idiff[1] == "1"): self.min = "minute"
+#		self.labelTime.set_text("Time: %s %s, %s %s ago" % (self.idiff[0], self.hour, self.idiff[1], self.min))
+#		
+#	else:
+#		# Instance as minutes
+#		self.idiff = self.idiff[1]
+#		# Remove the 0 prefix
+#		if ("0" in self.idiff[:1]): self.idiff = self.idiff[1:]
+#		if (self.idiff == "1"):	self.min = "minute"
+#        	self.labelTime.set_text("Time: %s %s ago" % (self.idiff, self.min))
+#
+#	# Need this so it runs more than once. Weird.
+#	return True
+
+    def __calcsince(self, dtime):
 	""" Function to calculate the time difference from the last request to 
-	the current time."""
+	the current time. Express a datetime.timedelta using a
+	phrase such as "1 hour, 20 minutes". """
 
-	""" Handles all dates well, although if the last request was done a month
-	or year ago it will display it as numbers of days. Did not bother to add 
-	a check for it, but it should be trivial (compare the number of days to
-	the current months, divide it. If > 365, divide also. """
+	# Create a timedelta from the datetime.datetime and the
+	# current time
 	
-	# Change now() for a date tuple to test the date parser
-	self.isetdiff = datetime.datetime.now() - stime
-	
-	# Lets make it a string and split it for easier manipulation
-	self.idiff = str(self.isetdiff).split(':')
-	
-	# Set up singular/plural checks
-	self.hour = "hours"
-	self.min = "minutes"
+	self.td = datetime.datetime.now() - dtime
 
-	# If an hour passed already
-	if ("0" not in self.idiff[0]):
-		if (self.idiff[0] == "1"): self.hour = "hour"
-		# Remove the 0 prefix
-		if ("0" in self.idiff[1][:1]): self.idiff[1] = self.idiff[1][1:]
-		if (self.idiff[1] == "1"): self.min = "minute"
-		self.labelTime.set_text("Time: %s %s, %s %s ago" % (self.idiff[0], self.hour, self.idiff[1], self.min))
-		
-	else:
-		# Instance as minutes
-		self.idiff = self.idiff[1]
-		# Remove the 0 prefix
-		if ("0" in self.idiff[:1]): self.idiff = self.idiff[1:]
-		if (self.idiff == "1"):	self.min = "minute"
-        	self.labelTime.set_text("Time: %s %s ago" % (self.idiff, self.min))
+	self.pieces = []
+	if self.td.days:
+		self.pieces.append(self.plural(self.td.days, 'day'))
+
+	self.minutes, self.seconds = divmod(self.td.seconds, 60)
+	self.hours, self.minutes = divmod(self.minutes, 60)
+	if self.hours:
+		pieces.append(plural(self.hours, 'hour'))
+	if minutes or len(pieces) == 0:
+		self.pieces.append(self.plural(self.minutes, 'minute'))
+
+	if len(self.pieces) == 1:
+		return self.pieces[0]
+
+	self.labelTime.set_text("Time: " + ", ".join(self.pieces[:-1]) + " and " + self.pieces[-1] + " ago")
 
 	# Need this so it runs more than once. Weird.
 	return True
+
+    def __plural(self, count, singular):
+	""" This is a helper function for __calcsince that handles
+	english plural translations """
+
+	# This is the simplest version; a more general version
+    	# should handle -y -> -ies, child -> children, etc.
+	return '%d %s%s' % (count, singular, ("", 's')[count != 1])
 
     def notify(self):
 	""" Change the image on the main screen, for notification purpose. """
