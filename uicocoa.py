@@ -3,7 +3,6 @@
 """ Itaka Cocoa GUI """
 
 import sys, os, traceback 
-
 # Itaka core modules
 try:
 	import config as iconfig

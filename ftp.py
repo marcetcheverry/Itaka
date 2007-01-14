@@ -14,8 +14,6 @@ if (config.system == 'darwin'):
 	import objc
 	from Foundation import *
 
-import screenshot as iscreenshot
-
 #: Local iteration counter
 lcounter = 0
 
@@ -45,7 +43,7 @@ class Ftp(threading.Thread):
 		# Use PyObjC threading
 		if (config.system == "darwin"):
 			#: Create a Pool since we are outside the Main Application Thread
-			self.pool = NSObject.NSAutoreleasePool.new()	
+			self.pool = NSAutoreleasePool.new()	
 			# See NSRunLoop for better memory management
 		
 		# Begin the upload loop.
