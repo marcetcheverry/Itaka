@@ -13,6 +13,7 @@ iconfig = iconfig.values
 if (config.system == 'darwin'):
 	import objc
 	from Foundation import *
+        from AppKit import *
 else:
 	import pygtk
 	pygtk.require("2.0")
@@ -26,7 +27,7 @@ if (config.system == 'darwin'):
 		""" NSObject wrapper for the Cocoa screenshooting code """
 
 		#: Cocoa filetype representation mapping dictionary
-		self.fileRepresentationMapping = {
+		fileRepresentationMapping = {
 		'.png': NSPNGFileType,
 		'.gif': NSGIFFileType,
 		'.jpg': NSJPEGFileType,
