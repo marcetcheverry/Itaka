@@ -6,75 +6,75 @@ import sys, os, datetime, traceback
 
 # Import Twisted, else disable it.
 try:
-	from twisted.internet import gtk2reactor
-	gtk2reactor.install()
+    from twisted.internet import gtk2reactor
+        gtk2reactor.install()
 
-	from twisted.python import log
-	from twisted.web import server, static
-	from twisted.web.resource import Resource
-	from twisted.internet import reactor
+        from twisted.python import log
+        from twisted.web import server, static
+        from twisted.web.resource import Resource
+        from twisted.internet import reactor
 except ImportError:
-	print "[*] Warning: Twisted Network Framework is missing, disabling 'server' method.."
-	twistedSupport = False
-	pass
+    print "[*] Warning: Twisted Network Framework is missing, disabling 'server' method.."
+        twistedSupport = False
+        pass
 
 # Itaka core modules
 try:
-	import config as iconfig
-	# Read the configuration (loaded by the core)
-	config = iconfig
-	iconfig = iconfig.values
-	import console as iconsole
+    import config as iconfig
+        # Read the configuration (loaded by the core)
+        config = iconfig
+        iconfig = iconfig.values
+        import console as iconsole
 
-	import server as iserver
-	import ftp as iftp
+        import server as iserver
+        import ftp as iftp
 
-	if (iconfig['itaka']['audio'] == "True"): import audio as iaudio
+        if (iconfig['itaka']['audio'] == "True"): import audio as iaudio
 
-	import uigtk_preferences as ipreferences
+        import uigtk_preferences as ipreferences
 except ImportError:
-	print "[*] ERROR: Failed to import Itaka modules."
-	traceback.print_exc()
-	sys.exit(1)
+    print "[*] ERROR: Failed to import Itaka modules."
+        traceback.print_exc()
+        sys.exit(1)
 
 # Import GTK toolkit
 try:
-	import pygtk
-	pygtk.require("2.0")
+    import pygtk
+        pygtk.require("2.0")
 except ImportError:
-	print "[*] WARNING: Pygtk module is missing."
+    print "[*] WARNING: Pygtk module is missing."
         pass
 try:
-        import gtk, gobject
+    import gtk, gobject
 except ImportError:
-	print "[*] ERROR: GTK+ bindings are missing."
-	sys.exit(1)
+    print "[*] ERROR: GTK+ bindings are missing."
+        sys.exit(1)
 
 # Import tray icon 
 try:
-	from egg import trayicon
-	trayiconSupport = True
+    from egg import trayicon
+        trayiconSupport = True
 except ImportError:
-	print "[*] WARNING: GTK+ Python TrayIcon bindings are missing, disabling trayicon."
-	trayiconSupport = False
-	pass
+    print "[*] WARNING: GTK+ Python TrayIcon bindings are missing, disabling trayicon."
+        trayiconSupport = False
+        pass
 
 class Gui:
     """ GTK GUI """
     def __init__(self, configinstance):
-	# Pas a reference of GUI to Screenshot module for its notification handling.
-	self.sinstance = iserver.ImageResource(self)
-	# Get a reference of the configuration instance
-	self.configinstance = configinstance
+        # Pas a reference of GUI to Screenshot module for its notification handling.
+        self.sinstance = iserver.ImageResource(self)
+        # Get a reference of the configuration instance
+        self.configinstance = configinstance
 
-	# Set up Server variables, if needed.
-	if (iconfig['itaka']['method'] == 'server'):
-		self.root = static.Data(iconfig['html']['html'], 'text/html; charset=UTF-8')
-		# Registers an identitiy (resource, file).
-		if (iconfig['itaka']['audio'] == "True"): self.root.putChild('audio', iaudio.AudioResource())	
-        	self.root.putChild('screenshot', self.sinstance)
-        	self.root.putChild('', self.root)
-	
+        # Set up Server variables, if needed.
+        if (iconfig['itaka']['method'] == 'server'):
+            self.root = static.Data(iconfig['html']['html'], 'text/html; charset=UTF-8')
+                # Registers an identitiy (resource, file).
+                if (iconfig['itaka']['audio'] == "True"): self.root.putChild('audio', iaudio.AudioResource())	
+                self.root.putChild('screenshot', self.sinstance)
+                self.root.putChild('', self.root)
+
         # Start defining widget
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png"))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -85,35 +85,35 @@ class Gui:
         self.window.resize(500, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
 
-	# TrayIcon, if needed.
-	if (trayiconSupport):
-        	# Set up TrayIcon
-		self.menu = gtk.Menu()
-        	self.itray = trayicon.TrayIcon("Itaka")
-        	self.itraylogobox = gtk.EventBox()
-		# Build the menu FIXME: Add icons.
-		self.menu = gtk.Menu()
-		self.menuabout = gtk.MenuItem("About")
-		self.menuprefs = gtk.MenuItem("Preferences")
-		self.menustop = gtk.MenuItem("Stop")
-		self.menustart = gtk.MenuItem("Start")
-		self.menuquit = gtk.MenuItem("Quit")
+        # TrayIcon, if needed.
+        if (trayiconSupport):
+            # Set up TrayIcon
+            self.menu = gtk.Menu()
+            self.itray = trayicon.TrayIcon("Itaka")
+            self.itraylogobox = gtk.EventBox()
+            # Build the menu FIXME: Add icons.
+            self.menu = gtk.Menu()
+            self.menuabout = gtk.MenuItem("About")
+            self.menuprefs = gtk.MenuItem("Preferences")
+            self.menustop = gtk.MenuItem("Stop")
+            self.menustart = gtk.MenuItem("Start")
+            self.menuquit = gtk.MenuItem("Quit")
 
-		for f in (self.menuabout, self.menuprefs, self.menustop, self.menustart, self.menuquit): self.menu.append(f)
-		
-		# Connect
-		self.menustart.connect("activate", self.startstop, "Start")
-		self.menustop.connect("activate", self.startstop, "Stop")
-		self.menuprefs.connect("activate", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
-		self.menuabout.connect("activate", self.about)
-		self.menuquit.connect("activate", self.destroy)
-		
-		for f in (self.menuquit, self.menustop, self.menustart, self.menuprefs, self.menuabout):	f.show()
+            for f in (self.menuabout, self.menuprefs, self.menustop, self.menustart, self.menuquit): self.menu.append(f)
 
-      		self.itraylogo = gtk.Image()
-       		self.itraylogo.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")).scale_simple(20, 20,gtk.gdk.INTERP_BILINEAR))
-        	self.itraylogobox.add(self.itraylogo)
-       		self.itraylogobox.connect("button_press_event", self.__trayclicked)
+            # Connect
+            self.menustart.connect("activate", self.startstop, "Start")
+            self.menustop.connect("activate", self.startstop, "Stop")
+            self.menuprefs.connect("activate", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
+            self.menuabout.connect("activate", self.about)
+            self.menuquit.connect("activate", self.destroy)
+
+            for f in (self.menuquit, self.menustop, self.menustart, self.menuprefs, self.menuabout):	f.show()
+
+            self.itraylogo = gtk.Image()
+            self.itraylogo.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")).scale_simple(20, 20,gtk.gdk.INTERP_BILINEAR))
+            self.itraylogobox.add(self.itraylogo)
+            self.itraylogobox.connect("button_press_event", self.__trayclicked)
 
         # Boxes, images, and buttons
         self.vbox = gtk.VBox(False, 6)
@@ -123,7 +123,7 @@ class Gui:
         self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
         self.itakaLogo.show()
 
-	# Add hbox and buttons and image
+        # Add hbox and buttons and image
         self.box.pack_start(self.itakaLogo, True, True, 4)
 
         self.ibox = gtk.HBox(False, 0)
@@ -138,7 +138,7 @@ class Gui:
         # Preferences button
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
         self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
-	
+
         self.ibox.pack_start(self.preferencesButton, True, True, 4)
 
         self.box.pack_start(self.ibox, True, True, 0)
@@ -148,7 +148,7 @@ class Gui:
         self.statusBox = gtk.HBox(False, 0)
         self.labelServed = gtk.Label()
         self.labelLastip = gtk.Label()
-	self.labelTime = gtk.Label()
+        self.labelTime = gtk.Label()
 
         self.statusBox.pack_start(self.labelLastip, True, False, 0)
         self.statusBox.pack_start(self.labelTime, True, False, 0)
@@ -161,7 +161,7 @@ class Gui:
         self.debugscroll.set_shadow_type(gtk.SHADOW_IN)
         self.debugview = gtk.TextView()
         self.debugview.set_wrap_mode(gtk.WRAP_WORD)
-	self.debugview.set_editable(False)
+        self.debugview.set_editable(False)
         self.debugview.set_size_request(-1, 160)
         self.debugbuffer = self.debugview.get_buffer()
         self.debugscroll.add(self.debugview)
@@ -187,6 +187,33 @@ class Gui:
         # Pack it into vbox
         self.debugvbox.pack_start(self.debugscroll, False, False, 4)
         self.debugvbox.pack_start(self.debughbox, False, False, 4)
+                self.menu = gtk.Menu()
+                self.itray = trayicon.TrayIcon("Itaka")
+                self.itraylogobox = gtk.EventBox()
+                # Build the menu FIXME: Add icons.
+                self.menu = gtk.Menu()
+                self.menuabout = gtk.MenuItem("About")
+                self.menuprefs = gtk.MenuItem("Preferences")
+                self.menustop = gtk.MenuItem("Stop")
+                self.menustart = gtk.MenuItem("Start")
+                self.menuquit = gtk.MenuItem("Quit")
+
+                for f in (self.menuabout, self.menuprefs, self.menustop, self.menustart, self.menuquit): self.menu.append(f)
+
+                # Connect
+                self.menustart.connect("activate", self.startstop, "Start")
+                self.menustop.connect("activate", self.startstop, "Stop")
+                self.menuprefs.connect("activate", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
+                self.menuabout.connect("activate", self.about)
+                self.menuquit.connect("activate", self.destroy)
+
+                for f in (self.menuquit, self.menustop, self.menustart, self.menuprefs, self.menuabout):	f.show()
+
+                self.itraylogo = gtk.Image()
+                self.itraylogo.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")).scale_simple(20, 20,gtk.gdk.INTERP_BILINEAR))
+                self.itraylogobox.add(self.itraylogo)
+                self.itraylogobox.connect("button_press_event", self.__trayclicked)
+
 
         # Label for the expander
         self.debugboxLabel = gtk.Label("<b>Detailed log</b>")
@@ -203,15 +230,15 @@ class Gui:
         # Add to main vbox
         self.vbox.pack_start(self.statusBox, False, False, 4)
         self.vbox.pack_start(self.expander, False, False, 0)
-	self.expander.set_sensitive(False)
+        self.expander.set_sensitive(False)
         # Add vbox to window (parent adds all)
         self.window.add(self.vbox)
 
         # Show window & tray.
         self.window.show_all()
-	if (trayiconSupport):
-		self.itray.add(self.itraylogobox)
-        	self.itray.show_all()
+        if (trayiconSupport):
+            self.itray.add(self.itraylogobox)
+                self.itray.show_all()
 
     def __expandlogger(self, expander, params):
         """ Callback for the expander widget. """
@@ -225,11 +252,11 @@ class Gui:
         return
 
     def logger(self, args):
-	""" Handle logging in the GUI. Arguments: dict[(tuple($msg)), key: str($msg)]. """
-	# We just care about the first tuple
+        """ Handle logging in the GUI. Arguments: dict[(tuple($msg)), key: str($msg)]. """
+        # We just care about the first tuple
         self.ioutput = args['message'][0]
-	# Write out the server log and stdout to the GUI	
-	self.debugbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
+        # Write out the server log and stdout to the GUI	
+        self.debugbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
         # Automatically scroll. Use wrap until fix.
         self.debugview.scroll_mark_onscreen(self.debugbuffer.get_insert())
 
@@ -239,8 +266,8 @@ class Gui:
 
     def pauselogger(self, widget, data=None):
         """ Callback to pause log output. """
-	# This function is disabled on FTP mode
-	# FIXME: Does this pause Console too?
+        # This function is disabled on FTP mode
+        # FIXME: Does this pause Console too?
         if widget.get_active():
             log.msg("Logging paused.")
             log.removeObserver(self.logger)
@@ -250,30 +277,30 @@ class Gui:
 
     def main(self):
         """ Main init function. Starts the GUI reactors."""
-	# GTK Reactor and Console Handling
-	try:
-		# Init console with a reference to our gui instance
-        	self.console = iconsole.Console(self)
-	except AttributeError:
-		print "[*] ERROR: Could not initiate Console engine."
-		traceback.print_exc()
-		sys.exit(1)
+        # GTK Reactor and Console Handling
+        try:
+            # Init console with a reference to our gui instance
+                self.console = iconsole.Console(self)
+        except AttributeError:
+            print "[*] ERROR: Could not initiate Console engine."
+                traceback.print_exc()
+                sys.exit(1)
 
-	# Server reactor (interacts with the Twisted reactor)	
+        # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
 
     def about(self, data=None):
-	""" Create the About dialog. """
-	self.about = gtk.AboutDialog()
-	self.about.set_name('Itaka')
-	self.about.set_version(config.version.version)
-	self.about.set_copyright(u'© 2003-2006 Marc Etcheverry')
-	self.about.set_comments('Screenshooting de mercado.')
-	self.about.set_authors(['Marc Etcheverry <m4rccd@yahoo.com>'])
-	self.about.set_website('http://itaka.sourceforge.net')
-	self.about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")))
-	self.about.set_icon(self.icon_pixbuf)
-	self.about.show()
+        """ Create the About dialog. """
+        self.about = gtk.AboutDialog()
+        self.about.set_name('Itaka')
+        self.about.set_version(config.version.version)
+        self.about.set_copyright(u'© 2003-2006 Marc Etcheverry')
+        self.about.set_comments('Screenshooting de mercado.')
+        self.about.set_authors(['Marc Etcheverry <m4rccd@yahoo.com>'])
+        self.about.set_website('http://itaka.sourceforge.net')
+        self.about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")))
+        self.about.set_icon(self.icon_pixbuf)
+        self.about.show()
 
     def __trayclicked(self, widget, event):
         """ Handle the clicks on the trayicon. """
@@ -283,138 +310,135 @@ class Gui:
             else:
                 self.window.show()
                 self.window.set_position(gtk.WIN_POS_CENTER)
-	elif event.button == 3:
+        elif event.button == 3:
             # Create menu
-	    self.menu.popup(None,None,None,event.button,event.time)
-	
+            self.menu.popup(None,None,None,event.button,event.time)
+
     def __checkwidget(self, widget):
-	    """ Workaround to save code on menu/main startstop. """
-	    if hasattr(widget, 'get_active'):
-		    return widget.get_active()
-	    else:
-		    return False
+        """ Workaround to save code on menu/main startstop. """
+        if hasattr(widget, 'get_active'):
+            return widget.get_active()
+        else:
+            return False
 
     def startstop(self, widget, data=None):
         """ Start or stop the screenshooting/ftp server from window or menu. """
-	# FIXME: Rewrite this function to something decent.
-	# Use an abstraction layer from the Tray if necessary.
+        # FIXME: Rewrite this function to something decent.
+        # Use an abstraction layer from the Tray if necessary.
 
-	if ( self.__checkwidget(widget) or data == "Start"):
-	    """Workaround to avoid collision between
-	    setting startstopbutton.set_active and 
-	    already started server from the menu and viceversa."""
-	    if (iconfig['itaka']['method'] == 'server'):
-	    	if (hasattr(self, 'ilistener')):	return True
-	    else:
-	    	if (hasattr(self, 'ftprunning')):	pass
-		    
-	    if (iconfig['itaka']['method'] == 'server'):
-            		# Set up the twisted site
-            		self.site = server.Site(self.root)
-            		# Start the server. Make an instance to distinguish from self.sreactor().
-            		self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
-			if (data):
-		    		self.buttonStartstop.set_active(True)
-	    else:
-			# Start up the FTP thread, with a GUI and ImageResource instance
-			self.ftprunning = iftp.Ftp(self, self.sinstance)
-			self.ftprunning.start()
-			
-			# Tell the user that we are uploading
-			self.labelLastip.set_text('Uploading to FTP %s:%s' % (iconfig['ftp']['host'], iconfig['ftp']['port']))
-		
-			# Pause does not work on FTP.
-			self.debugpausebutton.set_sensitive(False)
-	   	 	# If called from tray, set the main button active
-	    		if (data):
-		    		self.buttonStartstop.set_active(True)
-	    
+        if ( self.__checkwidget(widget) or data == "Start"):
+            """Workaround to avoid collision between
+            setting startstopbutton.set_active and 
+            already started server from the menu and viceversa."""
+            if (iconfig['itaka']['method'] == 'server'):
+                if (hasattr(self, 'ilistener')):	return True
+            else:
+                if (hasattr(self, 'ftprunning')):	pass
+
+            if (iconfig['itaka']['method'] == 'server'):
+                # Set up the twisted site
+                self.site = server.Site(self.root)
+                # Start the server. Make an instance to distinguish from self.sreactor().
+                self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
+                if (data):
+                    self.buttonStartstop.set_active(True)
+            else:
+                # Start up the FTP thread, with a GUI and ImageResource instance
+                self.ftprunning = iftp.Ftp(self, self.sinstance)
+                self.ftprunning.start()
+
+                # Tell the user that we are uploading
+                self.labelLastip.set_text('Uploading to FTP %s:%s' % (iconfig['ftp']['host'], iconfig['ftp']['port']))
+
+                # Pause does not work on FTP.
+                self.debugpausebutton.set_sensitive(False)
+                # If called from tray, set the main button active
+                if (data):
+                    self.buttonStartstop.set_active(True)
+
             # Announce on log y console stdout
-	    if (iconfig['itaka']['method'] == 'server'):
-	            	self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
-	    else:
-			self.console.msg('FTP upload sequence to %s:%s started every %s seconds. Uploading screenshots as %s images with %s%% quality.' % (str(iconfig['ftp']['host']), iconfig['ftp']['port'], iconfig['screenshot']['time'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
-			
-			
+            if (iconfig['itaka']['method'] == 'server'):
+                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
+            else:
+                self.console.msg('FTP upload sequence to %s:%s started every %s seconds. Uploading screenshots as %s images with %s%% quality.' % (str(iconfig['ftp']['host']), iconfig['ftp']['port'], iconfig['screenshot']['time'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
+
+
             # Change buttons
             self.buttonStartstop.set_label("Stop")
             self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
             self.buttonStartstop.set_image(self.startstopimage)
-            	
-	    # Close the expander
-	    self.expander.set_sensitive(True)
-	    if (iconfig['itaka']['notify'] == "True"):
-		    self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
+
+            # Close the expander
+            self.expander.set_sensitive(True)
+            if (iconfig['itaka']['notify'] == "True"):
+                    self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
 
         else:
-	    if (iconfig['itaka']['method'] == 'server'):
-	    	if hasattr(self, 'ilistener'):
-            		log.msg('Itaka shutting down...')
-            		self.console.msg('Server shutting down...')
-            		self.ilistener.stopListening()
-	    		del self.ilistener
-	    		# Stop the g_timeout
-	    		if hasattr(self, 'iagotimer'):
-				gobject.source_remove(self.iagotimer)
-	        	if (data):
-		    		self.buttonStartstop.set_active(False)
-			self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
-            		self.buttonStartstop.set_image(self.startstopimage)
-            		self.buttonStartstop.set_label("Start")
-	    		
-			# Change the labels and expander
-			self.labelLastip.set_text('')
-	    		self.labelTime.set_text('')
-	   	 	self.labelServed.set_text('')
-        		self.expander.set_expanded(False)				
-	    		self.expander.set_sensitive(False)
-	    		self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+            if (iconfig['itaka']['method'] == 'server'):
+                if hasattr(self, 'ilistener'):
+                    log.msg('Itaka shutting down...')
+                    self.console.msg('Server shutting down...')
+                    self.ilistener.stopListening()
+                    del self.ilistener
+                    # Stop the g_timeout
+                    if hasattr(self, 'iagotimer'):
+                            gobject.source_remove(self.iagotimer)
+                    if (data):
+                            self.buttonStartstop.set_active(False)
+                    self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
+                    self.buttonStartstop.set_image(self.startstopimage)
+                    self.buttonStartstop.set_label("Start")
 
-		else:
-			pass
-	    else:
-		if hasattr(self, 'ftprunning'):
-            		self.console.msg('Stopping FTP sequence...', True)
-			self.ftprunning.stop()
-			ftpdemandstop = True
-			if hasattr(self, 'iagotimer'):
-				gobject.source_remove(self.iagotimer)
-	        	if (data):
-		    		self.buttonStartstop.set_active(False)
-			self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
-            		self.buttonStartstop.set_image(self.startstopimage)
-            		self.buttonStartstop.set_label("Start")
-	    	
-			# Change the labels and expander
-			self.labelLastip.set_text('')
-	    		self.labelTime.set_text('')
-	    		self.labelServed.set_text('')
-        		self.expander.set_expanded(False)				
-	    		self.expander.set_sensitive(False)
-	    		self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+                    # Change the labels and expander
+                    self.labelLastip.set_text('')
+                    self.labelTime.set_text('')
+                    self.labelServed.set_text('')
+                    self.expander.set_expanded(False)				
+                    self.expander.set_sensitive(False)
+                    self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+                else:
+                    pass
+            else:
+                if hasattr(self, 'ftprunning'):
+                    self.console.msg('Stopping FTP sequence...', True)
+                    self.ftprunning.stop()
+                    ftpdemandstop = True
+                    if hasattr(self, 'iagotimer'):
+                            gobject.source_remove(self.iagotimer)
+                    if (data):
+                            self.buttonStartstop.set_active(False)
+                    self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
+                    self.buttonStartstop.set_image(self.startstopimage)
+                    self.buttonStartstop.set_label("Start")
 
-
-		else:
-			pass
-	    pass
+                    # Change the labels and expander
+                    self.labelLastip.set_text('')
+                    self.labelTime.set_text('')
+                    self.labelServed.set_text('')
+                    self.expander.set_expanded(False)				
+                    self.expander.set_sensitive(False)
+                    self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+                else:
+                    pass
+            pass
 
     def destroy(self, *args):
-	# FIXME: Cleanup stale screenshot file
-	# FIXME closing FTP bug
+        # FIXME: Cleanup stale screenshot file
+        # FIXME closing FTP bug
         """ Callback for the main window's destroy. """
         # Stop server(s). Check so it does not complain if close while not running.
         if hasattr(self, 'ilistener'):
             self.console.msg("Shutting down server...", True)
             #self.ilistener.stopListening()
-	    del self.console
-	if hasattr(self, 'ftprunning'):
+            del self.console
+        if hasattr(self, 'ftprunning'):
             self.console.msg("Shutting down FTP backend...", True)
-	    self.ftprunning.stop()
-	    del self.ftprunning
+            self.ftprunning.stop()
+            del self.ftprunning
         else:
-	    # Console goodbye!
-	    if hasattr(self, 'console'):	del self.console
-	gtk.main_quit()
+            # Console goodbye!
+            if hasattr(self, 'console'):	del self.console
+        gtk.main_quit()
 
 #    def __calcsince(self, stime):
 #	""" Function to calculate the time difference from the last request to 
@@ -451,86 +475,86 @@ class Gui:
 #	return True
 
     def __calcsince(self, dtime):
-	""" Function to calculate the time difference from the last request to 
-	the current time. Express a datetime.timedelta using a
-	phrase such as "1 hour, 20 minutes". """
+        """ Function to calculate the time difference from the last request to 
+        the current time. Express a datetime.timedelta using a
+        phrase such as "1 hour, 20 minutes". """
 
-	# Create a timedelta from the datetime.datetime and the current time
-	# (you can create your own timedeltas with datetime.timedelta(5, (650 *
-	# 60) * 2, 12) for testing.
-	self.td = datetime.datetime.now() - dtime
+        # Create a timedelta from the datetime.datetime and the current time
+        # (you can create your own timedeltas with datetime.timedelta(5, (650 *
+        # 60) * 2, 12) for testing.
+        self.td = datetime.datetime.now() - dtime
 
-	self.pieces = []
-	if self.td.days:
-		self.pieces.append(self.__plural(self.td.days, 'day'))
+        self.pieces = []
+        if self.td.days:
+                self.pieces.append(self.__plural(self.td.days, 'day'))
 
-	self.minutes, self.seconds = divmod(self.td.seconds, 60)
-	self.hours, self.minutes = divmod(self.minutes, 60)
-	if self.hours:
-		self.pieces.append(self.__plural(self.hours, 'hour'))
-	if self.minutes or len(self.pieces) == 0:
-		self.pieces.append(self.__plural(self.minutes, 'minute'))
+        self.minutes, self.seconds = divmod(self.td.seconds, 60)
+        self.hours, self.minutes = divmod(self.minutes, 60)
+        if self.hours:
+            self.pieces.append(self.__plural(self.hours, 'hour'))
+        if self.minutes or len(self.pieces) == 0:
+            self.pieces.append(self.__plural(self.minutes, 'minute'))
 
-	# "Time: " + ", ".join(self.pieces[:-1]) + "and" + self.pieces[-1] + " ago" 
+        # "Time: " + ", ".join(self.pieces[:-1]) + "and" + self.pieces[-1] + " ago" 
 
-	self.labelTime.set_text("Time: " + ", ".join(self.pieces) + " ago")
+        self.labelTime.set_text("Time: " + ", ".join(self.pieces) + " ago")
 
-	# Need this so it runs more than once. Weird.
-	return True
+        # Need this so it runs more than once. Weird.
+        return True
 
     def __plural(self, count, singular):
-	""" This is a helper function for __calcsince that handles
-	english plural translations """
+        """ This is a helper function for __calcsince that handles
+        english plural translations """
 
-	# This is the simplest version; a more general version
-    	# should handle -y -> -ies, child -> children, etc.
-	return '%d %s%s' % (count, singular, ("", 's')[count != 1])
+        # This is the simplest version; a more general version
+        # should handle -y -> -ies, child -> children, etc.
+        return '%d %s%s' % (count, singular, ("", 's')[count != 1])
 
     def notify(self):
-	""" Change the image on the main screen, for notification purpose. """
-	self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
-	# Only run this event once
-	return False
+        """ Change the image on the main screen, for notification purpose. """
+        self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+        # Only run this event once
+        return False
 
     def talk(self, action, data1=False, data2=False, data3=False):
         """ Handler for communcations between the server, FTP backend, and the GUI. """
-	# FIXME: Cleanup
-	
-	# Set up alert string and console output
+        # FIXME: Cleanup
+
+        # Set up alert string and console output
         if (iconfig['itaka']['alert'] == "True"): self.astring = "\a"
-	if (iconfig['itaka']['method'] == 'server'):
-		self.console.msg(self.astring + "Screenshot " + str(data1) + " served to: " + str(data2))
-		
+        if (iconfig['itaka']['method'] == 'server'):
+                self.console.msg(self.astring + "Screenshot " + str(data1) + " served to: " + str(data2))
+
         if ( action == "updateGuiStatus" ):
             # Update labels
             self.labelServed.set_text("Served: " + str(data1))
-	    if (data2):
-		    self.labelLastip.set_text("IP: " + str(data2))
-	    else:
-		    self.labelLastip.set_text("Uploaded to FTP")
+            if (data2):
+                    self.labelLastip.set_text("IP: " + str(data2))
+            else:
+                    self.labelLastip.set_text("Uploaded to FTP")
             self.labelServed.set_text("Served: " + str(data1))
-	   
-	    # Call the update timer function, and add a timer
-	    self.__calcsince(data3)
-	    # Delete the timer if its Not False
-	    # so we dont get duplicates
-	    if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
-	    self.iagotimer = gobject.timeout_add(60000, self.__calcsince, data3)
-            	    
-	    # Notify the main interface
-	    if (iconfig['itaka']['notify'] == "True"):
-	    	self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
-		# Call Inotify
-		self.notifyimg = gobject.timeout_add(2000, self.notify)
-		
-	# Handler for FTP errors
-	elif ( action == "updateFtpStatus"):
-		    	# This toggles the button, which in itself calls startstop()
-		    	self.buttonStartstop.set_active(False)	
-			self.labelLastip.set_text('Error: %s' % (str(data1)))
 
-	# Handler for Preferences signal to reload the config
-	elif ( action == "updateConfig"):
-			self.cout.msg("Updating configuration...")
-			global iconfig
-			iconfig = self.configinstance.load()
+            # Call the update timer function, and add a timer
+            self.__calcsince(data3)
+            # Delete the timer if its Not False
+            # so we dont get duplicates
+            if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
+            self.iagotimer = gobject.timeout_add(60000, self.__calcsince, data3)
+
+            # Notify the main interface
+            if (iconfig['itaka']['notify'] == "True"):
+                self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
+                # Call Inotify
+                self.notifyimg = gobject.timeout_add(2000, self.notify)
+
+        # Handler for FTP errors
+        elif ( action == "updateFtpStatus"):
+            # This toggles the button, which in itself calls startstop()
+            self.buttonStartstop.set_active(False)	
+            self.labelLastip.set_text('Error: %s' % (str(data1)))
+
+        # Handler for Preferences signal to reload the config
+        elif ( action == "updateConfig"):
+            self.cout.msg("Updating configuration...")
+            global iconfig
+            iconfig = self.configinstance.load()

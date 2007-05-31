@@ -19,8 +19,8 @@ version = "Devel"
 #: Check system or specify per os.name standard
 system = os.name
 
-# Support darwin
-if (system == "posix" and sys.platform.startswith("darwin")): system = "darwin"
+# Support darwin specific stuff
+if (system == "posix" and sys.platform.startswith("darwin")): platform = "darwin"
 
 #: Itaka images/ directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")
@@ -31,118 +31,104 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itak
 #: Save path for screenshots (system-specific)
 save_path = os.getcwd()
 
-if system in ('posix', 'darwin'): 
-	save_path = "/tmp"
+if system in ('posix'): 
+    save_path = "/tmp"
 elif system == 'nt': 
-	save_path = os.environ.get('TMP') or os.environ.get('TEMP')
+    save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
 #: Global configuration values 
 values = {}
 
 class ConfigParser:		
-	def load(self, notify=True):
-		"""Set up and load configuration. """
-		self.configfile = None
+    def load(self, notify=True):
+        """Set up and load configuration. """
+        self.configfile = None
 
-		# Check routine
-		if system in ("posix", "darwin"):
-			if not (os.path.exists(os.path.join(os.environ['HOME'], ".itaka/itaka.conf"))):
-				self.create(os.path.join(os.environ['HOME'], ".itaka/itaka.conf"))
-			else:
-				self.configfile = os.path.join(os.environ['HOME'], ".itaka/itaka.conf")
-		elif (system == "nt"):
-			if not (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/itaka.ini"))):
-				self.create(os.path.join(os.environ['APPDATA'], "itaka/itaka.ini"))
-			else:
-				self.configfile = os.path.join(os.environ['APPDATA'], "itaka/itaka.ini")
-		else:
-			# Generic system/paths (using local)	
-			if (os.path.exists(local_config)): 
-				self.configfile = local_config
-			else:	
-				self.create(local_config)
-		# Read and assign values from the configuration file 
-		try:
-			config.read(self.configfile)
-			if notify: print "[*] Read configuration (%s)" % (self.configfile)
-		except:
-			if notify: print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
-			traceback.print_exc()
+        # Check routine
+        if system in ("posix"):
+            if not (os.path.exists(os.path.join(os.environ['HOME'], ".itaka/itaka.conf"))):
+                self.create(os.path.join(os.environ['HOME'], ".itaka/itaka.conf"))
+            else:
+                self.configfile = os.path.join(os.environ['HOME'], ".itaka/itaka.conf")
+        elif (system == "nt"):
+            if not (os.path.exists(os.path.join(os.environ['APPDATA'], "itaka/itaka.ini"))):
+                self.create(os.path.join(os.environ['APPDATA'], "itaka/itaka.ini"))
+            else:
+                self.configfile = os.path.join(os.environ['APPDATA'], "itaka/itaka.ini")
+        else:
+            # Generic system/paths (using local)	
+                if (os.path.exists(local_config)): 
+                    self.configfile = local_config
+                else:	
+                    self.create(local_config)
+        # Read and assign values from the configuration file 
+        try:
+            config.read(self.configfile)
+                if notify: print "[*] Read configuration (%s)" % (self.configfile)
+        except:
+            if notify: print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
+                traceback.print_exc()
 
-		""" Retrieve values and return them as a dict."""
-		global values
-		values = {}
-		# Get values as a dict and return it
-		for section in config.sections():
-				values[section] = dict(config.items(section))
-		return values
+        """ Retrieve values and return them as a dict."""
+        global values
+        values = {}
+        # Get values as a dict and return it
+        for section in config.sections():
+            values[section] = dict(config.items(section))
+        return values
 
-	def save(self, valuesdict):
-		""" Saves a dict containing the configuration."""
-		# Unpack the dict into section, option, value
-		for section in valuesdict.keys():
-			for key, value in valuesdict[section].items():
-				config.set(section, key, value)
-	
-		# Save
-		try:
-			config.write(open(self.configfile, 'w'))
-			print "[*] Saving configuration... "	
-		except:		
-			print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-			traceback.print_exc()
-			
-	def update(self, section, key, value):
-		""" Update a specific key's value."""	
-		config.set(section, key, value)
-		# Save
-		try:
-			config.write(open(self.configfile, 'w'))
-			print "[*] Updating configuration key %s to %s" % (key, value)	
-		except:
-			print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-			traceback.print_exc()
+        def save(self, valuesdict):
+            """ Saves a dict containing the configuration."""
+            # Unpack the dict into section, option, value
+            for section in valuesdict.keys():
+                for key, value in valuesdict[section].items():
+                    config.set(section, key, value)
 
-	def create(self, path):
-		""" Create a configuration file from default values. """
-		# Create sections
-		for section in ('itaka', 'screenshot', 'ftp', 'server', 'html'): config.add_section(section)
-		
-		print "[*] Creating default configuration..."
-		# Set default values
-		config.set("itaka", "method", "server")
-		config.set("itaka", "alert", True)
-		config.set("itaka", "audio", False)
-		config.set("itaka", "notify", False)
-		
-		config.set("server", "port", 8000)
-		
-		config.set("screenshot", "format", "jpeg")
-		config.set("screenshot", "quality", 80)
-		config.set("screenshot", "path", save_path)
-		config.set("screenshot", "time", 8)
-		
-		config.set("ftp", "host", "ftp.host.com")
-		config.set("ftp", "port", 21)
-		config.set("ftp", "user", "user")
-		config.set("ftp", "pass", "pass")
-		config.set("ftp", "dir", "/itaka")
-		config.set("ftp", "debug", 0)
-		
+            # Save
+            try:
+                config.write(open(self.configfile, 'w'))
+                    print "[*] Saving configuration... "	
+            except:		
+                print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+                    traceback.print_exc()
 
-		# FIXME: Audio
-		config.set("html", "audio", '<iframe src="audio" width="100%" height="30" style="border: 0;" border="0">Your browser does not support IFRAME. <a href="audio">Click here</a></iframe><br />')
-		config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
+        def update(self, section, key, value):
+            """ Update a specific key's value."""	
+            config.set(section, key, value)
+            # Save
+            try:
+                config.write(open(self.configfile, 'w'))
+                    print "[*] Updating configuration key %s to %s" % (key, value)	
+            except:
+                print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+                    traceback.print_exc()
 
-		# Check if the directory exists, if not create it
-		# and write the config file with its variables
-		if not (os.path.exists(os.path.dirname(path))):
-			shutil.os.mkdir(os.path.dirname(path))
+        def create(self, path):
+            """ Create a configuration file from default values. """
+            # Create sections
+            for section in ('itaka', 'screenshot', 'server'): config.add_section(section)
 
-		try:
-			config.write(open(path, 'w'))
-		except:
-			print "[*] ERROR: Could not write configuration file %s" % (path)
-			traceback.print_exc()
-			
-		self.configfile = path		
+            print "[*] Creating default configuration..."
+            # Set default values
+            config.set("itaka", "alert", True)
+            config.set("itaka", "notify", False)
+
+            config.set("server", "port", 8000)
+
+            config.set("screenshot", "format", "jpeg")
+            config.set("screenshot", "quality", 80)
+            config.set("screenshot", "path", save_path)
+            config.set("screenshot", "time", 8)
+
+            # Check if the directory exists, if not create it
+            # and write the config file with its variables
+            if not (os.path.exists(os.path.dirname(path))):
+                shutil.os.mkdir(os.path.dirname(path))
+
+            try:
+                config.write(open(path, 'w'))
+            except:
+                print "[*] ERROR: Could not write configuration file %s" % (path)
+                    traceback.print_exc()
+
+            self.configfile = path		
