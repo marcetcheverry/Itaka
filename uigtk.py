@@ -7,57 +7,57 @@ import sys, os, datetime, traceback
 # Import Twisted, else disable it.
 try:
     from twisted.internet import gtk2reactor
-        gtk2reactor.install()
+    gtk2reactor.install()
 
-        from twisted.python import log
-        from twisted.web import server, static
-        from twisted.web.resource import Resource
-        from twisted.internet import reactor
+    from twisted.python import log
+    from twisted.web import server, static
+    from twisted.web.resource import Resource
+    from twisted.internet import reactor
 except ImportError:
     print "[*] Warning: Twisted Network Framework is missing, disabling 'server' method.."
-        twistedSupport = False
-        pass
+    twistedSupport = False
+    pass
 
 # Itaka core modules
 try:
     import config as iconfig
-        # Read the configuration (loaded by the core)
-        config = iconfig
-        iconfig = iconfig.values
-        import console as iconsole
+    # Read the configuration (loaded by the core)
+    config = iconfig
+    iconfig = iconfig.values
+    import console as iconsole
 
-        import server as iserver
-        import ftp as iftp
+    import server as iserver
+    import ftp as iftp
 
-        if (iconfig['itaka']['audio'] == "True"): import audio as iaudio
+    if (iconfig['itaka']['audio'] == "True"): import audio as iaudio
 
-        import uigtk_preferences as ipreferences
+    import uigtk_preferences as ipreferences
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules."
-        traceback.print_exc()
-        sys.exit(1)
+    traceback.print_exc()
+    sys.exit(1)
 
 # Import GTK toolkit
 try:
     import pygtk
-        pygtk.require("2.0")
+    pygtk.require("2.0")
 except ImportError:
     print "[*] WARNING: Pygtk module is missing."
-        pass
+    pass
 try:
     import gtk, gobject
 except ImportError:
     print "[*] ERROR: GTK+ bindings are missing."
-        sys.exit(1)
+    sys.exit(1)
 
 # Import tray icon 
 try:
     from egg import trayicon
-        trayiconSupport = True
+    trayiconSupport = True
 except ImportError:
     print "[*] WARNING: GTK+ Python TrayIcon bindings are missing, disabling trayicon."
-        trayiconSupport = False
-        pass
+    trayiconSupport = False
+    pass
 
 class Gui:
     """ GTK GUI """
@@ -70,10 +70,10 @@ class Gui:
         # Set up Server variables, if needed.
         if (iconfig['itaka']['method'] == 'server'):
             self.root = static.Data(iconfig['html']['html'], 'text/html; charset=UTF-8')
-                # Registers an identitiy (resource, file).
-                if (iconfig['itaka']['audio'] == "True"): self.root.putChild('audio', iaudio.AudioResource())	
-                self.root.putChild('screenshot', self.sinstance)
-                self.root.putChild('', self.root)
+            # Registers an identitiy (resource, file).
+            if (iconfig['itaka']['audio'] == "True"): self.root.putChild('audio', iaudio.AudioResource())	
+            self.root.putChild('screenshot', self.sinstance)
+            self.root.putChild('', self.root)
 
         # Start defining widget
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png"))
@@ -187,58 +187,58 @@ class Gui:
         # Pack it into vbox
         self.debugvbox.pack_start(self.debugscroll, False, False, 4)
         self.debugvbox.pack_start(self.debughbox, False, False, 4)
-                self.menu = gtk.Menu()
-                self.itray = trayicon.TrayIcon("Itaka")
-                self.itraylogobox = gtk.EventBox()
-                # Build the menu FIXME: Add icons.
-                self.menu = gtk.Menu()
-                self.menuabout = gtk.MenuItem("About")
-                self.menuprefs = gtk.MenuItem("Preferences")
-                self.menustop = gtk.MenuItem("Stop")
-                self.menustart = gtk.MenuItem("Start")
-                self.menuquit = gtk.MenuItem("Quit")
+        self.menu = gtk.Menu()
+        self.itray = trayicon.TrayIcon("Itaka")
+        self.itraylogobox = gtk.EventBox()
+        # Build the menu FIXME: Add icons.
+        self.menu = gtk.Menu()
+        self.menuabout = gtk.MenuItem("About")
+        self.menuprefs = gtk.MenuItem("Preferences")
+        self.menustop = gtk.MenuItem("Stop")
+        self.menustart = gtk.MenuItem("Start")
+        self.menuquit = gtk.MenuItem("Quit")
 
-                for f in (self.menuabout, self.menuprefs, self.menustop, self.menustart, self.menuquit): self.menu.append(f)
+        for f in (self.menuabout, self.menuprefs, self.menustop, self.menustart, self.menuquit): self.menu.append(f)
 
-                # Connect
-                self.menustart.connect("activate", self.startstop, "Start")
-                self.menustop.connect("activate", self.startstop, "Stop")
-                self.menuprefs.connect("activate", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
-                self.menuabout.connect("activate", self.about)
-                self.menuquit.connect("activate", self.destroy)
+        # Connect
+        self.menustart.connect("activate", self.startstop, "Start")
+        self.menustop.connect("activate", self.startstop, "Stop")
+    self.menuprefs.connect("activate", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
+    self.menuabout.connect("activate", self.about)
+    self.menuquit.connect("activate", self.destroy)
 
-                for f in (self.menuquit, self.menustop, self.menustart, self.menuprefs, self.menuabout):	f.show()
+    for f in (self.menuquit, self.menustop, self.menustart, self.menuprefs, self.menuabout):	f.show()
 
-                self.itraylogo = gtk.Image()
-                self.itraylogo.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")).scale_simple(20, 20,gtk.gdk.INTERP_BILINEAR))
-                self.itraylogobox.add(self.itraylogo)
-                self.itraylogobox.connect("button_press_event", self.__trayclicked)
+    self.itraylogo = gtk.Image()
+    self.itraylogo.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")).scale_simple(20, 20,gtk.gdk.INTERP_BILINEAR))
+    self.itraylogobox.add(self.itraylogo)
+    self.itraylogobox.connect("button_press_event", self.__trayclicked)
 
 
-        # Label for the expander
-        self.debugboxLabel = gtk.Label("<b>Detailed log</b>")
-        self.debugboxLabel.set_use_markup(True)
+    # Label for the expander
+    self.debugboxLabel = gtk.Label("<b>Detailed log</b>")
+    self.debugboxLabel.set_use_markup(True)
 
-        # Expander
-        self.expander = gtk.Expander(None)
-        self.expander.set_label_widget(self.debugboxLabel)
-        self.expander.connect('notify::expanded', self.__expandlogger)
+    # Expander
+    self.expander = gtk.Expander(None)
+    self.expander.set_label_widget(self.debugboxLabel)
+    self.expander.connect('notify::expanded', self.__expandlogger)
 
-        # Log to the self.logger function, which sets the buffer for self.debubuffer
-        log.addObserver(self.logger)
+    # Log to the self.logger function, which sets the buffer for self.debubuffer
+    log.addObserver(self.logger)
 
-        # Add to main vbox
-        self.vbox.pack_start(self.statusBox, False, False, 4)
-        self.vbox.pack_start(self.expander, False, False, 0)
-        self.expander.set_sensitive(False)
-        # Add vbox to window (parent adds all)
-        self.window.add(self.vbox)
+    # Add to main vbox
+    self.vbox.pack_start(self.statusBox, False, False, 4)
+    self.vbox.pack_start(self.expander, False, False, 0)
+    self.expander.set_sensitive(False)
+    # Add vbox to window (parent adds all)
+    self.window.add(self.vbox)
 
-        # Show window & tray.
-        self.window.show_all()
-        if (trayiconSupport):
-            self.itray.add(self.itraylogobox)
-                self.itray.show_all()
+    # Show window & tray.
+    self.window.show_all()
+    if (trayiconSupport):
+        self.itray.add(self.itraylogobox)
+        self.itray.show_all()
 
     def __expandlogger(self, expander, params):
         """ Callback for the expander widget. """
@@ -280,11 +280,11 @@ class Gui:
         # GTK Reactor and Console Handling
         try:
             # Init console with a reference to our gui instance
-                self.console = iconsole.Console(self)
+            self.console = iconsole.Console(self)
         except AttributeError:
             print "[*] ERROR: Could not initiate Console engine."
-                traceback.print_exc()
-                sys.exit(1)
+            traceback.print_exc()
+            sys.exit(1)
 
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()

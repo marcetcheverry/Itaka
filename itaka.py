@@ -15,8 +15,8 @@ try:
         import uigtk as igui
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules."
-        traceback.print_exc()
-        sys.exit(1)
+    traceback.print_exc()
+    sys.exit(1)
 
 if __name__ == "__main__":
     try:

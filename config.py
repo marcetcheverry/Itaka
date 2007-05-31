@@ -31,7 +31,7 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itak
 #: Save path for screenshots (system-specific)
 save_path = os.getcwd()
 
-if system in ('posix'): 
+if system is 'posix': 
     save_path = "/tmp"
 elif system == 'nt': 
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
@@ -64,10 +64,10 @@ class ConfigParser:
         # Read and assign values from the configuration file 
         try:
             config.read(self.configfile)
-                if notify: print "[*] Read configuration (%s)" % (self.configfile)
+            if notify: print "[*] Read configuration (%s)" % (self.configfile)
         except:
             if notify: print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
-                traceback.print_exc()
+            traceback.print_exc()
 
         """ Retrieve values and return them as a dict."""
         global values
@@ -77,58 +77,58 @@ class ConfigParser:
             values[section] = dict(config.items(section))
         return values
 
-        def save(self, valuesdict):
-            """ Saves a dict containing the configuration."""
-            # Unpack the dict into section, option, value
-            for section in valuesdict.keys():
-                for key, value in valuesdict[section].items():
-                    config.set(section, key, value)
+    def save(self, valuesdict):
+        """ Saves a dict containing the configuration."""
+        # Unpack the dict into section, option, value
+        for section in valuesdict.keys():
+            for key, value in valuesdict[section].items():
+                config.set(section, key, value)
 
-            # Save
-            try:
-                config.write(open(self.configfile, 'w'))
-                    print "[*] Saving configuration... "	
-            except:		
-                print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-                    traceback.print_exc()
+        # Save
+        try:
+            config.write(open(self.configfile, 'w'))
+            print "[*] Saving configuration... "	
+        except:		
+            print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+            traceback.print_exc()
 
-        def update(self, section, key, value):
-            """ Update a specific key's value."""	
-            config.set(section, key, value)
-            # Save
-            try:
-                config.write(open(self.configfile, 'w'))
-                    print "[*] Updating configuration key %s to %s" % (key, value)	
-            except:
-                print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-                    traceback.print_exc()
+    def update(self, section, key, value):
+        """ Update a specific key's value."""	
+        config.set(section, key, value)
+        # Save
+        try:
+            config.write(open(self.configfile, 'w'))
+            print "[*] Updating configuration key %s to %s" % (key, value)	
+        except:
+            print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+            traceback.print_exc()
 
-        def create(self, path):
-            """ Create a configuration file from default values. """
-            # Create sections
-            for section in ('itaka', 'screenshot', 'server'): config.add_section(section)
+    def create(self, path):
+        """ Create a configuration file from default values. """
+        # Create sections
+        for section in ('itaka', 'screenshot', 'server'): config.add_section(section)
 
-            print "[*] Creating default configuration..."
-            # Set default values
-            config.set("itaka", "alert", True)
-            config.set("itaka", "notify", False)
+        print "[*] Creating default configuration..."
+        # Set default values
+        config.set("itaka", "alert", True)
+        config.set("itaka", "notify", False)
 
-            config.set("server", "port", 8000)
+        config.set("server", "port", 8000)
 
-            config.set("screenshot", "format", "jpeg")
-            config.set("screenshot", "quality", 80)
-            config.set("screenshot", "path", save_path)
-            config.set("screenshot", "time", 8)
+        config.set("screenshot", "format", "jpeg")
+        config.set("screenshot", "quality", 80)
+        config.set("screenshot", "path", save_path)
+        config.set("screenshot", "time", 8)
 
-            # Check if the directory exists, if not create it
-            # and write the config file with its variables
-            if not (os.path.exists(os.path.dirname(path))):
-                shutil.os.mkdir(os.path.dirname(path))
+        # Check if the directory exists, if not create it
+        # and write the config file with its variables
+        if not (os.path.exists(os.path.dirname(path))):
+            shutil.os.mkdir(os.path.dirname(path))
 
-            try:
-                config.write(open(path, 'w'))
-            except:
-                print "[*] ERROR: Could not write configuration file %s" % (path)
-                    traceback.print_exc()
+        try:
+            config.write(open(path, 'w'))
+        except:
+            print "[*] ERROR: Could not write configuration file %s" % (path)
+            traceback.print_exc()
 
-            self.configfile = path		
+        self.configfile = path		
