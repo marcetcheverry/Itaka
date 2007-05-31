@@ -20,28 +20,28 @@ lcounter = 0
 
 # Set up the screenshooter server
 class ImageResource(Resource):
-	""" Take the screenshot code and handle the requests. """
+    """ Take the screenshot code and handle the requests. """
 
-	def __init__(self, ginstance):
-		""" Intialize inherited GUI instance """
-		self.igui = ginstance
+        def __init__(self, ginstance):
+            """ Intialize inherited GUI instance """
+            self.igui = ginstance
 
-	def render_GET(self, request):
-		""" Handle GET requests for screenshot. """
-		request.setHeader("Content-type", "image/" + iconfig['screenshot']['format'])
-		self.icip = request.getClientIP()
-		self.time = datetime.datetime.now()
-		# self.icbrowser = request.getClient()
+        def render_GET(self, request):
+            """ Handle GET requests for screenshot. """
+            request.setHeader("Content-type", "image/" + iconfig['screenshot']['format'])
+            self.icip = request.getClientIP()
+            self.time = datetime.datetime.now()
+            # self.icbrowser = request.getClient()
 
-		self.shotFile = iscreenshot.Screenshot()
-		global lcounter
-		lcounter += 1
-		# Call libnotify manually FIXME
-		if (iconfig['itaka']['notify'] == "True"): 
-			self.notifyseq = ["notifyit", str(self.icip), str(lcounter)]
-			self.notifyinstance = gobject.spawn_async(self.notifyseq, flags=gobject.SPAWN_SEARCH_PATH)
-				
-		# Tell the GUI what changed
-		self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
+            self.shotFile = iscreenshot.Screenshot()
+            global lcounter
+            lcounter += 1
+            # Call libnotify manually FIXME
+            if (iconfig['itaka']['notify'] == "True"): 
+                self.notifyseq = ["notifyit", str(self.icip), str(lcounter)]
+                    self.notifyinstance = gobject.spawn_async(self.notifyseq, flags=gobject.SPAWN_SEARCH_PATH)
 
-		return open(self.shotFile, 'rb').read()		
+            # Tell the GUI what changed
+            self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
+
+            return open(self.shotFile, 'rb').read()		

@@ -1,20 +1,12 @@
-	Urgente: *** Limpiar startstop() y talk() en Gui. (Urgente)
-                 *** Arreglar el quilombo de las preferencias dinamicas (reescribir)
-
-		 ** Limpiada general.
-		  Rediseniar dialogo de preferencias con gtk.table o ver si podemos arreglar Spread	
-		 * Usar bindings de python libnotify http://ptlo.blogspot.com/2005/11/missing-piece.html
-		 
-	Nuevas:	Local/Twisted-conch backends.
-		Config necesita crear directorio en el home !
-		Cocoa + Twisted
-		Cocoa Prefs
-
-	Ver: remover twisted de la gui cuando no se usa
-
-	Trivial: -Agregar preferencia de Start minimized
-		 -Usar mas tracebaks
-
-	Win32: 	 Usar el tray de ellos, Usar su notifbubbles. Usar setup.py
-		 http://www.pycode.com/modules/?id=2&tab=download&PHPSESSID=c64279880833ecf64f6520967786d1fc
-		 http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/334779"""
+* Remove ftp and ssh support
+* Clean up startstop() and talk() in the GUI
+* Fix the mess of dynamic preferences
+* Redesign the preferences dialog with GTK.Table or Spread.
+* Use Python libnotify bindings
+* Clean up the code
+* Configuration needs to create a directory in the home
+* Remove twisted from the GUI when not in use
+* Use the Windows trayicon, make executables
+** http://www.pycode.com/modules/?id=2&tab=download&PHPSESSID=c64279880833ecf64f6520967786d1fc
+** http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/334779"""
+* Make Ubuntu/Debian binaries. 
