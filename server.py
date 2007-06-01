@@ -82,7 +82,7 @@ class ImageResource(Resource):
             if (iconfig['server']['notify'] == "True") and notifyavailable != False:
                 uri = "file://" + (os.path.join(image_dir, "itaka-take.png")) 
 
-                n = pynotify.Notification("Screenshot taken!", "%s took screenshot number %d" % (self.icip, lcounter), uri)
+                n = pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
                 if not n.show():
                     pass
 

@@ -4,10 +4,11 @@
 
 * GUI
  * Consider trayicon support through GTK
+http://72.14.253.104/search?q=cache:RjfAr_bql5QJ:marcin.af.gliwice.pl/if-then-else-20070121143245+gtk.StatusIcon&hl=en&ct=clnk&cd=6&gl=us&client=firefox-a
  
  * Preferences
   * Integrate preferences into main window
   * Support dynamic preferences
 
 * Other
- * Make Ubuntu/Debian/Windows binaries. 
+ * Make Ubuntu/Debian/Windows binaries. Python distutils setup.
