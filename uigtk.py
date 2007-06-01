@@ -360,7 +360,6 @@ class Gui:
 
             if (iconfig['server']['notify'] == "True"):
                 self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
-                # Call Inotify
                 self.notifyimg = gobject.timeout_add(2000, self.notify)
 
             # Call the update timer function, and add a timer to update the GUI of its
