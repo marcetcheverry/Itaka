@@ -34,11 +34,13 @@ except ImportError:
     print "[*] ERROR: GTK+ Python bindings are missing."
     sys.exit(1)
 
+import os
+
 class Preferences:
     def prefwindow(self, widget, configinstance, guiinstance, icon):
         # Initate our configuration and gui instances
-        self.system = configinstance[0]
-        self.config = configinstance[1]
+        self.config = configinstance[0]
+        self.configinstance = configinstance[1]
 
         self.gui = guiinstance
 
@@ -48,9 +50,11 @@ class Preferences:
         """ Set up the preferences window. """
         self.icon_pixbuf = icon	
         self.preferences = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.preferences.set_resizable(False)
+        self.preferences.resize(210, 200)
         self.preferences.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
         self.preferences.connect("destroy", lambda call: self.preferences.hide())
-        self.preferences.set_title("Preferences")
+        self.preferences.set_title("Itaka Preferences")
         self.preferences.set_icon(self.icon_pixbuf)
         self.preferences.set_border_width(12)
 
@@ -59,10 +63,15 @@ class Preferences:
         self.preferencesHBox2 = gtk.HBox(False, 0)
         self.preferencesHBox3 = gtk.HBox(False, 0)
         self.preferencesHBox4 = gtk.HBox(False, 0)
+        self.preferencesHBox5 = gtk.HBox(False, 0)
 
         # Hbox4 contains notifications which is only available in some systems
-        if self.system != "posix":
+        if self.config.system != "posix":
             self.preferencesHBox4.set_sensitive(False)
+
+        self.preferencesLabelrestart = gtk.Label("<i>Restart to apply changes</i>")
+        self.preferencesLabelrestart.set_use_markup(True)
+        self.preferencesLabelrestart.set_justify(gtk.JUSTIFY_CENTER)
 
         self.preferencesLabelsettings = gtk.Label("<b>Settings</b>")
         self.preferencesLabelsettings.set_use_markup(True)
@@ -114,11 +123,12 @@ class Preferences:
         else: 
             self.preferencesChecknotifications.set_active(0)
 
-        # Close button
-        self.preferencesButtonclose = gtk.Button("Close", gtk.STOCK_CLOSE)
-        self.preferencesButtonclose.connect("clicked", lambda wid: self.save())
+        self.preferencesButtonClose = gtk.Button("Close", gtk.STOCK_CLOSE)
+        self.preferencesButtonClose.connect("clicked", lambda wid: self.save())
+        
+        self.preferencesButtonAbout = gtk.Button("About", gtk.STOCK_ABOUT)
+        self.preferencesButtonAbout.connect("clicked", lambda wid: self.about())
 
-        # Add labels to hboxes
         self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
         self.preferencesHBox2.pack_start(self.preferencesLabelquality, False, False, 12)
         self.preferencesHBox3.pack_start(self.preferencesLabelformat, False, False, 12)
@@ -128,6 +138,9 @@ class Preferences:
         self.preferencesHBox2.pack_end(self.preferencesSpinquality, False, False, 7)
         self.preferencesHBox3.pack_end(self.preferencesComboformat, False, False, 7)
         self.preferencesHBox4.pack_end(self.preferencesChecknotifications, False, False, 7)
+        self.preferencesHBox5.pack_start(self.preferencesButtonAbout, False, False, 7)
+        self.preferencesHBox5.pack_end(self.preferencesButtonClose, False, False, 7)
+
 
         # Add Hboxes to the Vbox
         self.preferencesVBox.pack_start(self.preferencesLabelsettings, False, False, 4)
@@ -135,7 +148,8 @@ class Preferences:
         self.preferencesVBox.pack_start(self.preferencesHBox2, False, False, 0)
         self.preferencesVBox.pack_start(self.preferencesHBox3, False, False, 0)
         self.preferencesVBox.pack_start(self.preferencesHBox4, False, False, 0)
-        self.preferencesVBox.pack_end(self.preferencesButtonclose, False, False, 5)
+        self.preferencesVBox.pack_start(self.preferencesLabelrestart, False, False, 5)
+        self.preferencesVBox.pack_start(self.preferencesHBox5, False, False, 0)
 
         # Add vbox
         self.preferences.add(self.preferencesVBox)
@@ -178,6 +192,35 @@ class Preferences:
 
         # Check if the configuration changed
         if (self.configurationdict != self.vconfig):
-            self.config.save(self.configurationdict)
-            #self.gui.talk(self.gui, "updateConfig")	
+            self.configinstance.save(self.configurationdict)
+            # self.gui.talk(self.gui, "updateConfig")	
         self.preferences.hide()
+
+    def about(self, data=None):
+        """ Create the About dialog. """
+        self.aboutdialog = gtk.AboutDialog()
+        self.aboutdialog.set_transient_for(self.preferences)
+        self.aboutdialog.set_name('Itaka')
+        self.aboutdialog.set_version(self.config.version)
+        self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
+        self.aboutdialog.set_comments('Screenshooting de mercado.')
+        self.aboutdialog.set_authors(['Marc E. <santusmarc@gmail.com>'])
+        self.aboutdialog.set_artists(['Marc E. <santusmarc@gmail.com>'])
+        self.aboutdialog.set_license('''This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
+        self.aboutdialog.set_website('http://itaka.jardinpresente.com.ar')
+        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(self.config.image_dir, "itaka-logo.png")))
+        self.aboutdialog.set_icon(self.icon_pixbuf)
+        self.aboutdialog.run()
+        self.aboutdialog.destroy()

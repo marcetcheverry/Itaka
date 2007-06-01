@@ -92,7 +92,7 @@ class Gui:
         self.window.set_title("Itaka")
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
-        self.window.resize(500, 1)
+        self.window.set_default_size(420, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
 
         # Boxes, images, and buttons
@@ -117,7 +117,7 @@ class Gui:
 
         # Preferences button
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, [config.system, self.configinstance], self, self.icon_pixbuf)
+        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, [config, self.configinstance], self, self.icon_pixbuf)
 
         self.ibox.pack_start(self.preferencesButton, True, True, 4)
 
@@ -198,7 +198,7 @@ class Gui:
             self.expander.add(self.debugvbox)
         else:
             self.expander.remove(self.expander.child)
-            self.window.resize(500, 1)
+            self.window.resize(420, 1)
         return
 
     def logger(self, args):
@@ -228,20 +228,6 @@ class Gui:
 
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
-
-    def about(self, data=None):
-        """ Create the About dialog. """
-        # TODO: Decide what to do about this, and fix the close button
-        self.about = gtk.AboutDialog()
-        self.about.set_name('Itaka')
-        self.about.set_version(config.version)
-        self.about.set_copyright(u'© 2003-2007 Marc E.')
-        self.about.set_comments('Screenshooting de mercado.')
-        self.about.set_authors(['Marc E. <santusmarc@gmail.com>'])
-        self.about.set_website('http://itaka.jardinpresente.com.ar')
-        self.about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka-logo.png")))
-        self.about.set_icon(self.icon_pixbuf)
-        self.about.show()
 
     def __checkwidget(self, widget):
         """ Check the status of the toggle button. """
