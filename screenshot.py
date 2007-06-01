@@ -17,6 +17,7 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+# $Id$
 
 """ Itaka screenshot engine """
 
@@ -44,7 +45,6 @@ def Screenshot():
             gtk.gdk.get_default_root_window(),
             gtk.gdk.colormap_get_system(),
             0, 0, 0, 0, w, h)
-    shotFile = os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))
 
     # Save the screnshot, checking before if to set JPEG quality
     if iconfig['screenshot']['format'] == 'jpeg':

@@ -1,12 +1,7 @@
-* Decide what to do with the screenshot path
-* Clean up startstop() and talk() in the GUI
-* Fix the mess of dynamic preferences
-* Redesign the preferences dialog with GTK.Table or Spread.
-* Use Python libnotify bindings
+* Decide what to do with the screenshot path, home or temp?
+* Fix about dialog close button
+* Support dynamic preferences
+* Toggle libnotify support based on availability of pynotify module
 * Clean up the code
-* Configuration needs to create a directory in the home
-* Remove twisted from the GUI when not in use
-* Use the Windows trayicon, make executables
-** http://www.pycode.com/modules/?id=2&tab=download&PHPSESSID=c64279880833ecf64f6520967786d1fc
-** http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/334779"""
-* Make Ubuntu/Debian binaries. 
+* Consider trayicon support through GTK
+* Make Ubuntu/Debian/Windows binaries. 

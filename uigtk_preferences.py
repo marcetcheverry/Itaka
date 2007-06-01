@@ -17,6 +17,7 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+# $Id$
 
 """ Itaka preferences dialog """
 
@@ -35,11 +36,13 @@ except ImportError:
 class Preferences:
     def prefwindow(self, widget, configinstance, guiinstance, icon):
         # Initate our configuration and gui instances
-        self.config = configinstance
+        self.system = configinstance[0]
+        self.config = configinstance[1]
+
         self.gui = guiinstance
 
         # Reload the configuration each time the window pops up
-        self.vconfig = configinstance.load(False)
+        self.vconfig = configinstance[1].load(False)
 
         """ Set up the preferences window. """
         self.icon_pixbuf = icon	
@@ -55,6 +58,10 @@ class Preferences:
         self.preferencesHBox2 = gtk.HBox(False, 0)
         self.preferencesHBox3 = gtk.HBox(False, 0)
         self.preferencesHBox4 = gtk.HBox(False, 0)
+
+        # Hbox4 contains notifications which is only available in some systems
+        if self.system != "posix":
+            self.preferencesHBox4.set_sensitive(False)
 
         self.preferencesLabelsettings = gtk.Label("<b>Settings</b>")
         self.preferencesLabelsettings.set_use_markup(True)
@@ -73,6 +80,7 @@ class Preferences:
         self.preferencesLabelformat = gtk.Label("Format:")
         self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelformat.set_alignment(0, 0.50)
+
 
 
         self.preferencesLabelnotifications = gtk.Label("Notifications:")
@@ -99,18 +107,11 @@ class Preferences:
         else: 
             self.preferencesComboformat.set_active(1)
 
-        #self.__preferencesComboHandler(None, "format")
-        #self.preferencesComboformat.connect("changed", self.__preferencesComboHandler, "format")
-
-
         self.preferencesChecknotifications = gtk.CheckButton()
         if (self.vconfig['server']['notify'] == "True"):
             self.preferencesChecknotifications.set_active(1)
         else: 
             self.preferencesChecknotifications.set_active(0)
-
-        #self.__preferencesComboHandler(None, "notifications")
-        #self.preferencesCombonotifications.connect("changed", self.__preferencesComboHandler, "notifications")
 
         # Close button
         self.preferencesButtonclose = gtk.Button("Close", gtk.STOCK_CLOSE)

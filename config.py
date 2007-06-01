@@ -17,6 +17,7 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+# $Id$
 
 """ Itaka Configuration Parser and Engine """
 
@@ -31,22 +32,24 @@ config = ConfigParser.ConfigParser()
 # Set up specific variables
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
-#: Version (do not change)
-version = "0.1 ($Rev$)"
+# Version (do not change)
+version = "0.1"
+revision = "$Rev"
 
 #: Check system or specify per os.name standard
 system = os.name
 
 # Support darwin specific stuff
+platform = None
 if (system == "posix" and sys.platform.startswith("darwin")): platform = "darwin"
 
-#: Itaka images/ directory
+# Itaka images/ directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")
 
-#: Local configuration file
+# Local configuration file
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
-#: Save path for screenshots (system-specific)
+# Save path for screenshots (system-specific)
 save_path = os.getcwd()
 
 if system is 'posix': 
