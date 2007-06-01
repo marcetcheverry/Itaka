@@ -59,7 +59,6 @@ class ImageResource(Resource):
 
     def __init__(self, ginstance, cinstance):
         """ Intialize inherited GUI and Console instances """
-        self.iconsole = cinstance
         self.igui = ginstance
 
     def render_GET(self, request):
@@ -79,7 +78,7 @@ class ImageResource(Resource):
 
             n = pynotify.Notification("Screenshot taken!", "%s took screenshot number %d" % (self.icip, lcounter), uri)
             if not n.show():
-                self.iconsole.error(['ImageResource', 'render_GET'], 'Could not show notification', False)
+                pass
 
         # Tell the GUI what changed
         self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
