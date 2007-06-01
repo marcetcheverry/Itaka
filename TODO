@@ -1,8 +1,14 @@
-* Preferences restart disclaimer
-* Add option to quiet all console output
-* Decide what to do with the screenshot path, home or temp?
-* Fix about dialog close button
-* Support dynamic preferences
-* Toggle libnotify support based on availability of pynotify module
-* Consider trayicon support through GTK
-* Make Ubuntu/Debian/Windows binaries. 
+* Core
+ * Add option to quiet all console output
+ * Decide what to do with the screenshot path, home or temp?
+
+* GUI
+ * Consider trayicon support through GTK
+ 
+ * Preferences
+  * Integrate preferences into main window
+  * Support dynamic preferences
+  * Toggle libnotify support based on availability of pynotify module
+
+* Other
+ * Make Ubuntu/Debian/Windows binaries. 
