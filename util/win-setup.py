@@ -1,18 +1,23 @@
 from distutils.core import setup
 import py2exe
 
-setup(name='Distutils',
-      version='1.0',
-      description='Itaka Screenshoot Server',
-      author='Marc E.',
-      author_email='m4rccd@yahoo.com',
-      url='http://itaka.sourceforge.net',
-     )
+# Copiar etc, share, lib de GTK a la cosa. No funciona con un all-in-one
+# Tampoco copia imagenes.
+# zipfile = None
 
-setup(console=["itaka.py"],
-      data_files=[("modules",
-                   ["itaka_globals.py", "__init__.py"]),
-                  ("images",
-                   glob.glob("images\\*.png"))],
+setup (
+	console=['itaka.py'],
+	name = 'Itaka',
+    	description = 'On-demand screenshooting server',
+    	version = '0.1',
+    	author='Marc E.',
+    	author_email='santusmarc@gmail.com',
+    	url='http://itaka.sourceforge.net',
+	
+	options = {
+        	'py2exe': {
+                      'packages':'encodings',
+                      'includes': 'cairo, pango, pangocairo, atk, gobject',
+                  }
+        }
 )
-zipfile=None

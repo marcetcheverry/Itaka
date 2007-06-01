@@ -39,6 +39,7 @@ system = iconfig.system
 platform = iconfig.platform
 
 # Use notifications where libnotify is available
+notifyavailable = False
 if system == "posix" and platform != "darwin":
     try:
         import pynotify

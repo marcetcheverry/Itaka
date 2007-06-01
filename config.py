@@ -41,7 +41,7 @@ system = os.name
 
 # Support darwin specific stuff
 platform = None
-if (system == "posix" and sys.platform.startswith("darwin")): platform = "darwin"
+if (sys.platform.startswith("darwin")): platform = "darwin"
 
 # Itaka images/ directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")
@@ -52,7 +52,7 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itak
 # Save path for screenshots (system-specific)
 save_path = os.getcwd()
 
-if system is 'posix': 
+if system == 'posix': 
     save_path = "/tmp"
 elif system == 'nt': 
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')

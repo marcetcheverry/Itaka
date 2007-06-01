@@ -38,6 +38,7 @@ pygtk.require("2.0")
 import gtk, gobject
 
 # Use notifications where libnotify is available
+notifyavailable = False
 if iconfig['server']['notify'] == "True" and system == "posix" and platform != "darwin":
     try:
         import pynotify
