@@ -1,4 +1,4 @@
-* Remove ftp and ssh support
+* Decide what to do with the screenshot path
 * Clean up startstop() and talk() in the GUI
 * Fix the mess of dynamic preferences
 * Redesign the preferences dialog with GTK.Table or Spread.
