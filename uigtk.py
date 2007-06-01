@@ -261,7 +261,6 @@ class Gui:
             self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
             print dir(self.ilistener)
 
-
             # Announce on log & console stdout
             self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
 
@@ -280,6 +279,7 @@ class Gui:
 
         else:
             if hasattr(self, 'ilistener'):
+                self.console.msg("Stopping server", True)
                 self.ilistener.stopListening()
                 del self.ilistener
 
