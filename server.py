@@ -54,10 +54,10 @@ class ImageResource(Resource):
         self.shotFile = iscreenshot.Screenshot()
         global lcounter
         lcounter += 1
-        # Call libnotify manually FIXME
-        if (iconfig['itaka']['notify'] == "True"): 
-            self.notifyseq = ["notifyit", str(self.icip), str(lcounter)]
-            self.notifyinstance = gobject.spawn_async(self.notifyseq, flags=gobject.SPAWN_SEARCH_PATH)
+        # TODO: Implement libnotify call with IP (self.icip), and lcounter
+        # Check for the os
+        if (iconfig['server']['notify'] == "True"): 
+            pass
 
         # Tell the GUI what changed
         self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)

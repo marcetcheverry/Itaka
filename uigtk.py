@@ -18,7 +18,7 @@
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
 
-""" Itaka GTK+ GUI """
+""" Itaka GTK+ GUI $Id$ """
 
 import sys, os, datetime, traceback 
 
@@ -177,6 +177,7 @@ class Gui:
         # Add vbox to window (parent adds all)
         self.window.add(self.vbox)
 
+        self.about()
         # Show window
         self.window.show_all()
 
@@ -232,7 +233,7 @@ class Gui:
         """ Create the About dialog. """
         self.about = gtk.AboutDialog()
         self.about.set_name('Itaka')
-        self.about.set_version(config.version.version)
+        self.about.set_version(config.version)
         self.about.set_copyright(u'© 2003-2007 Marc E.')
         self.about.set_comments('Screenshooting de mercado.')
         self.about.set_authors(['Marc E. <santusmarc@gmail.com>'])
@@ -276,8 +277,9 @@ class Gui:
 
             # Close the expander
             self.expander.set_sensitive(True)
-            if (iconfig['server']['notify'] == "True"):
-                    self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
+            # I am not sure about this, notification
+            #if (iconfig['server']['notify'] == "True"):
+            #        self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
 
         else:
             if hasattr(self, 'ilistener'):
@@ -382,7 +384,7 @@ class Gui:
             self.iagotimer = gobject.timeout_add(60000, self.__calcsince, data3)
 
             # Notify the main interface
-            if (iconfig['screenshot']['notify'] == "True"):
+            if (iconfig['server']['notify'] == "True"):
                 self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
                 # Call Inotify
                 self.notifyimg = gobject.timeout_add(2000, self.notify)

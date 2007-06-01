@@ -117,15 +117,15 @@ class Preferences:
         self.preferencesButtonclose.connect("clicked", lambda wid: self.save())
 
         # Add labels to hboxes
-        self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 16)
-        self.preferencesHBox2.pack_start(self.preferencesLabelquality, False, False, 16)
-        self.preferencesHBox3.pack_start(self.preferencesLabelformat, False, False, 16)
-        self.preferencesHBox4.pack_start(self.preferencesLabelnotifications, False, False, 16)
+        self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
+        self.preferencesHBox2.pack_start(self.preferencesLabelquality, False, False, 12)
+        self.preferencesHBox3.pack_start(self.preferencesLabelformat, False, False, 12)
+        self.preferencesHBox4.pack_start(self.preferencesLabelnotifications, False, False, 12)
 
-        self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 0)
-        self.preferencesHBox2.pack_end(self.preferencesSpinquality, False, False, 0)
-        self.preferencesHBox3.pack_end(self.preferencesComboformat, False, False, 0)
-        self.preferencesHBox4.pack_end(self.preferencesChecknotifications, False, False, 0)
+        self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
+        self.preferencesHBox2.pack_end(self.preferencesSpinquality, False, False, 7)
+        self.preferencesHBox3.pack_end(self.preferencesComboformat, False, False, 7)
+        self.preferencesHBox4.pack_end(self.preferencesChecknotifications, False, False, 7)
 
         # Add Hboxes to the Vbox
         self.preferencesVBox.pack_start(self.preferencesLabelsettings, False, False, 4)
