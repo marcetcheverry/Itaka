@@ -34,6 +34,23 @@ except ImportError:
     print "[*] ERROR: GTK+ Python bindings are missing."
     sys.exit(1)
 
+import config as iconfig
+system = iconfig.system
+platform = iconfig.platform
+
+# Use notifications where libnotify is available
+if system == "posix" and platform != "darwin":
+    try:
+        import pynotify
+        notifyavailable = True
+
+        if not pynotify.init("Itaka"):
+            print "[*] WARNING: Pynotify module is missing, disabling."
+            notifyavailable = False
+    except ImportError:
+        print "[*] WARNING: Pynotify module is missing, disabling."
+        notifyavailable = False
+
 import os
 
 class Preferences:
@@ -141,6 +158,11 @@ class Preferences:
         self.preferencesHBox5.pack_start(self.preferencesButtonAbout, False, False, 7)
         self.preferencesHBox5.pack_end(self.preferencesButtonClose, False, False, 7)
 
+
+        # Disable notifications for non-posix and non-pynotify
+        self.preferencesHBox4.set_sensitive(False)
+        if system == "posix" and platform != "darwin" and notifyavailable:
+            self.preferencesHBox4.set_sensitive(True)
 
         # Add Hboxes to the Vbox
         self.preferencesVBox.pack_start(self.preferencesLabelsettings, False, False, 4)
