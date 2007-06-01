@@ -63,24 +63,29 @@ class ImageResource(Resource):
 
     def render_GET(self, request):
         """ Handle GET requests for screenshot. """
-        request.setHeader("Content-type", "image/" + iconfig['screenshot']['format'])
-        self.icip = request.getClientIP()
-        self.time = datetime.datetime.now()
-        # self.icbrowser = request.getClient()
 
-        self.shotFile = iscreenshot.Screenshot()
-        global lcounter
-        lcounter += 1
+        if (request.uri == "/screenshot"):
 
-        # Call libnotify
-        if (iconfig['server']['notify'] == "True") and notifyavailable != False:
-            uri = "file://" + (os.path.join(image_dir, "itaka-take.png")) 
+            request.setHeader("Content-type", "image/" + iconfig['screenshot']['format'])
+            request.setHeader("Connection", "close")
 
-            n = pynotify.Notification("Screenshot taken!", "%s took screenshot number %d" % (self.icip, lcounter), uri)
-            if not n.show():
-                pass
+            self.icip = request.getClientIP()
+            self.time = datetime.datetime.now()
+            # self.icbrowser = request.getClient()
 
-        # Tell the GUI what changed
-        self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
+            self.shotFile = iscreenshot.Screenshot()
+            global lcounter
+            lcounter += 1
 
-        return open(self.shotFile, 'rb').read()		
+            # Call libnotify
+            if (iconfig['server']['notify'] == "True") and notifyavailable != False:
+                uri = "file://" + (os.path.join(image_dir, "itaka-take.png")) 
+
+                n = pynotify.Notification("Screenshot taken!", "%s took screenshot number %d" % (self.icip, lcounter), uri)
+                if not n.show():
+                    pass
+
+            # Tell the GUI what changed
+            self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
+
+            return open(self.shotFile, 'rb').read()		

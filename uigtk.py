@@ -253,16 +253,19 @@ class Gui:
     def startstop(self, widget, data=None):
         """ Start or stop the screenshooting server. """
         if (self.__checkwidget(widget)):
-            if (hasattr(self, 'ilistener')): return True
+
+            # Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
             # Set up the twisted site
             self.site = server.Site(self.root)
             # Start the server. Make an instance to distinguish from self.sreactor().
             self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
-            print dir(self.ilistener)
 
             # Announce on log & console stdout
-            self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
+            if iconfig['screenshot']['quality'] == "jpeg":
+                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
+            else:
+                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper()), True)
 
             # Change buttons
             self.buttonStartstop.set_active(True)
@@ -280,12 +283,12 @@ class Gui:
         else:
             if hasattr(self, 'ilistener'):
                 self.console.msg("Stopping server", True)
+
                 self.ilistener.stopListening()
-                del self.ilistener
 
                 # Stop the g_timeout
                 if hasattr(self, 'iagotimer'):
-                        gobject.source_remove(self.iagotimer)
+                    gobject.source_remove(self.iagotimer)
 
                 # Change GUI elements
                 self.buttonStartstop.set_active(False)
