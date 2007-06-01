@@ -8,7 +8,6 @@
  * Preferences
   * Integrate preferences into main window
   * Support dynamic preferences
-  * Toggle libnotify support based on availability of pynotify module
 
 * Other
  * Make Ubuntu/Debian/Windows binaries. 
