@@ -17,21 +17,38 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+# $Id$
 
 """ Itaka web server engine """
 
 import config as iconfig
+image_dir = iconfig.image_dir
+system = iconfig.system
+platform = iconfig.platform
 iconfig = iconfig.values
 import screenshot as iscreenshot
 
 from twisted.web.resource import Resource
 
-import datetime
+import datetime, os
 
 import pygtk
 pygtk.require("2.0")
 
 import gtk, gobject
+
+# Use notifications where libnotify is available
+if iconfig['server']['notify'] == "True" and system == "posix" and platform != "darwin":
+    try:
+        import pynotify
+        notifyavailable = True
+
+        if not pynotify.init("Itaka"):
+            print "[*] WARNING: Pynotify module is missing, disabling."
+            notifyavailable = False
+    except ImportError:
+        print "[*] WARNING: Pynotify module is missing, disabling."
+        notifyavailable = False
 
 #: Local iteration counter
 lcounter = 0
@@ -40,8 +57,9 @@ lcounter = 0
 class ImageResource(Resource):
     """ Take the screenshot code and handle the requests. """
 
-    def __init__(self, ginstance):
-        """ Intialize inherited GUI instance """
+    def __init__(self, ginstance, cinstance):
+        """ Intialize inherited GUI and Console instances """
+        self.iconsole = cinstance
         self.igui = ginstance
 
     def render_GET(self, request):
@@ -54,10 +72,14 @@ class ImageResource(Resource):
         self.shotFile = iscreenshot.Screenshot()
         global lcounter
         lcounter += 1
-        # TODO: Implement libnotify call with IP (self.icip), and lcounter
-        # Check for the os
-        if (iconfig['server']['notify'] == "True"): 
-            pass
+
+        # Call libnotify
+        if (iconfig['server']['notify'] == "True") and notifyavailable != False:
+            uri = "file://" + (os.path.join(image_dir, "itaka-take.png")) 
+
+            n = pynotify.Notification("Screenshot taken!", "%s took screenshot number %d" % (self.icip, lcounter), uri)
+            if not n.show():
+                self.iconsole.error(['ImageResource', 'render_GET'], 'Could not show notification', False)
 
         # Tell the GUI what changed
         self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)

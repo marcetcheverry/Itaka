@@ -17,6 +17,7 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+# $Id$
 
 """ Itaka GTK+ GUI $Id$ """
 
@@ -30,7 +31,7 @@ try:
     from twisted.web import server, static
     from twisted.web.resource import Resource
     from twisted.internet import reactor
-except ImportError:
+except ImportiError:
     print "[*] Warning: Twisted Network Framework is missing, quitting."
     sys.exit(1)
 
@@ -64,8 +65,17 @@ except ImportError:
 class Gui:
     """ GTK GUI """
     def __init__(self, configinstance):
-        # Pas a reference of GUI to Screenshot module for its notification handling.
-        self.sinstance = iserver.ImageResource(self)
+        # Initiate our Console intance
+        try:
+            # Init console with a reference to our gui instance
+            self.console = iconsole.Console(self)
+        except AttributeError:
+            print "[*] ERROR: Could not initiate Console engine."
+            traceback.print_exc()
+            sys.exit(1)
+
+        # Pas a reference of GUI and Console instanceto Screenshot module for its notification handling.
+        self.sinstance = iserver.ImageResource(self, self.console)
         # Get a reference of the configuration instance
         self.configinstance = configinstance
 
@@ -107,7 +117,7 @@ class Gui:
 
         # Preferences button
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, self.configinstance, self, self.icon_pixbuf)
+        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, [config.system, self.configinstance], self, self.icon_pixbuf)
 
         self.ibox.pack_start(self.preferencesButton, True, True, 4)
 
@@ -177,7 +187,6 @@ class Gui:
         # Add vbox to window (parent adds all)
         self.window.add(self.vbox)
 
-        self.about()
         # Show window
         self.window.show_all()
 
@@ -217,14 +226,7 @@ class Gui:
 
     def main(self):
         """ Main init function. Starts the GUI reactors."""
-        # GTK Reactor and Console Handling
-        try:
-            # Init console with a reference to our gui instance
-            self.console = iconsole.Console(self)
-        except AttributeError:
-            print "[*] ERROR: Could not initiate Console engine."
-            traceback.print_exc()
-            sys.exit(1)
+        # GTK Reactor
 
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
@@ -238,23 +240,21 @@ class Gui:
         self.about.set_comments('Screenshooting de mercado.')
         self.about.set_authors(['Marc E. <santusmarc@gmail.com>'])
         self.about.set_website('http://itaka.jardinpresente.com.ar')
-        self.about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png")))
+        self.about.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka-logo.png")))
         self.about.set_icon(self.icon_pixbuf)
         self.about.show()
 
     def __checkwidget(self, widget):
-        """ Workaround to save code on menu/main startstop. """
+        """ Check the status of the toggle button. """
         if hasattr(widget, 'get_active'):
             return widget.get_active()
         else:
             return False
 
     def startstop(self, widget, data=None):
-        """ Start or stop the screenshooting/ftp server from window or menu. """
-        # FIXME: Rewrite this function to something decent.
-        # Use an abstraction layer from the Tray if necessary.
+        """ Start or stop the screenshooting server. """
 
-        if ( self.__checkwidget(widget) or data == "Start"):
+        if (self.__checkwidget(widget)):
             """Workaround to avoid collision between
             setting startstopbutton.set_active and 
             already started server from the menu and viceversa."""
@@ -264,39 +264,40 @@ class Gui:
             self.site = server.Site(self.root)
             # Start the server. Make an instance to distinguish from self.sreactor().
             self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
-            if (data):
-                self.buttonStartstop.set_active(True)
+
 
             # Announce on log & console stdout
             self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
 
             # Change buttons
+            self.buttonStartstop.set_active(True)
             self.buttonStartstop.set_label("Stop")
             self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
             self.buttonStartstop.set_image(self.startstopimage)
 
             # Close the expander
             self.expander.set_sensitive(True)
+
             # I am not sure about this, notification
-            #if (iconfig['server']['notify'] == "True"):
+            # if (iconfig['server']['notify'] == "True"):
             #        self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
 
         else:
             if hasattr(self, 'ilistener'):
-                log.msg('Itaka shutting down...')
+                log.msg('Server shutting down...')
                 self.console.msg('Server shutting down...')
                 self.ilistener.stopListening()
                 del self.ilistener
+
                 # Stop the g_timeout
                 if hasattr(self, 'iagotimer'):
                         gobject.source_remove(self.iagotimer)
-                if (data):
-                        self.buttonStartstop.set_active(False)
+
+                # Change GUI elements
+                self.buttonStartstop.set_active(False)
                 self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
                 self.buttonStartstop.set_image(self.startstopimage)
                 self.buttonStartstop.set_label("Start")
-
-                # Change the labels and expander
                 self.labelLastip.set_text('')
                 self.labelTime.set_text('')
                 self.labelServed.set_text('')
@@ -307,16 +308,22 @@ class Gui:
                 pass
 
     def destroy(self, *args):
-        # FIXME: Cleanup stale screenshot file
         """ Callback for the main window's destroy. """
+
         # Stop server(s). Check so it does not complain if close while not running.
         if hasattr(self, 'ilistener'):
             self.console.msg("Shutting down server...", True)
-            #self.ilistener.stopListening()
+            self.ilistener.stopListening()
             del self.console
         else:
             # Console goodbye!
-            if hasattr(self, 'console'):	del self.console
+            if hasattr(self, 'console'):
+                del self.console
+
+        # Remove stale screenshot and quit
+        if os.path.exists(os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))): 
+            os.remove(os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format'])))
+
         gtk.main_quit()
 
     def __calcsince(self, dtime):
@@ -361,36 +368,28 @@ class Gui:
         # Only run this event once
         return False
 
-    def talk(self, action, data1=False, data2=False, data3=False):
+    def talk(self, action, number=False, ip=False, time=False):
         """ Handler for communcations between the server backend, and the GUI. """
-        # FIXME: Cleanup
 
-        self.console.msg("Screenshot " + str(data1) + " served to: " + str(data2))
+        if (action == "updateGuiStatus" ):
+            self.console.msg("Screenshot " + str(number) + " served to: " + str(ip))
+            self.labelServed.set_text("Served: " + str(number))
+            self.labelLastip.set_text("IP: " + str(ip))
 
-        if ( action == "updateGuiStatus" ):
-            # Update labels
-            self.labelServed.set_text("Served: " + str(data1))
-            if (data2):
-                    self.labelLastip.set_text("IP: " + str(data2))
-            else:
-                    self.labelLastip.set_text("Uploaded to FTP")
-            self.labelServed.set_text("Served: " + str(data1))
-
-            # Call the update timer function, and add a timer
-            self.__calcsince(data3)
-            # Delete the timer if its Not False
-            # so we dont get duplicates
-            if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
-            self.iagotimer = gobject.timeout_add(60000, self.__calcsince, data3)
-
-            # Notify the main interface
             if (iconfig['server']['notify'] == "True"):
                 self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
                 # Call Inotify
                 self.notifyimg = gobject.timeout_add(2000, self.notify)
 
+            # Call the update timer function, and add a timer to update the GUI of its
+            # "Last screenshot taken" time
+            self.__calcsince(time)
+            if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
+            self.iagotimer = gobject.timeout_add(60000, self.__calcsince, time)
+
         # Handler for Preferences signal to reload the config
         elif ( action == "updateConfig"):
-            self.cout.msg("Updating configuration...")
-            global iconfig
-            iconfig = self.configinstance.load()
+            # TODO: Implement dynamic preferences
+            # global iconfig
+            # iconfig = self.configinstance.load()
+            pass
