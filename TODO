@@ -1,7 +1,12 @@
+Realease:
+If PNG, disable quality, and do not report "quality" on log messages
+Preferences restart disclaimer
+Start stop fucked up
+
+* Add option to quiet all console output
 * Decide what to do with the screenshot path, home or temp?
 * Fix about dialog close button
 * Support dynamic preferences
 * Toggle libnotify support based on availability of pynotify module
-* Clean up the code
 * Consider trayicon support through GTK
 * Make Ubuntu/Debian/Windows binaries. 

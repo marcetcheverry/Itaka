@@ -74,7 +74,7 @@ class Gui:
             traceback.print_exc()
             sys.exit(1)
 
-        # Pas a reference of GUI and Console instanceto Screenshot module for its notification handling.
+        # Pass a reference of GUI and Console instanceto Screenshot module for its notification handling.
         self.sinstance = iserver.ImageResource(self, self.console)
         # Get a reference of the configuration instance
         self.configinstance = configinstance
@@ -216,7 +216,6 @@ class Gui:
 
     def pauselogger(self, widget, data=None):
         """ Callback to pause log output. """
-        # FIXME: Does this pause Console too?
         if widget.get_active():
             log.msg("Logging paused.")
             log.removeObserver(self.logger)
@@ -226,13 +225,13 @@ class Gui:
 
     def main(self):
         """ Main init function. Starts the GUI reactors."""
-        # GTK Reactor
 
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
 
     def about(self, data=None):
         """ Create the About dialog. """
+        # TODO: Decide what to do about this, and fix the close button
         self.about = gtk.AboutDialog()
         self.about.set_name('Itaka')
         self.about.set_version(config.version)
@@ -253,17 +252,14 @@ class Gui:
 
     def startstop(self, widget, data=None):
         """ Start or stop the screenshooting server. """
-
         if (self.__checkwidget(widget)):
-            """Workaround to avoid collision between
-            setting startstopbutton.set_active and 
-            already started server from the menu and viceversa."""
             if (hasattr(self, 'ilistener')): return True
 
             # Set up the twisted site
             self.site = server.Site(self.root)
             # Start the server. Make an instance to distinguish from self.sreactor().
             self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
+            print dir(self.ilistener)
 
 
             # Announce on log & console stdout
@@ -284,8 +280,6 @@ class Gui:
 
         else:
             if hasattr(self, 'ilistener'):
-                log.msg('Server shutting down...')
-                self.console.msg('Server shutting down...')
                 self.ilistener.stopListening()
                 del self.ilistener
 
@@ -306,11 +300,11 @@ class Gui:
                 self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
             else:
                 pass
+                print "puta pario"
 
     def destroy(self, *args):
         """ Callback for the main window's destroy. """
-
-        # Stop server(s). Check so it does not complain if close while not running.
+        # Stop server.
         if hasattr(self, 'ilistener'):
             self.console.msg("Shutting down server...", True)
             self.ilistener.stopListening()
@@ -370,7 +364,6 @@ class Gui:
 
     def talk(self, action, number=False, ip=False, time=False):
         """ Handler for communcations between the server backend, and the GUI. """
-
         if (action == "updateGuiStatus" ):
             self.console.msg("Screenshot " + str(number) + " served to: " + str(ip))
             self.labelServed.set_text("Served: " + str(number))
