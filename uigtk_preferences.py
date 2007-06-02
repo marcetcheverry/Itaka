@@ -218,32 +218,3 @@ class Preferences:
             self.configinstance.save(self.configurationdict)
             # self.gui.talk(self.gui, "updateConfig")	
         self.preferences.hide()
-
-    def about(self, data=None):
-        """ Create the About dialog. """
-        self.aboutdialog = gtk.AboutDialog()
-        self.aboutdialog.set_transient_for(self.preferences)
-        self.aboutdialog.set_name('Itaka')
-        self.aboutdialog.set_version(self.config.version)
-        self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
-        self.aboutdialog.set_comments('Screenshooting de mercado.')
-        self.aboutdialog.set_authors(['Marc E. <santusmarc@gmail.com>'])
-        self.aboutdialog.set_artists(['Marc E. <santusmarc@gmail.com>'])
-        self.aboutdialog.set_license('''This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
-        self.aboutdialog.set_website('http://itaka.jardinpresente.com.ar')
-        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(self.config.image_dir, "itaka-logo.png")))
-        self.aboutdialog.set_icon(self.icon_pixbuf)
-        self.aboutdialog.run()
-        self.aboutdialog.destroy()
