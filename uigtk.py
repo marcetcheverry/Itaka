@@ -398,9 +398,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """ Callback to pause log output. """
         if widget.get_active():
             log.msg("Logging paused.")
+            self.debugscroll.set_sensitive(False)
             log.removeObserver(self.logger)
         else:
             log.addObserver(self.logger)
+            self.debugscroll.set_sensitive(True)
             log.msg("Logging started.")
 
     def main(self):
