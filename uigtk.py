@@ -19,7 +19,7 @@
 # http://itaka.jardinpresente.com.ar
 # $Id$
 
-""" Itaka GTK+ GUI $Id$ """
+""" Itaka GTK+ GUI """
 
 import sys, os, datetime, traceback 
 
@@ -117,7 +117,10 @@ class Gui:
 
         # Preferences button
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, [config, self.configinstance], self, self.icon_pixbuf)
+        #self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, [config, self.configinstance], self, self.icon_pixbuf)
+        self.preferencesVBoxhidden = False
+        self.expandpreferencesdone = False
+        self.preferencesButton.connect("clicked", self.__expandpreferences)
 
         self.ibox.pack_start(self.preferencesButton, True, True, 4)
 
@@ -189,6 +192,186 @@ class Gui:
 
         # Show window
         self.window.show_all()
+
+        # Once we have all our widgets, get the 'default' real size, for expanding/contracting
+        self.window.default_size = self.window.get_size()
+
+    def __contractpreferences(self, params=None):
+        """ Callback to contract the window of preferences. """
+        # TODO: Add save
+
+        if hasattr(self, 'contracttimeout'):
+            self.windowsize = self.window.get_size()
+            if self.windowsize[1] > self.window.default_size[1]:
+                self.window.resize(self.windowsize[0], self.windowsize[1]-30)
+                return True
+            # Gobject is buggy and needs this somehow
+            gobject.source_remove(self.contracttimeout)
+            del self.contracttimeout
+            return False
+
+        self.preferencesVBox.hide_all()
+
+        self.expandpreferencesdone = False 
+        self.preferencesVBoxhidden = True
+        self.preferencesButton.set_sensitive(True)
+
+        self.contracttimeout = gobject.timeout_add(30, self.__contractpreferences)
+
+    def __expandpreferences(self, params=None):
+        """ Callback to expand the window for preferences. """
+        # We have a race condition here. If GTK cant resize fast enough, then it gets very sluggish
+        # See configure-event signal of gtk.Widget
+        # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
+        if self.expandpreferencesdone != True:
+            if hasattr(self, 'expandtimeout'):
+                self.windowsize = self.window.get_size()
+
+                if self.windowsize[1] <= 270:
+                    self.window.resize(self.windowsize[0], self.windowsize[1]+30)
+                    self.windowsize = self.window.get_size()
+                    return True
+                else:
+                    # Its done expanding, add our widgets or display it if it has been done already
+                    self.expandpreferencesdone = True
+                    self.preferencesButton.set_sensitive(False)
+
+                    if self.preferencesVBoxhidden:
+                        self.preferencesVBox.show_all()
+                    else:
+                        self.preferencesVBox = gtk.VBox(False, 0)
+                        self.preferencesHBox1 = gtk.HBox(False, 0)
+                        self.preferencesHBox2 = gtk.HBox(False, 0)
+                        self.preferencesHBox3 = gtk.HBox(False, 0)
+                        self.preferencesHBox4 = gtk.HBox(False, 0)
+                        self.preferencesHBox5 = gtk.HBox(False, 0)
+
+                        # Hbox4 contains notifications which is only available in some systems
+                        if config.system != "posix":
+                            self.preferencesHBox4.set_sensitive(False)
+
+                        self.preferencesLabelrestart = gtk.Label("<i>Restart to apply changes</i>")
+                        self.preferencesLabelrestart.set_use_markup(True)
+                        self.preferencesLabelrestart.set_justify(gtk.JUSTIFY_CENTER)
+
+                        self.preferencesLabelsettings = gtk.Label("<b>Settings</b>")
+                        self.preferencesLabelsettings.set_use_markup(True)
+                        self.preferencesLabelsettings.set_justify(gtk.JUSTIFY_LEFT)
+                        self.preferencesLabelsettings.set_alignment(0.03, 0.50)
+
+                        self.preferencesLabelport = gtk.Label("Port:")
+                        self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
+                        self.preferencesLabelport.set_alignment(0, 0.50)
+
+                        self.preferencesLabelquality = gtk.Label("Quality:")
+                        self.preferencesLabelquality.set_justify(gtk.JUSTIFY_LEFT)
+                        self.preferencesLabelquality.set_alignment(0, 0.50)
+
+
+                        self.preferencesLabelformat = gtk.Label("Format:")
+                        self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
+                        self.preferencesLabelformat.set_alignment(0, 0.50)
+
+                        self.preferencesLabelnotifications = gtk.Label("Notifications:")
+                        self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
+                        self.preferencesLabelnotifications.set_alignment(0, 0.50)
+
+                        # Spinbuttons
+                        self.adjustmentport = gtk.Adjustment(float(iconfig['server']['port']), 1024, 65535, 1, 0, 0)
+                        self.preferencesSpinport = gtk.SpinButton(self.adjustmentport)
+                        self.preferencesSpinport.set_numeric(True)
+
+                        self.adjustmentquality = gtk.Adjustment(float(iconfig['screenshot']['quality']), 0, 100, 1, 0, 0)
+                        self.preferencesSpinquality = gtk.SpinButton(self.adjustmentquality)
+                        self.preferencesSpinquality.set_numeric(True)
+
+                        # Combos
+                        self.preferencesComboformat = gtk.combo_box_new_text()
+                        self.preferencesComboformat.append_text("JPEG")
+                        self.preferencesComboformat.append_text("PNG")
+                        if (iconfig['screenshot']['format'] == "jpeg"):
+                            self.preferencesComboformat.set_active(0)
+                        else: 
+                            self.preferencesComboformat.set_active(1)
+
+                        self.preferencesChecknotifications = gtk.CheckButton()
+                        if (iconfig['server']['notify'] == "True"):
+                            self.preferencesChecknotifications.set_active(1)
+                        else: 
+                            self.preferencesChecknotifications.set_active(0)
+
+                        self.preferencesButtonClose = gtk.Button("Close", gtk.STOCK_CLOSE)
+                        self.preferencesButtonClose.connect("clicked", lambda wid: self.__contractpreferences())
+                        
+                        self.preferencesButtonAbout = gtk.Button("About", gtk.STOCK_ABOUT)
+                        self.preferencesButtonAbout.connect("clicked", lambda wid: self.about())
+
+                        self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
+                        self.preferencesHBox2.pack_start(self.preferencesLabelquality, False, False, 12)
+                        self.preferencesHBox3.pack_start(self.preferencesLabelformat, False, False, 12)
+                        self.preferencesHBox4.pack_start(self.preferencesLabelnotifications, False, False, 12)
+
+                        self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
+                        self.preferencesHBox2.pack_end(self.preferencesSpinquality, False, False, 7)
+                        self.preferencesHBox3.pack_end(self.preferencesComboformat, False, False, 7)
+                        self.preferencesHBox4.pack_end(self.preferencesChecknotifications, False, False, 7)
+                        self.preferencesHBox5.pack_start(self.preferencesButtonAbout, False, False, 7)
+                        self.preferencesHBox5.pack_end(self.preferencesButtonClose, False, False, 7)
+
+
+                        # Disable notifications for non-posix and non-pynotify
+                        self.preferencesHBox4.set_sensitive(False)
+                        notifyavailable = True
+                        if config.system == "posix" and config.platform != "darwin" and notifyavailable:
+                            self.preferencesHBox4.set_sensitive(True)
+
+                        # Add Hboxes to the Vbox
+                        self.preferencesVBox.pack_start(self.preferencesLabelsettings, False, False, 4)
+                        self.preferencesVBox.pack_start(self.preferencesHBox1, False, False, 0)
+                        self.preferencesVBox.pack_start(self.preferencesHBox2, False, False, 0)
+                        self.preferencesVBox.pack_start(self.preferencesHBox3, False, False, 0)
+                        self.preferencesVBox.pack_start(self.preferencesHBox4, False, False, 0)
+                        self.preferencesVBox.pack_start(self.preferencesLabelrestart, False, False, 5)
+                        self.preferencesVBox.pack_start(self.preferencesHBox5, False, False, 0)
+
+                        self.vbox.pack_start(self.preferencesVBox, False, False, 0)
+                        self.preferencesVBox.show_all()
+
+                    # Gobject is buggy and needs this somehow
+                    gobject.source_remove(self.expandtimeout)
+                    del self.expandtimeout
+                    return False
+            else:
+                self.expandtimeout = gobject.timeout_add(30, self.__expandpreferences)
+
+    def about(self, data=None):
+        """ Create the About dialog. """
+        self.aboutdialog = gtk.AboutDialog()
+        self.aboutdialog.set_transient_for(self.window)
+        self.aboutdialog.set_name('Itaka')
+        self.aboutdialog.set_version(config.version)
+        self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
+        self.aboutdialog.set_comments('Screenshooting de mercado.')
+        self.aboutdialog.set_authors(['Marc E. <santusmarc@gmail.com>'])
+        self.aboutdialog.set_artists(['Marc E. <santusmarc@gmail.com>'])
+        self.aboutdialog.set_license('''This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
+        self.aboutdialog.set_website('http://itaka.jardinpresente.com.ar')
+        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka-logo.png")))
+        self.aboutdialog.set_icon(self.icon_pixbuf)
+        self.aboutdialog.run()
+        self.aboutdialog.destroy()
 
     def __expandlogger(self, expander, params):
         """ Callback for the expander widget. """
