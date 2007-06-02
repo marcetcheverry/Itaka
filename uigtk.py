@@ -94,6 +94,7 @@ class Gui:
         self.window.set_border_width(6)
         self.window.set_default_size(420, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
+        self.window.set_auto_startup_notification(True)
 
         # Boxes, images, and buttons
         self.vbox = gtk.VBox(False, 6)
