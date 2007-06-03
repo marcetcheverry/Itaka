@@ -59,7 +59,10 @@ class Gui:
     """ GTK GUI """
     def __init__(self, consoleinstance, configuration):
         """ 'consoleinstance' is an instance of the Console class. 'configuration' is a tuple of configuration globals and an instance of the user's configuration values """
-        
+       
+        # Set up some variables
+        self.server_listening = False
+
         # Load our configuration and console instances and values
         self.console = consoleinstance
         self.itakaglobals = configuration[0]
@@ -77,6 +80,40 @@ class Gui:
         self.window.set_border_width(6)
         self.window.set_default_size(420, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
+
+        # Create our tray icon
+        self.statusIcon = gtk.StatusIcon()
+        self.statusmenu = gtk.Menu()
+        self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
+        self.statusIcon.set_tooltip("Itaka")
+        self.statusIcon.set_visible(True)
+        self.statusIcon.connect('activate', self.__statusicon_activate)
+        self.statusIcon.connect('popup-menu', self.__statusicon_menu, self.statusmenu)
+
+        self.startimage = gtk.Image()
+        self.startimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU)
+
+        self.stopimage = gtk.Image()
+        self.stopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
+
+ 	self.menuitemstart = gtk.ImageMenuItem("Start") 
+        self.menuitemstart.set_image(self.startimage)
+        self.menuitemstart.connect('activate', self.startstop, "start")
+ 	self.menuitemstop = gtk.ImageMenuItem("Stop") 
+        self.menuitemstop.set_image(self.stopimage)
+        self.menuitemstop.connect('activate', self.startstop, "stop")
+        self.menuitemstop.set_sensitive(False)
+        self.menuitemabout = gtk.ImageMenuItem(gtk.STOCK_ABOUT) 
+        self.menuitemabout.connect('activate', self.about)
+        self.menuitemseparator = gtk.SeparatorMenuItem()
+ 	self.menuitemquit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        self.menuitemquit.connect('activate', self.destroy)
+
+        self.statusmenu.append(self.menuitemstart)
+        self.statusmenu.append(self.menuitemstop)
+        self.statusmenu.append(self.menuitemseparator)
+        self.statusmenu.append(self.menuitemabout)
+        self.statusmenu.append(self.menuitemquit)
 
         self.vbox = gtk.VBox(False, 6)
         self.box = gtk.HBox(False, 0)
@@ -388,7 +425,7 @@ class Gui:
             else:
                 self.window.normal_size = self.window.initial_size
            
-            if self.preferencesVBox.flags() and gtk.VISIBLE:
+            if self.preferencesVBox.get_property("visible"):
                 self.preferencesVBox.hide_all()
             if self.window.current_size[1] > self.window.normal_size[1]:
                 self.window.resize(self.window.current_size[0], self.window.current_size[1]-30)
@@ -419,6 +456,18 @@ class Gui:
             if self.preferencesexpanded:
                 # Cant assign tuple items
                 self.expander_size = [self.expander_size[0], self.expander_size[1] - self.preferencesVBox.size_request()[1]]
+    def __statusicon_menu(self, widget, button, time, menu):
+        if button == 3:
+            if menu:
+                menu.show_all()
+                menu.popup(None, None, None, 3, time)
+            pass
+ 
+    def __statusicon_activate(self, widget):
+        if (self.window.get_property("visible")):
+            self.window.hide()
+        else:
+            self.window.show()
 
     def about(self, data=None):
         """ Create the About dialog. """
@@ -499,16 +548,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.sreact = reactor.run()
 
     def __checkwidget(self, widget):
-        """ Check the status of the toggle button. """
+        """ Check the status of the toggle button """
         if hasattr(widget, 'get_active'):
             return widget.get_active()
         else:
             return False
 
-    def startstop(self, widget, data=None):
-        """ Start or stop the screenshooting server. """
-        if (self.__checkwidget(widget)):
-            # NOTE:Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
+    def startstop(self, widget, traydata=None):
+        """ Start or stop the screenshooting server. 'traydata' is a string either 'start' or 'stop' to be used from the Status tray icon """
+        if (self.__checkwidget(widget) or traydata == "start"):
+            if self.server_listening: return
+            # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
             # Set up the twisted site
             # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
@@ -521,10 +571,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             # Start the server. Make an instance to distinguish from self.sreactor().
             try:
                 self.ilistener = reactor.listenTCP(int(self.configuration['server']['port']), self.site)
+                self.server_listening = True
             except twisted.internet.error.CannotListenError:
                 # TODO: Add better error handling for the GUI
-                self.console.error(('Gui', 'starstop'), 'Could not start server, another service is already running on port %s' % (self.configuration['server']['port']))
-                # NOTE: This actually calls starstop to stop the server again, acts as a click
+                self.console.error(('Gui', 'startstop'), 'Could not start server, another service is already running on port %s' % (self.configuration['server']['port']))
+                # NOTE: This actually calls startstop to stop the server again, acts as a click
                 self.buttonStartstop.set_active(False)
                 return
 
@@ -540,6 +591,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
             self.buttonStartstop.set_image(self.startstopimage)
 
+            self.menuitemstart.set_sensitive(False)
+            self.menuitemstop.set_sensitive(True)
+
             # Close the expander
             self.expander.set_sensitive(True)
 
@@ -548,17 +602,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             #        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
 
         else:
-            if hasattr(self, 'ilistener'):
+            if self.server_listening:
                 self.console.msg("Stopping server", self)
 
                 self.ilistener.stopListening()
-
+                self.server_listening = False
                 # Stop the g_timeout
                 if hasattr(self, 'iagotimer'):
                     gobject.source_remove(self.iagotimer)
 
                 # Change GUI elements
-                self.buttonStartstop.set_active(False)
+                if (traydata):
+                    self.buttonStartstop.set_active(False)
+
                 self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
                 self.buttonStartstop.set_image(self.startstopimage)
                 self.buttonStartstop.set_label("Start")
@@ -568,13 +624,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 self.expander.set_expanded(False)				
                 self.expander.set_sensitive(False)
                 self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
-            else:
-                self.console.warn(('Gui','starstop'), "Trying to stop a server that is not listening")
+                self.menuitemstart.set_sensitive(True)
+                self.menuitemstop.set_sensitive(False)
 
     def destroy(self, *args):
         """ Callback for the main window's destroy. """
         # Stop server.
-        if hasattr(self, 'ilistener'):
+        if self.server_listening:
             self.console.msg("Shutting down server...", self)
             self.ilistener.stopListening()
             del self.console
@@ -628,6 +684,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def notify(self):
         """ Change the image on the main screen, for notification purpose. """
         self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+        self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
         # Only run this event once
         return False
 
@@ -638,9 +695,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.labelServed.set_text("Served: " + str(number))
             self.labelLastip.set_text("IP: " + str(ip))
 
-            if (self.configuration['server']['notify'] == "True"):
-                self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-                self.notifyimg = gobject.timeout_add(2000, self.notify)
+            # if (self.configuration['server']['notify'] == "True"):
+            # Show the camera image on tray and interface for 1.5 seconds
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
+            self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
+            self.notifyimg = gobject.timeout_add(1500, self.notify)
 
             # Call the update timer function, and add a timer to update the GUI of its
             # "Last screenshot taken" time

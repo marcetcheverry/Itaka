@@ -6,20 +6,14 @@
  * FIX: Decide what to do with the screenshot path, home or temp?
 
 * GUI
- * NEW: Consider trayicon support through GTK
- * http://72.14.253.104/search?q=cache:RjfAr_bql5QJ:marcin.af.gliwice.pl/if-then-else-20070121143245+gtk.StatusIcon&hl=en&ct=clnk&cd=6&gl=us&client=firefox-a
- 
  * NEW: Error handling EOG style for Twisted server start failure, screenshot failures, preference saving failures, etc.
  
  * Preferences  
   * NEW: Implementation of pseudo-dynamic reloading of preferences, and redesign dialog to conform to its new space
-  
   * FIX: Optimize preferences dropdown effect
 
+ * Logging Window
   * NEW: New logging window. "Events/Details", pausing on events will desensitive. On details will clear,
   * NEW: center (x,y) a major gtk.STOCK_PAUSE, store the previous data in memory, and desensitive. 
-	
-  * Support dynamic preferences
-
 * Other
  * NEW: Make Ubuntu/Debian/Windows binaries. Python distutils setup.
