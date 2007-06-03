@@ -17,6 +17,7 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+#
 # $Id$
 
 """ Itaka Configuration Parser and Engine """
@@ -29,7 +30,7 @@ import ConfigParser, os, sys, shutil, traceback
 # Set up instance
 config = ConfigParser.ConfigParser()
 
-# Set up specific variables
+# Set up global variables
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
 # Version (do not change)
@@ -49,7 +50,7 @@ image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/
 # Local configuration file
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
-# Save path for screenshots (system-specific)
+# Save path for screenshots (system-specific specified later on)
 save_path = os.getcwd()
 
 if system == 'posix': 
@@ -57,7 +58,7 @@ if system == 'posix':
 elif system == 'nt': 
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
-#: Global configuration values 
+# User's configuration values 
 values = {}
 
 class ConfigParser:		
@@ -78,10 +79,10 @@ class ConfigParser:
                 self.configfile = os.path.join(os.environ['APPDATA'], "itaka/itaka.ini")
         else:
             # Generic system/paths (using local)	
-                if (os.path.exists(local_config)): 
-                    self.configfile = local_config
-                else:	
-                    self.create(local_config)
+            if (os.path.exists(local_config)): 
+                self.configfile = local_config
+            else:	
+                self.create(local_config)
         # Read and assign values from the configuration file 
         try:
             config.read(self.configfile)

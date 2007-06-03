@@ -17,76 +17,75 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+#
 # $Id$
 
 """ Itaka web server engine """
 
-import config as iconfig
-image_dir = iconfig.image_dir
-system = iconfig.system
-platform = iconfig.platform
-iconfig = iconfig.values
-import screenshot as iscreenshot
-
 from twisted.web.resource import Resource
+import datetime, os, traceback, sys
 
-import datetime, os
-
-import pygtk
-pygtk.require("2.0")
-
-import gtk, gobject
-
-# Use notifications where libnotify is available
-notifyavailable = False
-if iconfig['server']['notify'] == "True" and system == "posix" and platform != "darwin":
-    try:
-        import pynotify
-        notifyavailable = True
-
-        if not pynotify.init("Itaka"):
-            print "[*] WARNING: Pynotify module is missing, disabling."
-            notifyavailable = False
-    except ImportError:
-        print "[*] WARNING: Pynotify module is missing, disabling."
-        notifyavailable = False
-
-#: Local iteration counter
+try:
+    import screenshot as iscreenshot
+except ImportError:
+    print "[*] ERROR: Failed to import Itaka screenshot module."
+    traceback.print_exc()
+    sys.exit(1)
+    
+# Server hit iteration counter
 lcounter = 0
 
-# Set up the screenshooter server
 class ImageResource(Resource):
     """ Take the screenshot code and handle the requests. """
 
-    def __init__(self, ginstance, cinstance):
-        """ Intialize inherited GUI and Console instances """
-        self.igui = ginstance
+    def __init__(self, guiinstance, consoleinstance, configuration):
+        """ Intialize inherited GUI, Console and global Configuration values """
+        self.gui = guiinstance
+        self.console = consoleinstance
+        self.itakaglobals = configuration[0]
+        self.configuration = configuration[1]
+        
+        # Use notifications where libnotify is available
+        notifyavailable = False
+        if self.configuration['server']['notify'] == "True" and self.itakaglobals.system == "posix" and self.itakaglobals.platform != "darwin":
+            try:
+                import pynotify
+                self.pynotify = pynotify
+                self.notifyavailable = True
+
+                if not self.pynotify.init("Itaka"):
+                    self.console.warn(('ImageResource','__init__'), "Pynotify module is failing, disabling option.")
+                    self.notifyavailable = False
+            except ImportError:
+                self.console.warn(('ImageResource','__init__'), "Pynotify module is missing, disabling option.")
+                self.notifyavailable = False
 
     def render_GET(self, request):
         """ Handle GET requests for screenshot. """
 
         if (request.uri == "/screenshot"):
-
-            request.setHeader("Content-type", "image/" + iconfig['screenshot']['format'])
+            request.setHeader("Content-type", "image/" + self.configuration['screenshot']['format'])
             request.setHeader("Connection", "close")
 
             self.icip = request.getClientIP()
             self.time = datetime.datetime.now()
             # self.icbrowser = request.getClient()
 
-            self.shotFile = iscreenshot.Screenshot()
+            # This takes the screenshot
+            self.shotFile = iscreenshot.Screenshot(self.configuration)
+
             global lcounter
             lcounter += 1
 
             # Call libnotify
-            if (iconfig['server']['notify'] == "True") and notifyavailable != False:
-                uri = "file://" + (os.path.join(image_dir, "itaka-take.png")) 
+            if (self.configuration['server']['notify'] == "True") and self.notifyavailable != False:
+                uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
-                n = pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
+                n = self.pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
                 if not n.show():
                     pass
 
             # Tell the GUI what changed
-            self.igui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
+            self.gui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
 
             return open(self.shotFile, 'rb').read()		

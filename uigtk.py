@@ -17,6 +17,7 @@
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+#
 # $Id$
 
 """ Itaka GTK+ GUI """
@@ -30,20 +31,15 @@ try:
     from twisted.python import log
     from twisted.web import server, static
     from twisted.internet import reactor
+    import twisted.internet.error
 except ImportError:
     print "[*] Warning: Twisted Network Framework is missing, quitting."
     sys.exit(1)
 
 try:
-    import config as iconfig
-    # Read the configuration (loaded by the core)
-    config = iconfig
-    iconfig = iconfig.values
-    import console as iconsole
-
     import server as iserver
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka modules."
+    print "[*] ERROR: Failed to import Itaka server module."
     traceback.print_exc()
     sys.exit(1)
 
@@ -61,29 +57,18 @@ except ImportError:
 
 class Gui:
     """ GTK GUI """
-    def __init__(self, configinstance):
-        # Initiate our Console intance
-        try:
-            # Init console with a reference to our gui instance
-            self.console = iconsole.Console(self)
-        except AttributeError:
-            print "[*] ERROR: Could not initiate Console engine."
-            traceback.print_exc()
-            sys.exit(1)
+    def __init__(self, consoleinstance, configuration):
+        """ 'consoleinstance' is an instance of the Console class. 'configuration' is a tuple of configuration globals and an instance of the user's configuration values """
+        
+        # Load our configuration and console instances and values
+        self.console = consoleinstance
+        self.itakaglobals = configuration[0]
+        # The configuration instance has the user's preferences already loaded.
+        self.configinstance = configuration[1]
+        self.configuration = self.itakaglobals.values
 
-        # Pass a reference of GUI and Console instanceto Screenshot module for its notification handling.
-        self.sinstance = iserver.ImageResource(self, self.console)
-        # Get a reference of the configuration instance
-        self.configinstance = configinstance
-
-        # Set up Server variables, if needed.
-        self.root = static.Data(iconfig['html']['html'], 'text/html; charset=UTF-8')
-        # Registers an identitiy (resource, file).
-        self.root.putChild('screenshot', self.sinstance)
-        self.root.putChild('', self.root)
-
-        # Start defining widget
-        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka.png"))
+        # Start defining widgets
+        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.connect("destroy", self.destroy)
         self.window.set_title("Itaka")
@@ -92,15 +77,13 @@ class Gui:
         self.window.set_default_size(420, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
 
-        # Boxes, images, and buttons
         self.vbox = gtk.VBox(False, 6)
         self.box = gtk.HBox(False, 0)
 
         self.itakaLogo = gtk.Image()
-        self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
         self.itakaLogo.show()
 
-        # Add hbox and buttons and image
         self.box.pack_start(self.itakaLogo, True, True, 4)
 
         self.ibox = gtk.HBox(False, 0)
@@ -112,7 +95,6 @@ class Gui:
         self.buttonStartstop.connect("toggled", self.startstop, "Start/Stop button")
         self.ibox.pack_start(self.buttonStartstop, True, True, 8)
 
-        # Preferences button
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
         #self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, [config, self.configinstance], self, self.icon_pixbuf)
         self.preferencesVBoxhidden = False
@@ -124,7 +106,6 @@ class Gui:
         self.box.pack_start(self.ibox, True, True, 0)
         self.vbox.pack_start(self.box, False, False, 0)
 
-        # Another Hbox and Labels
         self.statusBox = gtk.HBox(False, 0)
         self.labelServed = gtk.Label()
         self.labelLastip = gtk.Label()
@@ -146,7 +127,6 @@ class Gui:
         self.debugbuffer = self.debugview.get_buffer()
         self.debugscroll.add(self.debugview)
 
-        # Buttons
         self.debughbox = gtk.HBox(False, 0)
         self.debugclearbutton = gtk.Button("Clear")
         self.debugclearbuttonimage = gtk.Image()
@@ -160,15 +140,12 @@ class Gui:
         self.debugpausebutton.set_image(self.debugpausebuttonimage)
         self.debugpausebutton.connect("toggled", self.pauselogger)
 
-        # Reverse
         self.debughbox.pack_end(self.debugclearbutton, False, False, 4)
         self.debughbox.pack_end(self.debugpausebutton, False, False, 4)
 
-        # Pack it into vbox
         self.debugvbox.pack_start(self.debugscroll, False, False, 4)
         self.debugvbox.pack_start(self.debughbox, False, False, 4)
 
-        # Label for the expander
         self.debugboxLabel = gtk.Label("<b>Detailed log</b>")
         self.debugboxLabel.set_use_markup(True)
 
@@ -180,17 +157,14 @@ class Gui:
         # Log to the self.logger function, which sets the buffer for self.debubuffer
         log.addObserver(self.logger)
 
-        # Add to main vbox
         self.vbox.pack_start(self.statusBox, False, False, 4)
         self.vbox.pack_start(self.expander, False, False, 0)
         self.expander.set_sensitive(False)
-        # Add vbox to window (parent adds all)
-        self.window.add(self.vbox)
 
-        # Show window
+        self.window.add(self.vbox)
         self.window.show_all()
 
-        # Once we have all our widgets, get the 'default' real size, for expanding/contracting
+        # Once we have all our widgets shown, get the 'default' real size, for expanding/contracting
         self.window.default_size = self.window.get_size()
 
     def __contractpreferences(self, params=None):
@@ -244,7 +218,7 @@ class Gui:
                         self.preferencesHBox5 = gtk.HBox(False, 0)
 
                         # Hbox4 contains notifications which is only available in some systems
-                        if config.system != "posix":
+                        if self.itakaglobals.system != "posix":
                             self.preferencesHBox4.set_sensitive(False)
 
                         self.preferencesLabelrestart = gtk.Label("<i>Restart to apply changes</i>")
@@ -274,11 +248,11 @@ class Gui:
                         self.preferencesLabelnotifications.set_alignment(0, 0.50)
 
                         # Spinbuttons
-                        self.adjustmentport = gtk.Adjustment(float(iconfig['server']['port']), 1024, 65535, 1, 0, 0)
+                        self.adjustmentport = gtk.Adjustment(float(self.configuration['server']['port']), 1024, 65535, 1, 0, 0)
                         self.preferencesSpinport = gtk.SpinButton(self.adjustmentport)
                         self.preferencesSpinport.set_numeric(True)
 
-                        self.adjustmentquality = gtk.Adjustment(float(iconfig['screenshot']['quality']), 0, 100, 1, 0, 0)
+                        self.adjustmentquality = gtk.Adjustment(float(self.configuration['screenshot']['quality']), 0, 100, 1, 0, 0)
                         self.preferencesSpinquality = gtk.SpinButton(self.adjustmentquality)
                         self.preferencesSpinquality.set_numeric(True)
 
@@ -286,13 +260,13 @@ class Gui:
                         self.preferencesComboformat = gtk.combo_box_new_text()
                         self.preferencesComboformat.append_text("JPEG")
                         self.preferencesComboformat.append_text("PNG")
-                        if (iconfig['screenshot']['format'] == "jpeg"):
+                        if (self.configuration['screenshot']['format'] == "jpeg"):
                             self.preferencesComboformat.set_active(0)
                         else: 
                             self.preferencesComboformat.set_active(1)
 
                         self.preferencesChecknotifications = gtk.CheckButton()
-                        if (iconfig['server']['notify'] == "True"):
+                        if (self.configuration['server']['notify'] == "True"):
                             self.preferencesChecknotifications.set_active(1)
                         else: 
                             self.preferencesChecknotifications.set_active(0)
@@ -319,7 +293,7 @@ class Gui:
                         # Disable notifications for non-posix and non-pynotify
                         self.preferencesHBox4.set_sensitive(False)
                         notifyavailable = True
-                        if config.system == "posix" and config.platform != "darwin" and notifyavailable:
+                        if self.itakaglobals.system == "posix" and self.itakaglobals.platform != "darwin" and notifyavailable:
                             self.preferencesHBox4.set_sensitive(True)
 
                         # Add Hboxes to the Vbox
@@ -346,7 +320,7 @@ class Gui:
         self.aboutdialog = gtk.AboutDialog()
         self.aboutdialog.set_transient_for(self.window)
         self.aboutdialog.set_name('Itaka')
-        self.aboutdialog.set_version(config.version)
+        self.aboutdialog.set_version(self.itakaglobals.version)
         self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
         self.aboutdialog.set_comments('Screenshooting de mercado.')
         self.aboutdialog.set_authors(['Marc E. <santusmarc@gmail.com>'])
@@ -365,7 +339,7 @@ You should have received a copy of the GNU General Public License
 along with Itaka; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.aboutdialog.set_website('http://itaka.jardinpresente.com.ar')
-        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(config.image_dir, "itaka-logo.png")))
+        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-logo.png")))
         self.aboutdialog.set_icon(self.icon_pixbuf)
         self.aboutdialog.run()
         self.aboutdialog.destroy()
@@ -429,19 +403,31 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def startstop(self, widget, data=None):
         """ Start or stop the screenshooting server. """
         if (self.__checkwidget(widget)):
-
-            # Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
+            # NOTE:Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
             # Set up the twisted site
+            # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
+            self.sinstance = iserver.ImageResource(self, self.console, (self.itakaglobals, self.configuration))
+            self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
+            self.root.putChild('screenshot', self.sinstance)
+            self.root.putChild('', self.root)
             self.site = server.Site(self.root)
+
             # Start the server. Make an instance to distinguish from self.sreactor().
-            self.ilistener = reactor.listenTCP(int(iconfig['server']['port']), self.site)
+            try:
+                self.ilistener = reactor.listenTCP(int(self.configuration['server']['port']), self.site)
+            except twisted.internet.error.CannotListenError:
+                # TODO: Add better error handling for the GUI
+                self.console.error(('Gui', 'starstop'), 'Could not start server, another service is already running on port %s' % (self.configuration['server']['port']))
+                # NOTE: This actually calls starstop to stop the server again, acts as a click
+                self.buttonStartstop.set_active(False)
+                return False
 
             # Announce on log & console stdout
-            if iconfig['screenshot']['quality'] == "jpeg":
-                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper(), iconfig['screenshot']['quality']), True)
+            if self.configuration['screenshot']['quality'] == "jpeg":
+                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), self)
             else:
-                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images.' % (iconfig['server']['port'], iconfig['screenshot']['format'].upper()), True)
+                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), self)
 
             # Change buttons
             self.buttonStartstop.set_active(True)
@@ -453,12 +439,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.expander.set_sensitive(True)
 
             # I am not sure about this, notification
-            # if (iconfig['server']['notify'] == "True"):
-            #        self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
+            # if (self.configuration['server']['notify'] == "True"):
+            #        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
 
         else:
             if hasattr(self, 'ilistener'):
-                self.console.msg("Stopping server", True)
+                self.console.msg("Stopping server", self)
 
                 self.ilistener.stopListening()
 
@@ -476,16 +462,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 self.labelServed.set_text('')
                 self.expander.set_expanded(False)				
                 self.expander.set_sensitive(False)
-                self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+                self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
             else:
-                pass
-                print "puta pario"
+                self.console.warn(('Gui','starstop'), "Trying to stop a server that is not listening")
 
     def destroy(self, *args):
         """ Callback for the main window's destroy. """
         # Stop server.
         if hasattr(self, 'ilistener'):
-            self.console.msg("Shutting down server...", True)
+            self.console.msg("Shutting down server...", self)
             self.ilistener.stopListening()
             del self.console
         else:
@@ -494,8 +479,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 del self.console
 
         # Remove stale screenshot and quit
-        if os.path.exists(os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))): 
-            os.remove(os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format'])))
+        if os.path.exists(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))): 
+            os.remove(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format'])))
 
         gtk.main_quit()
 
@@ -537,7 +522,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def notify(self):
         """ Change the image on the main screen, for notification purpose. """
-        self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka.png"))
+        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
         # Only run this event once
         return False
 
@@ -548,8 +533,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.labelServed.set_text("Served: " + str(number))
             self.labelLastip.set_text("IP: " + str(ip))
 
-            if (iconfig['server']['notify'] == "True"):
-                self.itakaLogo.set_from_file(os.path.join(config.image_dir, "itaka-take.png"))
+            if (self.configuration['server']['notify'] == "True"):
+                self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
                 self.notifyimg = gobject.timeout_add(2000, self.notify)
 
             # Call the update timer function, and add a timer to update the GUI of its
@@ -559,8 +544,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.iagotimer = gobject.timeout_add(60000, self.__calcsince, time)
 
         # Handler for Preferences signal to reload the config
-        elif ( action == "updateConfig"):
+        elif (action == "updateConfig"):
             # TODO: Implement dynamic preferences
-            # global iconfig
-            # iconfig = self.configinstance.load()
+            # global self.configuration
+            # self.configuration = self.configinstance.load()
             pass

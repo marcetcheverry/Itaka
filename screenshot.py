@@ -22,23 +22,16 @@
 
 """ Itaka screenshot engine """
 
-import gc, os
-
-# Itaka core modules
-import config as iconfig
-config = iconfig
-iconfig = iconfig.values
-
-import pygtk
+import gc, os, gtk, pygtk
 pygtk.require("2.0")
-import gtk 
 
-# Final absolute path to the screenshot file
-shotFile = os.path.join(iconfig['screenshot']['path'], 'itakashot.%s' % (iconfig['screenshot']['format']))
 
-def Screenshot():
-    """ Returns a screenshot file. """
-    # GTK Screenshooting code.
+def Screenshot(configuration):
+    """ Returns a screenshot file. 'configuration' is configuration values """
+
+    # Final absolute path to the screenshot file
+    shotFile = os.path.join(configuration['screenshot']['path'], 'itakashot.%s' % (configuration['screenshot']['format']))
+    
     w = gtk.gdk.screen_width()
     h = gtk.gdk.screen_height()
     screenshot = gtk.gdk.Pixbuf.get_from_drawable(
@@ -48,10 +41,10 @@ def Screenshot():
             0, 0, 0, 0, w, h)
 
     # Save the screnshot, checking before if to set JPEG quality
-    if iconfig['screenshot']['format'] == 'jpeg':
-        screenshot.save(shotFile, iconfig['screenshot']['format'].lower(), {"quality":str(iconfig['screenshot']['quality'])})
+    if configuration['screenshot']['format'] == 'jpeg':
+        screenshot.save(shotFile, configuration['screenshot']['format'].lower(), {"quality":str(configuration['screenshot']['quality'])})
     else:
-        screenshot.save(shotFile, iconfig['screenshot']['format'].lower())
+        screenshot.save(shotFile, configuration['screenshot']['format'].lower())
 
     # Important workaround to avoid a memory leak.
     # http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp

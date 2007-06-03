@@ -15,7 +15,7 @@
 # along with Itaka; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
+# Copyright 2003-2007 Marc E. <santusmarc@gmail.com>.
 # http://itaka.jardinpresente.com.ar
 #
 # $Id$ 
@@ -26,12 +26,22 @@ import sys, traceback
 
 # Itaka core modules
 try:
-    # Initiate the configuration engine.
-    import config as iconfig
-    configinstance = iconfig.ConfigParser()
+    # Initiate our Console and Configuration engines
+    import console
+    import config as itakaglobals
+    configinstance = itakaglobals.ConfigParser()
     configinstance.load()
 
+    try:
+        # Initiate console with a reference to our global configuration values
+        console = console.Console(itakaglobals)
+    except AttributeError:
+        print "[*] ERROR: Could not initiate Console engine."
+        traceback.print_exc()
+        sys.exit(1)
+
     import uigtk as igui
+
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules."
     traceback.print_exc()
@@ -39,9 +49,9 @@ except ImportError:
 
 if __name__ == "__main__":
     try:
-        gui = igui.Gui(configinstance)
+        gui = igui.Gui(console, (itakaglobals, configinstance))
         gui.main()
     except AttributeError:
-        print "[*] ERROR: Could not initiate GUI."
+        console.error(('Itaka', 'core'), "Could not initiate GUI")
         traceback.print_exc()
         sys.exit(1)
