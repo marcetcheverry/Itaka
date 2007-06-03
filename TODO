@@ -12,8 +12,7 @@
  * NEW: Error handling EOG style for Twisted server start failure, screenshot failures, preference saving failures, etc.
  
  * Preferences  
-  * NEW: Add save function, drop uigtk_preferences completely, see implementation of pseudo-dynamic reloading
-  * of preferences, and redesign dialog to conform to its new space
+  * NEW: Implementation of pseudo-dynamic reloading of preferences, and redesign dialog to conform to its new space
   
   * FIX: Optimize preferences dropdown effect
 

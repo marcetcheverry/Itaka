@@ -167,7 +167,6 @@ class Gui:
         self.vbox.pack_start(self.expander, False, False, 0)
         self.expander.set_sensitive(False)
 
-
         # This is are the preference widgets that are going to be added and shown later
         self.preferencesVBox = gtk.VBox(False, 0)
         self.preferencesHBox1 = gtk.HBox(False, 0)
@@ -176,8 +175,22 @@ class Gui:
         self.preferencesHBox4 = gtk.HBox(False, 0)
         self.preferencesHBox5 = gtk.HBox(False, 0)
 
+        # Use notifications where libnotify is available
+        notifyavailable = False
+        if self.itakaglobals.system == "posix" and self.itakaglobals.platform != "darwin":
+            try:
+                import pynotify
+                self.notifyavailable = True
+
+                if not pynotify.init("Itaka"):
+                    print "[*] WARNING: Pynotify module is missing, disabling."
+                    self.notifyavailable = False
+            except ImportError:
+                print "[*] WARNING: Pynotify module is missing, disabling."
+                self.notifyavailable = False
+
         # Hbox4 contains notifications which is only available in some systems
-        if self.itakaglobals.system != "posix":
+        if not self.notifyavailable: 
             self.preferencesHBox4.set_sensitive(False)
 
         self.preferencesLabelrestart = gtk.Label("<i>Restart to apply changes</i>")
@@ -271,6 +284,42 @@ class Gui:
         # Once we have all our widgets shown, get the 'initial' real size, for expanding/contracting
         self.window.initial_size = self.window.get_size()
 
+    def save_preferences(self):
+        """ Save and hide the preferences dialog """
+        # Switch to the proper values
+        formatvalue = str(self.preferencesComboformat.get_active_text())
+        if formatvalue == "PNG":
+            formatvalue = "png"
+        else:
+            formatvalue = "jpeg"
+
+        notifyvalue = self.preferencesChecknotifications.get_active()
+        if notifyvalue:
+            notifyvalue = 'True'
+        else:
+            notifyvalue = 'False'
+
+        # Build a configuration dictionary to send to the configuration engine's
+        # save method. Redundant values must be included for the comparison
+        self.configurationdict = {
+            'html':
+                {'html': '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>'},
+
+            'screenshot': 
+                {'path': '/tmp', 
+                'format': formatvalue,
+                'quality': str(self.preferencesSpinquality.get_value_as_int())},
+
+            'server': 
+                {'port': str(self.preferencesSpinport.get_value_as_int()),
+                'notify': notifyvalue}
+            }
+
+        # Check if the configuration changed
+        if (self.configurationdict != self.configuration):
+            self.configinstance.save(self.configurationdict)
+            # self.gui.talk(self.gui, "updateConfig")	
+
     def __expandpreferences(self, params=None):
         """ Callback to expand the window for preferences. """
         # We have a race condition here. If GTK cant resize fast enough, then it gets very sluggish
@@ -310,11 +359,15 @@ class Gui:
                     self.preferencesButton.set_sensitive(False)
                     self.preferencesexpanded = True
 
+                    # Reload our configuration and show the preferences
+                    self.configuration = self.configinstance.load(False)
                     if self.preferenceshidden:
                         self.preferencesVBox.show_all()
                     else:
                         self.vbox.pack_start(self.preferencesVBox, False, False, 0)
                         self.preferencesVBox.show_all()
+
+
                     
                     self.expandtimeout = None
                     return False
@@ -334,7 +387,7 @@ class Gui:
                 self.expander_size_finalized = True
             else:
                 self.window.normal_size = self.window.initial_size
-
+           
             if self.preferencesVBox.flags() and gtk.VISIBLE:
                 self.preferencesVBox.hide_all()
             if self.window.current_size[1] > self.window.normal_size[1]:
@@ -347,6 +400,9 @@ class Gui:
                 self.expander.size_finalized = False
                 self.preferencesButton.set_sensitive(True)
                 
+                # Save our settings 
+                self.save_preferences()
+
                 self.contracttimeout = None
                 return False
         else:
