@@ -375,6 +375,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if self.expander.get_expanded():
             # Show the debugvbox() and it's subwidgets
             self.debugvbox.show_all()
+#            tv = gtk.TextView()
+#            self.debugvbox.pack_end(tv, False, False, 0)
+#            tv.show()
+#            tv_win = tv.get_window(gtk.TEXT_WINDOW_TEXT)
+#            print tv_win
+#            self.debugbackwindow = self.debugview.get_window(gtk.TEXT_WINDOW_TEXT)
+#            self.debugbackwindow.set_back_pixmap(self.icon_pixbuf, gtk.FALSE)
+
             self.expander.add(self.debugvbox)
         else:
             self.expander.remove(self.expander.child)
@@ -397,13 +405,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def pauselogger(self, widget, data=None):
         """ Callback to pause log output. """
         if widget.get_active():
-            log.msg("Logging paused.")
+            log.msg("Logging paused")
             self.debugscroll.set_sensitive(False)
             log.removeObserver(self.logger)
         else:
             log.addObserver(self.logger)
             self.debugscroll.set_sensitive(True)
-            log.msg("Logging started.")
+            log.msg("Logging resumed")
 
     def main(self):
         """ Main init function. Starts the GUI reactors."""
