@@ -196,7 +196,7 @@ class Gui:
         self.debugvbox.pack_start(self.debugscroll, False, False, 4)
         self.debugvbox.pack_start(self.debughbox, False, False, 4)
 
-        self.debugboxLabel = gtk.Label("<b>Detailed log</b>")
+        self.debugboxLabel = gtk.Label("<b>Event log</b>")
         self.debugboxLabel.set_use_markup(True)
 
         # Expander
@@ -704,7 +704,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         # "Time: " + ", ".join(self.pieces[:-1]) + "and" + self.pieces[-1] + " ago" 
 
-        self.labelTime.set_text("Time: " + ", ".join(self.pieces) + " ago")
+        self.labelTime.set_text("<b>Time</b>: " + ", ".join(self.pieces) + " ago")
+        self.labelTime.set_use_markup(True)
 
         # Need this so it runs more than once. Weird.
         return True
@@ -727,8 +728,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """ Handler for communcations between the server backend, and the GUI. """
         if (action == "updateGuiStatus" ):
             self.console.msg("Screenshot " + str(number) + " served to: " + str(ip))
-            self.labelServed.set_text("Served: " + str(number))
-            self.labelLastip.set_text("IP: " + str(ip))
+            self.labelServed.set_text("<b>Served</b>: " + str(number))
+            self.labelServed.set_use_markup(True)
+            self.labelLastip.set_text("<b>IP</b>: " + str(ip))
+            self.labelLastip.set_use_markup(True)
             self.statusIcon.set_tooltip("Itaka - %s served" % (self.__plural(int(number), 'screenshot')))
             # if (self.configuration['server']['notify'] == "True"):
             # Show the camera image on tray and interface for 1.5 seconds
