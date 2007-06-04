@@ -1,19 +1,28 @@
-* Core
+Milestone 1 (first release):
+
+- Preferences  
+ - FIX: Optimize and thouroughly test preferences dropdown effect.
+
+- GUI
+ - NEW: Error handling EOG style for Twisted server start failure, screenshot failures, preference saving failures, etc.
+
+- Logging Window
+ - NEW: New logging window. "Events/Details", pausing on events will desensitive. On details will clear,
+ - NEW: center (x,y) a major gtk.STOCK_PAUSE, store the previous data in memory, and desensitive. 
+
+- Other
+ - NEW: Make Ubuntu/Debian/Windows binaries. Python distutils setup.
+
+- Core
  (This is all low-priority)
- * NEW: Add option to quiet all console output
- * NEW: Add a debug option to make all tracebacks pass through self.console.debug
- * NEW: Streamline pynotify availability to itakaglobals
- * FIX: Decide what to do with the screenshot path, home or temp?
+ - NEW: Add option to quiet all console output
+ - NEW: Add a debug option to make all tracebacks pass through self.console.debug
+ - NEW: Streamline pynotify availability to itakaglobals
+ - FIX: Decide what to do with the screenshot path, home or temp?
 
-* GUI
- * NEW: Error handling EOG style for Twisted server start failure, screenshot failures, preference saving failures, etc.
+Milestone 2 (second release):
+
+- Server
+ - NEW: Add option to take a screenshot of the current top window (see gnome-screenshot)
+ - MAYBE: Add option to notify via audio?
  
- * Preferences  
-  * NEW: Redesign dialog to conform to its new space
-  * FIX: Optimize and thouroughly test preferences dropdown effect
-
- * Logging Window
-  * NEW: New logging window. "Events/Details", pausing on events will desensitive. On details will clear,
-  * NEW: center (x,y) a major gtk.STOCK_PAUSE, store the previous data in memory, and desensitive. 
-* Other
- * NEW: Make Ubuntu/Debian/Windows binaries. Python distutils setup.

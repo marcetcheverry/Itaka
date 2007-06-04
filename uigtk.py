@@ -82,7 +82,7 @@ class Gui:
         self.window.set_title("Itaka")
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
-        self.window.set_default_size(420, 1)
+        self.window.set_default_size(400, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
 
         # Create our tray icon
@@ -217,7 +217,9 @@ class Gui:
         self.expander.set_sensitive(False)
 
         # This is are the preference widgets that are going to be added and shown later
-        self.preferencesVBox = gtk.VBox(False, 0)
+        self.preferencesVBox = gtk.VBox(False, 7)
+        self.preferencesVBoxitems = gtk.VBox(False, 5)
+        self.preferencesVBoxitems.set_border_width(2)
         self.preferencesHBox1 = gtk.HBox(False, 0)
         self.preferencesHBox2 = gtk.HBox(False, 0)
         self.preferencesHBox3 = gtk.HBox(False, 0)
@@ -243,10 +245,10 @@ class Gui:
         if not self.notifyavailable: 
             self.preferencesHBox4.set_sensitive(False)
 
-        self.preferencesLabelsettings = gtk.Label("<b>Settings</b>")
-        self.preferencesLabelsettings.set_use_markup(True)
-        self.preferencesLabelsettings.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelsettings.set_alignment(0.03, 0.50)
+        self.preferencesFramesettings = gtk.Frame()
+        self.preferencesSettingslabel = gtk.Label("<b>Preferences</b>")
+        self.preferencesSettingslabel.set_use_markup(True)
+        self.preferencesFramesettings.set_label_widget(self.preferencesSettingslabel)
 
         self.preferencesLabelport = gtk.Label("Port:")
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
@@ -276,7 +278,7 @@ class Gui:
 
         # Combos
         self.preferencesComboformat = gtk.combo_box_new_text()
-        self.preferencesComboformat.append_text("JPEG")
+        self.preferencesComboformat.append_text("JPG")
         self.preferencesComboformat.append_text("PNG")
         if (self.configuration['screenshot']['format'] == "jpeg"):
             self.preferencesComboformat.set_active(0)
@@ -296,13 +298,13 @@ class Gui:
         self.preferencesButtonAbout.connect("clicked", lambda wid: self.about())
 
         self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
-        self.preferencesHBox2.pack_start(self.preferencesLabelquality, False, False, 12)
-        self.preferencesHBox3.pack_start(self.preferencesLabelformat, False, False, 12)
+        self.preferencesHBox2.pack_start(self.preferencesLabelformat, False, False, 12)
+        self.preferencesHBox3.pack_start(self.preferencesLabelquality, False, False, 12)
         self.preferencesHBox4.pack_start(self.preferencesLabelnotifications, False, False, 12)
 
         self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
-        self.preferencesHBox2.pack_end(self.preferencesSpinquality, False, False, 7)
-        self.preferencesHBox3.pack_end(self.preferencesComboformat, False, False, 7)
+        self.preferencesHBox2.pack_end(self.preferencesComboformat, False, False, 7)
+        self.preferencesHBox3.pack_end(self.preferencesSpinquality, False, False, 7)
         self.preferencesHBox4.pack_end(self.preferencesChecknotifications, False, False, 7)
         self.preferencesHBox5.pack_start(self.preferencesButtonAbout, False, False, 7)
         self.preferencesHBox5.pack_end(self.preferencesButtonClose, False, False, 7)
@@ -315,11 +317,13 @@ class Gui:
             self.preferencesHBox4.set_sensitive(True)
 
         # Add Hboxes to the Vbox
-        self.preferencesVBox.pack_start(self.preferencesLabelsettings, False, False, 4)
-        self.preferencesVBox.pack_start(self.preferencesHBox1, False, False, 0)
-        self.preferencesVBox.pack_start(self.preferencesHBox2, False, False, 0)
-        self.preferencesVBox.pack_start(self.preferencesHBox3, False, False, 0)
-        self.preferencesVBox.pack_start(self.preferencesHBox4, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox1, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox2, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox3, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
+
+        self.preferencesFramesettings.add(self.preferencesVBoxitems)
+        self.preferencesVBox.pack_start(self.preferencesFramesettings, False, False, 0)
         self.preferencesVBox.pack_start(self.preferencesHBox5, False, False, 4)
 
         self.window.add(self.vbox)
@@ -395,12 +399,8 @@ class Gui:
                 """NOTE: GTK+ GtkWidget.size_request() method can give you the amount of size a widget will take.
                 however, it has to be show()ned before. For our little hack, we show the preferencesVBox widgets
                 but not itself, which should yield a close enough calculation."""
-                self.preferencesHBox1.show_all()
-                self.preferencesHBox2.show_all()
-                self.preferencesHBox3.show_all()
-                self.preferencesHBox4.show_all()
+                self.preferencesFramesettings.show_all()
                 self.preferencesHBox5.show_all()
-                self.preferencesLabelsettings.show()
 
                 """If the logger is expanded, use that as the initial size. 
                 _expander_size is set by our GtkWindow resize callback
@@ -415,8 +415,13 @@ class Gui:
                 else:
                     self.window.normal_size = self.window.initial_size
 
-                if self.window.current_size[1] <= self.window.normal_size[1]+self.preferencesVBox.size_request()[1]:
-                    self.window.resize(self.window.current_size[0], self.window.current_size[1]+30)
+                self.increment = 33
+                if self.window.current_size[1] < self.window.normal_size[1]+self.preferencesVBox.size_request()[1]:
+                    # Avoid overexpanding our calculation
+                    if self.window.current_size[1]+self.increment > self.window.normal_size[1]+self.preferencesVBox.size_request()[1]: 
+                        self.increment = (self.window.normal_size[1]+self.preferencesVBox.size_request()[1] - self.window.current_size[1]) 
+
+                    self.window.resize(self.window.current_size[0], self.window.current_size[1]+self.increment)
                     return True
                 else:
                     # Its done expanding, add our widgets or display it if it has been done already
@@ -430,8 +435,6 @@ class Gui:
                     else:
                         self.vbox.pack_start(self.preferencesVBox, False, False, 0)
                         self.preferencesVBox.show_all()
-
-
                     
                     self.expandtimeout = None
                     return False
@@ -454,8 +457,9 @@ class Gui:
            
             if self.preferencesVBox.get_property("visible"):
                 self.preferencesVBox.hide_all()
+
             if self.window.current_size[1] > self.window.normal_size[1]:
-                self.window.resize(self.window.current_size[0], self.window.current_size[1]-30)
+                self.window.resize(self.window.current_size[0], self.window.current_size[1]-self.increment)
                 return True
             else:
                 # Done, set some variables and stop our timer
