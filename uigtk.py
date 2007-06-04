@@ -103,15 +103,23 @@ class Gui:
         self.menuitemstop.set_image(self.stopimage)
         self.menuitemstop.connect('activate', self.startstop, "stop")
         self.menuitemstop.set_sensitive(False)
+        self.menuitemnotifications = gtk.CheckMenuItem("Show Notifications")
+        if (self.configuration['server']['notify'] == "True"):
+            self.menuitemnotifications.set_active(True)
+        self.menuitemnotifications.connect('toggled', self.__statusicon_notify)
+
+        self.menuitemseparator = gtk.SeparatorMenuItem()
+        self.menuitemseparator1 = gtk.SeparatorMenuItem()
         self.menuitemabout = gtk.ImageMenuItem(gtk.STOCK_ABOUT) 
         self.menuitemabout.connect('activate', self.about)
-        self.menuitemseparator = gtk.SeparatorMenuItem()
  	self.menuitemquit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
         self.menuitemquit.connect('activate', self.destroy)
 
         self.statusmenu.append(self.menuitemstart)
         self.statusmenu.append(self.menuitemstop)
         self.statusmenu.append(self.menuitemseparator)
+        self.statusmenu.append(self.menuitemnotifications)
+        self.statusmenu.append(self.menuitemseparator1)
         self.statusmenu.append(self.menuitemabout)
         self.statusmenu.append(self.menuitemquit)
 
@@ -213,17 +221,18 @@ class Gui:
         self.preferencesHBox5 = gtk.HBox(False, 0)
 
         # Use notifications where libnotify is available
-        notifyavailable = False
+        self.notifyavailable = False
         if self.itakaglobals.system == "posix" and self.itakaglobals.platform != "darwin":
             try:
                 import pynotify
+                self.pynotify = pynotify
                 self.notifyavailable = True
 
-                if not pynotify.init("Itaka"):
-                    print "[*] WARNING: Pynotify module is missing, disabling."
+                if not self.pynotify.init("Itaka"):
+                    self.console.warn(('Gui','__init__'), "Pynotify module is failing, disabling option.")
                     self.notifyavailable = False
             except ImportError:
-                print "[*] WARNING: Pynotify module is missing, disabling."
+                self.console.warn(('Gui','__init__'), "Pynotify module is missing, disabling option.")
                 self.notifyavailable = False
 
         # Hbox4 contains notifications which is only available in some systems
@@ -456,7 +465,9 @@ class Gui:
             if self.preferencesexpanded:
                 # Cant assign tuple items
                 self.expander_size = [self.expander_size[0], self.expander_size[1] - self.preferencesVBox.size_request()[1]]
+
     def __statusicon_menu(self, widget, button, time, menu):
+        """ Callback to display the menu on the status icon """
         if button == 3:
             if menu:
                 menu.show_all()
@@ -464,10 +475,21 @@ class Gui:
             pass
  
     def __statusicon_activate(self, widget):
+        """ Callback to toggle the window visibility from the status icon """
         if (self.window.get_property("visible")):
             self.window.hide()
         else:
             self.window.show()
+
+    def __statusicon_notify(self, widget):
+        """ Callback to disable or enable notifications on the fly from the status icon. 'active' is a boolean for the checkbox """
+        if self.menuitemnotifications.get_active():
+            self.configuration['server']['notify'] = 'True'
+            print "active"
+        else:
+            self.configuration['server']['notify'] = 'False'
+            print "not"
+        # TODO: This should also save
 
     def about(self, data=None):
         """ Create the About dialog. """
@@ -562,7 +584,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             # Set up the twisted site
             # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
-            self.sinstance = iserver.ImageResource(self, self.console, (self.itakaglobals, self.configuration))
+            self.sinstance = iserver.ImageResource(self, self.console, (self.itakaglobals, self.configuration), self.notifyavailable)
             self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
             self.root.putChild('screenshot', self.sinstance)
             self.root.putChild('', self.root)

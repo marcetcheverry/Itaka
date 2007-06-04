@@ -38,27 +38,13 @@ lcounter = 0
 class ImageResource(Resource):
     """ Take the screenshot code and handle the requests. """
 
-    def __init__(self, guiinstance, consoleinstance, configuration):
-        """ Intialize inherited GUI, Console and global Configuration values """
+    def __init__(self, guiinstance, consoleinstance, configuration, notifyavailable):
+        """ Intialize inherited GUI, Console and global Configuration values. Also a bool for notifications availability """
         self.gui = guiinstance
         self.console = consoleinstance
         self.itakaglobals = configuration[0]
         self.configuration = configuration[1]
-        
-        # Use notifications where libnotify is available
-        notifyavailable = False
-        if self.configuration['server']['notify'] == "True" and self.itakaglobals.system == "posix" and self.itakaglobals.platform != "darwin":
-            try:
-                import pynotify
-                self.pynotify = pynotify
-                self.notifyavailable = True
-
-                if not self.pynotify.init("Itaka"):
-                    self.console.warn(('ImageResource','__init__'), "Pynotify module is failing, disabling option.")
-                    self.notifyavailable = False
-            except ImportError:
-                self.console.warn(('ImageResource','__init__'), "Pynotify module is missing, disabling option.")
-                self.notifyavailable = False
+        self.notifyavailable = notifyavailable
 
     def render_GET(self, request):
         """ Handle GET requests for screenshot. """
@@ -79,9 +65,11 @@ class ImageResource(Resource):
 
             # Call libnotify
             if (self.configuration['server']['notify'] == "True") and self.notifyavailable != False:
+                import pynotify
+
                 uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
-                n = self.pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
+                n = pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
                 if not n.show():
                     pass
 
