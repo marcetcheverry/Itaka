@@ -45,7 +45,7 @@ platform = None
 if (sys.platform.startswith("darwin")): platform = "darwin"
 
 # Itaka images/ directory
-image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")
+image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
 
 # Local configuration file
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
