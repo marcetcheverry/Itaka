@@ -33,13 +33,13 @@ try:
     from twisted.internet import reactor
     import twisted.internet.error
 except ImportError:
-    print "[*] Warning: Twisted Network Framework is missing, quitting."
+    print "[*] Warning: Twisted Network Framework is missing, quitting"
     sys.exit(1)
 
 try:
     import server as iserver
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka server module."
+    print "[*] ERROR: Failed to import Itaka server module"
     traceback.print_exc()
     sys.exit(1)
 
@@ -47,12 +47,16 @@ try:
     import pygtk
     pygtk.require("2.0")
 except ImportError:
-    print "[*] WARNING: Pygtk module is missing."
+    print "[*] WARNING: Pygtk module is missing"
     pass
 try:
     import gtk, gobject
 except ImportError:
-    print "[*] ERROR: GTK+ bindings are missing."
+    print "[*] ERROR: GTK+ bindings are missing"
+    sys.exit(1)
+
+if gtk.gtk_version[1] < 10:
+    print "[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed" % ".".join(str(x) for x in gtk.gtk_version)
     sys.exit(1)
 
 class Gui:
