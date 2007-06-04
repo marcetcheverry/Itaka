@@ -22,7 +22,7 @@
 
 """ Itaka GTK+ GUI """
 
-import sys, os, datetime, traceback 
+import sys, os, datetime, traceback, copy 
 
 try:
     from twisted.internet import gtk2reactor
@@ -327,7 +327,6 @@ class Gui:
     def save_preferences(self):
         """ Save and hide the preferences dialog """
         # So we can mess with the values in the running one and not mess up our comparison
-        import copy
         self.currentconfiguration = copy.deepcopy(self.configuration)
 
         # Switch to the proper values
@@ -513,7 +512,7 @@ class Gui:
         self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
         self.aboutdialog.set_comments('Screenshooting de mercado.')
         self.aboutdialog.set_authors(['Marc E. <santusmarc@gmail.com>'])
-        self.aboutdialog.set_artists(['Marc E. <santusmarc@gmail.com>'])
+        self.aboutdialog.set_artists(['Marc E. <santusmarc@gmail.com>', 'Tango Project (http://tango.freedesktop.org)'])
         self.aboutdialog.set_license('''Itaka is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or

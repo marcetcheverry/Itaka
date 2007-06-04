@@ -9,8 +9,8 @@
  * NEW: Error handling EOG style for Twisted server start failure, screenshot failures, preference saving failures, etc.
  
  * Preferences  
-  * NEW: Implementation of pseudo-dynamic reloading of preferences, and redesign dialog to conform to its new space
-  * FIX: Optimize preferences dropdown effect
+  * NEW: Redesign dialog to conform to its new space
+  * FIX: Optimize and thouroughly test preferences dropdown effect
 
  * Logging Window
   * NEW: New logging window. "Events/Details", pausing on events will desensitive. On details will clear,
