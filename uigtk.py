@@ -239,10 +239,6 @@ class Gui:
         if not self.notifyavailable: 
             self.preferencesHBox4.set_sensitive(False)
 
-        self.preferencesLabelrestart = gtk.Label("<i>Restart to apply changes</i>")
-        self.preferencesLabelrestart.set_use_markup(True)
-        self.preferencesLabelrestart.set_justify(gtk.JUSTIFY_CENTER)
-
         self.preferencesLabelsettings = gtk.Label("<b>Settings</b>")
         self.preferencesLabelsettings.set_use_markup(True)
         self.preferencesLabelsettings.set_justify(gtk.JUSTIFY_LEFT)
@@ -320,9 +316,7 @@ class Gui:
         self.preferencesVBox.pack_start(self.preferencesHBox2, False, False, 0)
         self.preferencesVBox.pack_start(self.preferencesHBox3, False, False, 0)
         self.preferencesVBox.pack_start(self.preferencesHBox4, False, False, 0)
-        self.preferencesVBox.pack_start(self.preferencesLabelrestart, False, False, 5)
-        self.preferencesVBox.pack_start(self.preferencesHBox5, False, False, 0)
-
+        self.preferencesVBox.pack_start(self.preferencesHBox5, False, False, 4)
 
         self.window.add(self.vbox)
         self.window.show_all()
@@ -332,18 +326,28 @@ class Gui:
 
     def save_preferences(self):
         """ Save and hide the preferences dialog """
+        # So we can mess with the values in the running one and not mess up our comparison
+        import copy
+        self.currentconfiguration = copy.deepcopy(self.configuration)
+
         # Switch to the proper values
         formatvalue = str(self.preferencesComboformat.get_active_text())
         if formatvalue == "PNG":
             formatvalue = "png"
+            self.configuration['screenshot']['format'] = 'png'
         else:
             formatvalue = "jpeg"
+            self.configuration['screenshot']['format'] = 'jpeg'
 
         notifyvalue = self.preferencesChecknotifications.get_active()
         if notifyvalue:
             notifyvalue = 'True'
+            self.menuitemnotifications.set_active(True)
+            self.configuration['server']['notify'] = 'True'
         else:
             notifyvalue = 'False'
+            self.menuitemnotifications.set_active(False)
+            self.configuration['server']['notify'] = 'False'
 
         # Build a configuration dictionary to send to the configuration engine's
         # save method. Redundant values must be included for the comparison
@@ -361,10 +365,22 @@ class Gui:
                 'notify': notifyvalue}
             }
 
+        # Set them for local use now
+        if self.configuration['screenshot']['quality'] != str(self.preferencesSpinquality.get_value_as_int()):
+            self.configuration['screenshot']['quality'] = str(self.preferencesSpinquality.get_value_as_int())
+
+        if self.configuration['server']['port'] !=  str(self.preferencesSpinport.get_value_as_int()):
+            self.configuration['server']['port'] =  str(self.preferencesSpinport.get_value_as_int())
+            # Restart the server
+            if self.server_listening:
+                self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']))
+                self.startstop(None, "stop")
+                self.startstop(None, "start")
+
+
         # Check if the configuration changed
-        if (self.configurationdict != self.configuration):
+        if (self.configurationdict != self.currentconfiguration):
             self.configinstance.save(self.configurationdict)
-            # self.gui.talk(self.gui, "updateConfig")	
 
     def __expandpreferences(self, params=None):
         """ Callback to expand the window for preferences. """
@@ -382,7 +398,6 @@ class Gui:
                 self.preferencesHBox4.show_all()
                 self.preferencesHBox5.show_all()
                 self.preferencesLabelsettings.show()
-                self.preferencesLabelrestart.show()
 
                 """If the logger is expanded, use that as the initial size. 
                 _expander_size is set by our GtkWindow resize callback
@@ -485,10 +500,8 @@ class Gui:
         """ Callback to disable or enable notifications on the fly from the status icon. 'active' is a boolean for the checkbox """
         if self.menuitemnotifications.get_active():
             self.configuration['server']['notify'] = 'True'
-            print "active"
         else:
             self.configuration['server']['notify'] = 'False'
-            print "not"
         # TODO: This should also save
 
     def about(self, data=None):
@@ -602,7 +615,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 return
 
             # Announce on log & console stdout
-            if self.configuration['screenshot']['quality'] == "jpeg":
+            if self.configuration['screenshot']['format'] == "jpeg":
                 self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), self)
             else:
                 self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), self)
@@ -613,6 +626,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
             self.buttonStartstop.set_image(self.startstopimage)
 
+            self.statusIcon.set_tooltip("Itaka - Server running")
             self.menuitemstart.set_sensitive(False)
             self.menuitemstop.set_sensitive(True)
 
@@ -637,6 +651,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 if (traydata):
                     self.buttonStartstop.set_active(False)
 
+                self.statusIcon.set_tooltip("Itaka")
                 self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
                 self.buttonStartstop.set_image(self.startstopimage)
                 self.buttonStartstop.set_label("Start")
@@ -696,8 +711,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         return True
 
     def __plural(self, count, singular):
-        """ This is a helper function for __calcsince that handles
-        english plural translations """
+        """ This is a helper function that handles english plural translations """
 
         # This is the simplest version; a more general version
         # should handle -y -> -ies, child -> children, etc.
@@ -716,7 +730,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.console.msg("Screenshot " + str(number) + " served to: " + str(ip))
             self.labelServed.set_text("Served: " + str(number))
             self.labelLastip.set_text("IP: " + str(ip))
-
+            self.statusIcon.set_tooltip("Itaka - %s served" % (self.__plural(int(number), 'screenshot')))
             # if (self.configuration['server']['notify'] == "True"):
             # Show the camera image on tray and interface for 1.5 seconds
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
@@ -729,10 +743,3 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.__calcsince(time)
             if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
             self.iagotimer = gobject.timeout_add(60000, self.__calcsince, time)
-
-        # Handler for Preferences signal to reload the config
-        elif (action == "updateConfig"):
-            # TODO: Implement dynamic preferences
-            # global self.configuration
-            # self.configuration = self.configinstance.load()
-            pass
