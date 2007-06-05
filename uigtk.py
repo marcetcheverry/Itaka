@@ -226,25 +226,6 @@ class Gui:
         self.preferencesHBox4 = gtk.HBox(False, 0)
         self.preferencesHBox5 = gtk.HBox(False, 0)
 
-        # Use notifications where libnotify is available
-        self.notifyavailable = False
-        if self.itakaglobals.system == "posix" and self.itakaglobals.platform != "darwin":
-            try:
-                import pynotify
-                self.pynotify = pynotify
-                self.notifyavailable = True
-
-                if not self.pynotify.init("Itaka"):
-                    self.console.warn(('Gui','__init__'), "Pynotify module is failing, disabling option.")
-                    self.notifyavailable = False
-            except ImportError:
-                self.console.warn(('Gui','__init__'), "Pynotify module is missing, disabling option.")
-                self.notifyavailable = False
-
-        # Hbox4 contains notifications which is only available in some systems
-        if not self.notifyavailable: 
-            self.preferencesHBox4.set_sensitive(False)
-
         self.preferencesFramesettings = gtk.Frame()
         self.preferencesSettingslabel = gtk.Label("<b>Preferences</b>")
         self.preferencesSettingslabel.set_use_markup(True)
@@ -309,12 +290,9 @@ class Gui:
         self.preferencesHBox5.pack_start(self.preferencesButtonAbout, False, False, 7)
         self.preferencesHBox5.pack_end(self.preferencesButtonClose, False, False, 7)
 
-        # Disable notifications for non-posix and non-pynotify
-        # TODO: This should actually check if there is pynotify
-        self.preferencesHBox4.set_sensitive(False)
-        notifyavailable = True
-        if self.itakaglobals.system == "posix" and self.itakaglobals.platform != "darwin" and notifyavailable:
-            self.preferencesHBox4.set_sensitive(True)
+        # Hbox4 contains notifications which is only available in some systems
+        if not self.itakaglobals.notifyavailable: 
+            self.preferencesHBox4.set_sensitive(False)
 
         # Add Hboxes to the Vbox
         self.preferencesVBoxitems.pack_start(self.preferencesHBox1, False, False, 0)
@@ -535,7 +513,7 @@ You should have received a copy of the GNU General Public License
 along with Itaka; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.aboutdialog.set_website('http://itaka.jardinpresente.com.ar')
-        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-logo.png")))
+        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka64x64.png")))
         self.aboutdialog.set_icon(self.icon_pixbuf)
         self.aboutdialog.run()
         self.aboutdialog.destroy()
@@ -604,7 +582,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             # Set up the twisted site
             # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
-            self.sinstance = iserver.ImageResource(self, self.console, (self.itakaglobals, self.configuration), self.notifyavailable)
+            self.sinstance = iserver.ImageResource(self, self.console, (self.itakaglobals, self.configuration))
             self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
             self.root.putChild('screenshot', self.sinstance)
             self.root.putChild('', self.root)

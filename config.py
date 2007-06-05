@@ -37,12 +37,18 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itak
 version = "0.1"
 revision = "$Rev"
 
-#: Check system or specify per os.name standard
+# Check system or specify per os.name standard
 system = os.name
 
 # Support darwin specific stuff
 platform = None
 if (sys.platform.startswith("darwin")): platform = "darwin"
+
+# Specify console output settings. 
+# 'normal' is for all normal operation mesages and warnings (not including errors)
+# 'debug' is for all messages through self.console.debug
+# 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
+output = {'normal': False, 'debug': False, 'quiet': False}
 
 # Itaka images/ directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
@@ -53,10 +59,24 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itak
 # Save path for screenshots (system-specific specified later on)
 save_path = os.getcwd()
 
-if system == 'posix': 
-    save_path = "/tmp"
-elif system == 'nt': 
+if os.environ.get('HOME') is not None:
+    save_path = os.path.join(os.environ.get('HOME'), ".itaka")
+else:
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
+
+# Use notifications where libnotify is available
+notifyavailable = False
+if system == "posix" and platform != "darwin":
+    try:
+        import pynotify
+        notifyavailable = True
+
+        if not pynotify.init("Itaka"):
+            print "[*] WARNING: Pynotify module is failing, disabling option"
+            notifyavailable = False
+    except ImportError:
+        print "[*] WARNING: Pynotify module is missing, disabling option"
+        notifyavailable = False
 
 # User's configuration values 
 values = {}
@@ -86,10 +106,11 @@ class ConfigParser:
         # Read and assign values from the configuration file 
         try:
             config.read(self.configfile)
-            if notify: print "[*] Read configuration (%s)" % (self.configfile)
+            if output['normal']: print "[*] Read configuration (%s)" % (self.configfile)
+
         except:
-            if notify: print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
-            traceback.print_exc()
+            if output['normal']: print "[*] ERROR: Could not read configuration file (%s)" % (self.configfile)
+            if output['debug']: traceback.print_exc()
 
         """ Retrieve values and return them as a dict."""
         global values
@@ -109,10 +130,10 @@ class ConfigParser:
         # Save
         try:
             config.write(open(self.configfile, 'w'))
-            print "[*] Saving configuration... "	
+            if output['normal']: print "[*] Saving configuration... "	
         except:		
-            print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-            traceback.print_exc()
+            if not output['quiet']: print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+            if output['debug']: traceback.print_exc()
 
     def update(self, section, key, value):
         """ Update a specific key's value."""	
@@ -120,17 +141,17 @@ class ConfigParser:
         # Save
         try:
             config.write(open(self.configfile, 'w'))
-            print "[*] Updating configuration key %s to %s" % (key, value)	
+            if output['normal']: print "[*] Updating configuration key %s to %s" % (key, value)	
         except:
-            print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-            traceback.print_exc()
+            if not output['quiet']: print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+            if output['debug']: traceback.print_exc()
 
     def create(self, path):
         """ Create a configuration file from default values. """
         # Create sections
         for section in ('server', 'screenshot', 'html'): config.add_section(section)
 
-        print "[*] Creating default configuration..."
+        if output['normal']: print "[*] Creating default configuration..."
         # Set default values
         config.set("server", "port", 8000)
         config.set("server", "notify", True)
@@ -149,7 +170,7 @@ class ConfigParser:
         try:
             config.write(open(path, 'w'))
         except:
-            print "[*] ERROR: Could not write configuration file %s" % (path)
-            traceback.print_exc()
+            if not output['quiet']: print "[*] ERROR: Could not write configuration file %s" % (path)
+            if output['debug']: traceback.print_exc()
 
         self.configfile = path		

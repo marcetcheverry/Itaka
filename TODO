@@ -13,13 +13,6 @@ Milestone 1 (first release):
 - Other
  - NEW: Make Ubuntu/Debian/Windows binaries. Python distutils setup.
 
-- Core
- (This is all low-priority)
- - NEW: Add option to quiet all console output
- - NEW: Add a debug option to make all tracebacks pass through self.console.debug
- - NEW: Streamline pynotify availability to itakaglobals
- - FIX: Decide what to do with the screenshot path, home or temp?
-
 Milestone 2 (second release):
 
 - Server

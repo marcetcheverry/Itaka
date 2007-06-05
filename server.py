@@ -38,13 +38,12 @@ lcounter = 0
 class ImageResource(Resource):
     """ Take the screenshot code and handle the requests. """
 
-    def __init__(self, guiinstance, consoleinstance, configuration, notifyavailable):
-        """ Intialize inherited GUI, Console and global Configuration values. Also a bool for notifications availability """
+    def __init__(self, guiinstance, consoleinstance, configuration):
+        """ Intialize inherited GUI, Console and global Configuration values """
         self.gui = guiinstance
         self.console = consoleinstance
         self.itakaglobals = configuration[0]
         self.configuration = configuration[1]
-        self.notifyavailable = notifyavailable
 
     def render_GET(self, request):
         """ Handle GET requests for screenshot. """
@@ -64,7 +63,7 @@ class ImageResource(Resource):
             lcounter += 1
 
             # Call libnotify
-            if (self.configuration['server']['notify'] == "True") and self.notifyavailable != False:
+            if (self.configuration['server']['notify'] == "True") and self.itakaglobals.notifyavailable != False:
                 import pynotify
 
                 uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
