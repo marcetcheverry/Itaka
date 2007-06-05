@@ -57,7 +57,10 @@ class ImageResource(Resource):
             # self.icbrowser = request.getClient()
 
             # This takes the screenshot
-            self.shotFile = iscreenshot.Screenshot(self.configuration)
+            try:
+                self.shotFile = iscreenshot.Screenshot(self.gui, self.configuration)
+            except:
+                self.console.error(['ImageResource','render_get'], "Could not take screenshot", self.gui)
 
             global lcounter
             lcounter += 1

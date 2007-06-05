@@ -3,9 +3,6 @@ Milestone 1 (first release):
 - Preferences  
  - FIX: Optimize and thouroughly test preferences dropdown effect.
 
-- GUI
- - NEW: Error handling EOG style for Twisted server start failure, screenshot failures, preference saving failures, etc.
-
 - Other
  - NEW: Make Ubuntu/Debian/Windows binaries. Python distutils setup.
 
@@ -13,5 +10,12 @@ Milestone 2 (second release):
 
 - Server
  - NEW: Add option to take a screenshot of the current top window (see gnome-screenshot)
- - MAYBE: Add option to notify via audio?
+ - MAYBE: Add option to notify via audio
+ - MAYBE: Add options to the preferences to specify console output, animations
+
+- GUI:
+ - NEW: Add options to report errors in the system tray (blinking true). The window should pop up
+
+- Code:
+ - FIX: Recomment and make it beautiful to some sort of python standard
  

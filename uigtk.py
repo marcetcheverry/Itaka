@@ -396,7 +396,10 @@ class Gui:
 
         # Check if the configuration changed
         if (self.configurationdict != self.currentconfiguration):
-            self.configinstance.save(self.configurationdict)
+            try:
+                self.configinstance.save(self.configurationdict)
+            except:
+                self.console.error(['Gui', 'save'], "Could not save preferences")
 
     def __expandpreferences(self, params=None):
         """ Callback to expand the window for preferences. """
@@ -561,25 +564,45 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
         return
 
-    def logger(self, args, eventsonly=False, icon=None):
-        """ Handle logging in the GUI. Arguments: dict[(tuple($msg)), key: str($msg)]. 'eventsonly' is a boolean to spcecify if the log message will only go to the events log. 'icon' is tuple, the first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object. It is used for the event log in the GUI """
+    def logger(self, args, failure=False, failuretype=None, eventsonly=False, icon=None):
+        """ Handle logging in the GUI. Arguments: 'args' is a dict { 'key': [str(msg)]], however, when handling failures the message tuple contains an extra item containing a detailed message for separation in the GUI log viewers. 'failure' is a boolean specifying whether we are logging an error. 'failuretype' is a string specyfing what kind of failure it is, either 'error', 'warning' or 'debug'. 'eventsonly' is a boolean to spcecify if the log message will only go to the events log. 'icon' is tuple, the first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object. It is used for the event log in the GUI """
 
-        self.ioutput = args['message'][0]
-
+        self.message = args['message'][0]
+        # The detailed log gets the detailed mesage on failures
+        if failure:
+            self.message = args['message'][1]
+    
         # Write out the message to the GUI	
-        self.logdetailsbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
+        self.logdetailsbuffer.insert_at_cursor("\r" +self.message,len("\r" + self.message))
         # Automatically scroll. Use wrap until fix.
         self.logdetailstextview.scroll_mark_onscreen(self.logdetailsbuffer.get_insert())
 
-        if eventsonly:
+        if eventsonly or failure:
             # The event log
+            if failure:
+                # Use the non-detailed mesage
+                self.message = args['message'][0]
+                # Failures can not set icons, we set them.
+                if failuretype == "error":
+                    icon = ['stock', 'STOCK_DIALOG_ERROR']
+                elif failuretype == "warning":
+                    icon = ['stock', 'STOCK_DIALOG_WARNING']
+                elif failuretype == "debug": 
+                    icon = ['stock', 'STOCK_DIALOG_INFO']
+               
+            # TODO: Set background
             if icon is not None:
                 if icon[0] == "stock":
-                    self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), self.ioutput])
+                    self.insertediter = self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), self.message])
+                    # Select the item if its a failure
+                    if failure:
+                        self.selection = self.logeventstreeview.get_selection()
+                        self.selection.select_iter(self.insertediter)
+
                 else:
-                    self.logeventsstore.append([icon[1], self.ioutput])
+                    self.logeventsstore.append([icon[1], self.message])
             else:
-                self.logeventsstore.append([None, self.ioutput])
+                self.logeventsstore.append([None, self.message])
 
     def clearlogger(self, args):
         """ Callback to clear the log """
@@ -646,8 +669,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 self.ilistener = reactor.listenTCP(int(self.configuration['server']['port']), self.site)
                 self.server_listening = True
             except twisted.internet.error.CannotListenError:
-                # TODO: Add better error handling for the GUI
-                self.console.error(('Gui', 'startstop'), 'Could not start server, another service is already running on port %s' % (self.configuration['server']['port']))
+                self.console.error(('Gui', 'startstop'), 'Failed to start server, another server is listening on port %s' % (self.configuration['server']['port']), self)
                 # NOTE: This actually calls startstop to stop the server again, acts as a click
                 self.buttonStartstop.set_active(False)
                 return
