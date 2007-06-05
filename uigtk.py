@@ -170,43 +170,75 @@ class Gui:
         self.statusBox.pack_start(self.labelServed, True, False, 0)
 
         # Logger widget (displayed when expanded)
-        self.debugvbox = gtk.VBox(False, 0)
-        self.debugscroll = gtk.ScrolledWindow()
-        self.debugscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.debugscroll.set_shadow_type(gtk.SHADOW_IN)
-        self.debugview = gtk.TextView()
-        self.debugview.set_wrap_mode(gtk.WRAP_WORD)
-        self.debugview.set_editable(False)
-        self.debugview.set_size_request(-1, 160)
-        self.debugbuffer = self.debugview.get_buffer()
-        self.debugscroll.add(self.debugview)
+        self.logvbox = gtk.VBox(False, 0)
+        self.lognotebook = gtk.Notebook()
+        self.lognotebook.set_tab_pos(gtk.POS_BOTTOM)
 
-        self.debughbox = gtk.HBox(False, 0)
-        self.debugclearbutton = gtk.Button("Clear")
-        self.debugclearbuttonimage = gtk.Image()
-        self.debugclearbuttonimage.set_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
-        self.debugclearbutton.set_image(self.debugclearbuttonimage)
-        self.debugclearbutton.connect("clicked", self.clearlogger)
+        self.logeventslabel = gtk.Label("Events")
+        self.logdetailslabel = gtk.Label("Details")
 
-        self.debugpausebutton = gtk.ToggleButton("Pause")
-        self.debugpausebuttonimage = gtk.Image()
-        self.debugpausebuttonimage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
-        self.debugpausebutton.set_image(self.debugpausebuttonimage)
-        self.debugpausebutton.connect("toggled", self.pauselogger)
+        self.logeventsscroll = gtk.ScrolledWindow()
+        self.logeventsscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.logeventsscroll.set_shadow_type(gtk.SHADOW_NONE)
 
-        self.debughbox.pack_end(self.debugclearbutton, False, False, 4)
-        self.debughbox.pack_end(self.debugpausebutton, False, False, 4)
+        self.logeventsstore = gtk.ListStore(gtk.gdk.Pixbuf, str)
+        self.logeventstreeview = gtk.TreeView(self.logeventsstore)
+        self.logeventstreeview.set_property("headers-visible", False)
+        self.logeventstreeview.set_property("rules-hint", True)
 
-        self.debugvbox.pack_start(self.debugscroll, False, False, 4)
-        self.debugvbox.pack_start(self.debughbox, False, False, 4)
+        self.logeventscolumnicon = gtk.TreeViewColumn()
+        self.logeventscolumntext = gtk.TreeViewColumn()
+        self.logeventstreeview.append_column(self.logeventscolumnicon)
+        self.logeventstreeview.append_column(self.logeventscolumntext)
 
-        self.debugboxLabel = gtk.Label("<b>Event log</b>")
-        self.debugboxLabel.set_use_markup(True)
+        self.logeventscellpixbuf = gtk.CellRendererPixbuf()
+        self.logeventscolumnicon.pack_start(self.logeventscellpixbuf)
+        self.logeventscolumnicon.add_attribute(self.logeventscellpixbuf, 'pixbuf', 0)
+
+        self.logeventscelltext = gtk.CellRendererText()
+        self.logeventscolumntext.pack_start(self.logeventscelltext, True)
+        self.logeventscolumntext.add_attribute(self.logeventscelltext, 'text', 1)
+        self.logeventsscroll.add(self.logeventstreeview)
+
+        self.logdetailsscroll = gtk.ScrolledWindow()
+        self.logdetailsscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.logdetailsscroll.set_shadow_type(gtk.SHADOW_NONE)
+        self.logdetailsview = gtk.TextView()
+        self.logdetailsview.set_wrap_mode(gtk.WRAP_WORD)
+        self.logdetailsview.set_editable(False)
+        self.logdetailsview.set_size_request(-1, 160)
+        self.logdetailsbuffer = self.logdetailsview.get_buffer()
+        self.logdetailsscroll.add(self.logdetailsview)
+
+        self.lognotebook.append_page(self.logeventsscroll, self.logeventslabel)
+        self.lognotebook.append_page(self.logdetailsscroll, self.logdetailslabel)
+
+        self.loghbox = gtk.HBox(False, 0)
+        self.logclearbutton = gtk.Button("Clear")
+        self.logclearbuttonimage = gtk.Image()
+        self.logclearbuttonimage.set_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
+        self.logclearbutton.set_image(self.logclearbuttonimage)
+        self.logclearbutton.connect("clicked", self.clearlogger)
+
+        self.logpausebutton = gtk.ToggleButton("Pause")
+        self.logpausebuttonimage = gtk.Image()
+        self.logpausebuttonimage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
+        self.logpausebutton.set_image(self.logpausebuttonimage)
+        self.logpausebutton.connect("toggled", self.pauselogger)
+
+        self.loghbox.pack_end(self.logclearbutton, False, False, 4)
+        self.loghbox.pack_end(self.logpausebutton, False, False, 4)
+
+        self.logvbox.pack_start(self.lognotebook, False, False, 4)
+        self.logvbox.pack_start(self.loghbox, False, False, 4)
+
+        self.logboxLabel = gtk.Label("<b>Event log</b>")
+        self.logboxLabel.set_use_markup(True)
 
         # Expander
         self.expander_size_finalized = False
         self.expander = gtk.Expander(None)
-        self.expander.set_label_widget(self.debugboxLabel)
+        self.expander.set_label_widget(self.logboxLabel)
         self.expander.connect('notify::expanded', self.__expandlogger)
 
         # Log to the self.logger function, which sets the buffer for self.debubuffer
@@ -358,10 +390,9 @@ class Gui:
             self.configuration['server']['port'] =  str(self.preferencesSpinport.get_value_as_int())
             # Restart the server
             if self.server_listening:
-                self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']))
+                self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_REFRESH'])
                 self.startstop(None, "stop")
                 self.startstop(None, "start")
-
 
         # Check if the configuration changed
         if (self.configurationdict != self.currentconfiguration):
@@ -522,7 +553,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """ Callback for the expander widget. """
         if self.expander.get_expanded():
             # Show the debugvbox() and it's subwidgets
-            self.debugvbox.show_all()
+            self.logvbox.show_all()
 #            tv = gtk.TextView()
 #            self.debugvbox.pack_end(tv, False, False, 0)
 #            tv.show()
@@ -531,35 +562,52 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 #            self.debugbackwindow = self.debugview.get_window(gtk.TEXT_WINDOW_TEXT)
 #            self.debugbackwindow.set_back_pixmap(self.icon_pixbuf, gtk.FALSE)
 
-            self.expander.add(self.debugvbox)
+            self.expander.add(self.logvbox)
         else:
             self.expander.remove(self.expander.child)
             self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
         return
 
-    def logger(self, args):
-        """ Handle logging in the GUI. Arguments: dict[(tuple($msg)), key: str($msg)]. """
-        # We just care about the first tuple
+    def logger(self, args, eventsonly=False, icon=None):
+        """ Handle logging in the GUI. Arguments: dict[(tuple($msg)), key: str($msg)]. 'eventsonly' is a boolean to spcecify if the log message will only go to the events log. 'icon' is tuple, the first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object. It is used for the event log in the GUI """
+
         self.ioutput = args['message'][0]
-        # Write out the server log and stdout to the GUI	
-        self.debugbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
+
+        # Write out the message to the GUI	
+        self.logdetailsbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
         # Automatically scroll. Use wrap until fix.
-        self.debugview.scroll_mark_onscreen(self.debugbuffer.get_insert())
+        self.logdetailsview.scroll_mark_onscreen(self.logdetailsbuffer.get_insert())
+
+        if eventsonly:
+            # The event log
+            if icon is not None:
+                if icon[0] == "stock":
+                    self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), self.ioutput])
+                else:
+                    self.logeventsstore.append([icon[1], self.ioutput])
+            else:
+                self.logeventsstore.append([None, self.ioutput])
 
     def clearlogger(self, args):
-        """ Callback to clear the log. """
-        self.debugbuffer.set_text("")
+        """ Callback to clear the log """
+        self.logeventsstore.clear()
+        self.logdetailsbuffer.set_text("")
 
     def pauselogger(self, widget, data=None):
         """ Callback to pause log output. """
         if widget.get_active():
-            log.msg("Logging paused")
-            self.debugscroll.set_sensitive(False)
+            log.msg("Log paused")
+            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PAUSE'), size=gtk.ICON_SIZE_MENU, detail=None), "Log paused"])
+
+            self.logeventstreeview.set_sensitive(False)
+            self.logdetailsscroll.set_sensitive(False)
             log.removeObserver(self.logger)
         else:
             log.addObserver(self.logger)
-            self.debugscroll.set_sensitive(True)
-            log.msg("Logging resumed")
+            self.logdetailsscroll.set_sensitive(True)
+            self.logeventstreeview.set_sensitive(True)
+            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PLAY'), size=gtk.ICON_SIZE_MENU, detail=None), "Log resumed"])
+            log.msg("Log resumed")
 
     def main(self):
         """ Main init function. Starts the GUI reactors."""
@@ -601,9 +649,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             # Announce on log & console stdout
             if self.configuration['screenshot']['format'] == "jpeg":
-                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images with %s%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), self)
+                self.console.msg('Server started on port %s' % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_CONNECT'])
+                self.console.msg('Server started on port %s TCP. Serving %s images with %s%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), self, False, ['stock', 'STOCK_CONNECT'])
             else:
-                self.console.msg('Server listening on port %s TCP. Serving screenshots as %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), self)
+                self.console.msg('Server started on port %s.' % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_CONNECT'])
+                self.console.msg('Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), self, False, ['stock', 'STOCK_CONNECT'])
 
             # Change buttons
             self.buttonStartstop.set_active(True)
@@ -624,7 +674,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         else:
             if self.server_listening:
-                self.console.msg("Stopping server", self)
+                self.console.msg("Server stopped", self, True, ['stock', 'STOCK_DISCONNECT'])
 
                 self.ilistener.stopListening()
                 self.server_listening = False
@@ -713,7 +763,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def talk(self, action, number=False, ip=False, time=False):
         """ Handler for communcations between the server backend, and the GUI. """
         if (action == "updateGuiStatus" ):
-            self.console.msg("Screenshot " + str(number) + " served to: " + str(ip))
+            self.console.msg("Screenshot number " + str(number) + " served to " + str(ip), self, True, ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+
             self.labelServed.set_text("<b>Served</b>: " + str(number))
             self.labelServed.set_use_markup(True)
             self.labelLastip.set_text("<b>IP</b>: " + str(ip))

@@ -7,7 +7,6 @@ Milestone 1 (first release):
  - NEW: Error handling EOG style for Twisted server start failure, screenshot failures, preference saving failures, etc.
 
 - Logging Window
- - NEW: New logging window. "Events/Details", pausing on events will desensitive. On details will clear,
  - NEW: center (x,y) a major gtk.STOCK_PAUSE, store the previous data in memory, and desensitive. 
 
 - Other
