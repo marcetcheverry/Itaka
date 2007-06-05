@@ -203,12 +203,12 @@ class Gui:
         self.logdetailsscroll = gtk.ScrolledWindow()
         self.logdetailsscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self.logdetailsscroll.set_shadow_type(gtk.SHADOW_NONE)
-        self.logdetailsview = gtk.TextView()
-        self.logdetailsview.set_wrap_mode(gtk.WRAP_WORD)
-        self.logdetailsview.set_editable(False)
-        self.logdetailsview.set_size_request(-1, 160)
-        self.logdetailsbuffer = self.logdetailsview.get_buffer()
-        self.logdetailsscroll.add(self.logdetailsview)
+        self.logdetailstextview = gtk.TextView()
+        self.logdetailstextview.set_wrap_mode(gtk.WRAP_WORD)
+        self.logdetailstextview.set_editable(False)
+        self.logdetailstextview.set_size_request(-1, 160)
+        self.logdetailsbuffer = self.logdetailstextview.get_buffer()
+        self.logdetailsscroll.add(self.logdetailstextview)
 
         self.lognotebook.append_page(self.logeventsscroll, self.logeventslabel)
         self.lognotebook.append_page(self.logdetailsscroll, self.logdetailslabel)
@@ -554,13 +554,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if self.expander.get_expanded():
             # Show the debugvbox() and it's subwidgets
             self.logvbox.show_all()
-#            tv = gtk.TextView()
-#            self.debugvbox.pack_end(tv, False, False, 0)
-#            tv.show()
-#            tv_win = tv.get_window(gtk.TEXT_WINDOW_TEXT)
-#            print tv_win
-#            self.debugbackwindow = self.debugview.get_window(gtk.TEXT_WINDOW_TEXT)
-#            self.debugbackwindow.set_back_pixmap(self.icon_pixbuf, gtk.FALSE)
 
             self.expander.add(self.logvbox)
         else:
@@ -576,7 +569,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Write out the message to the GUI	
         self.logdetailsbuffer.insert_at_cursor("\r" +self.ioutput,len("\r" + self.ioutput))
         # Automatically scroll. Use wrap until fix.
-        self.logdetailsview.scroll_mark_onscreen(self.logdetailsbuffer.get_insert())
+        self.logdetailstextview.scroll_mark_onscreen(self.logdetailsbuffer.get_insert())
 
         if eventsonly:
             # The event log
@@ -596,18 +589,30 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def pauselogger(self, widget, data=None):
         """ Callback to pause log output. """
         if widget.get_active():
-            log.msg("Log paused")
-            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PAUSE'), size=gtk.ICON_SIZE_MENU, detail=None), "Log paused"])
+            # It would be nice if we could set a center background image to our textview.
+            # However, GTK makes that very hard.
+            """
+            self.logprepausetext = self.logdetailsbuffer.get_text(self.logdetailsbuffer.get_start_iter(), self.logdetailsbuffer.get_end_iter())
+            self.logdetailsbuffer.set_text("")
 
+            self.logdetailsbuffer.create_tag ('center-image', justification = gtk.JUSTIFY_CENTER)
+            self.logdetailsimageiter = self.logdetailsbuffer.get_iter_at_offset(0)
+            self.logdetailsbuffer.insert_pixbuf(self.logdetailsimageiter, self.logdetailstextview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PAUSE'), size=gtk.ICON_SIZE_DIALOG, detail=None))
+            self.logdetailsbuffer.apply_tag_by_name('center-image', self.logdetailsbuffer.get_iter_at_offset(0), self.logdetailsimageiter)
+
+            """
+            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PAUSE'), size=gtk.ICON_SIZE_MENU, detail=None), "Logging paused"])
+            
             self.logeventstreeview.set_sensitive(False)
-            self.logdetailsscroll.set_sensitive(False)
+            self.logdetailstextview.set_sensitive(False)
+
             log.removeObserver(self.logger)
         else:
             log.addObserver(self.logger)
-            self.logdetailsscroll.set_sensitive(True)
+            self.logdetailstextview.set_sensitive(True)
             self.logeventstreeview.set_sensitive(True)
-            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PLAY'), size=gtk.ICON_SIZE_MENU, detail=None), "Log resumed"])
-            log.msg("Log resumed")
+
+            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PLAY'), size=gtk.ICON_SIZE_MENU, detail=None), "Logging resumed"])
 
     def main(self):
         """ Main init function. Starts the GUI reactors."""
@@ -703,7 +708,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """ Callback for the main window's destroy. """
         # Stop server.
         if self.server_listening:
-            self.console.msg("Shutting down server...", self)
+            self.console.msg("Shutting down server...")
             self.ilistener.stopListening()
             del self.console
         else:
