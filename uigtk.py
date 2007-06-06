@@ -84,6 +84,7 @@ class Gui:
         self.window.set_border_width(6)
         self.window.set_default_size(400, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
+        self.window_position = self.window.get_position()
 
         # Create our tray icon
         self.statusIcon = gtk.StatusIcon()
@@ -157,6 +158,7 @@ class Gui:
         self.preferencesexpanded = False
         self.contracttimeout = None
         self.expandtimeout = None
+        self.blinktimeout = None
 
         self.ibox.pack_start(self.preferencesButton, True, True, 4)
 
@@ -512,10 +514,22 @@ class Gui:
                 menu.show_all()
                 menu.popup(None, None, None, 3, time)
             pass
+
+    def statusicon_blinktimeout(self, time=3000):
+        """ Callback to set timeout in miliseconds to blink and stop blinking the status icon """
+        if self.blinktimeout is None:
+            self.statusIcon.set_blinking(True)
+            self.blinktimeout = gobject.timeout_add(time, self.statusicon_blinktimeout)
+        else:
+            self.statusIcon.set_blinking(False)
+            self.blinktimeout = None
+            return False
  
     def __statusicon_activate(self, widget):
         """ Callback to toggle the window visibility from the status icon """
-        if (self.window.get_property("visible")):
+        if self.window.get_property("visible"):
+            # Save it for when we undock because of errors
+            self.window_position = self.window.get_position()
             self.window.hide()
         else:
             self.window.show()
@@ -711,6 +725,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         else:
             if self.server_listening:
                 self.console.msg("Server stopped", self, True, False, ['stock', 'STOCK_DISCONNECT'])
+
 
                 self.ilistener.stopListening()
                 self.server_listening = False
