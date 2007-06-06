@@ -1,24 +1,20 @@
 Source: itaka
 Section: web
-Priority: optional
-Maintainer: Marc E. (sanmarcos) <santusmarc@gmail.com>
-Build-Depends-Indep: python (>= 2.3)
-Build-Depends: debhelper (>= 5.0.37.2), python-central (>=0.5)
-XS-Python-Version: ${python:Versions}
+Priority: extra
+Maintainer: Marc E. <santusmarc@gmail.com>
+Build-Depends: imagemagick, docbook-to-man, python, debhelper (>= 5.0.37.2)
 Standards-Version: 3.7.2
 
 Package: itaka
 Architecture: all
-Depends: ${python:Depends}, python-gtk2 (>= 2.10), python-twisted
-XB-Python-Version: ${python:Versions}
+Depends: python (>=2.3), python-gtk2 (>= 2.10), python-twisted-web
 Recommends: python-libnotify
 Description: On-demand screenshooting server
  Itaka is a on-demand screenshooting server based on the HTTP protocol.
  It integrates a specifically coded server to take screenshots on-demand when
- your machine is queried through a remote browser with a GTK GUI for client notification.
- It features the following:
+ your machine is queried through a remote browser. 
  .
+ It features the following:
   * Supports PNG/JPEG (with quality adjustment) image types.
   * Supports client notifications through libnotify.
-  * A very polished GUI with detailed logging of activities.
-
+  * A very polished GTK+ GUI with detailed logging of activities.
