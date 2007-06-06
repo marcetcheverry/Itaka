@@ -3,9 +3,6 @@ Milestone 1 (first release):
 - Preferences  
  - FIX: Optimize and thouroughly test preferences dropdown effect.
 
-- Other
- - NEW: Make Ubuntu/Debian/Windows binaries.
-
 Milestone 2 (second release):
 
 - Server
@@ -19,4 +16,6 @@ Milestone 2 (second release):
 
 - Code:
  - FIX: Recomment and make it beautiful to some sort of python standard
- 
+
+- Other:
+ - NEW: Make Windows binaries
