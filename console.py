@@ -34,24 +34,30 @@ class Console:
         """ Quitting message """
         if self.itakaglobals.output['normal']: print "[*] Itaka shutting down..."
 
-    def msg(self, message, gui=False, eventsonly=True, icon=None):
-        """ Message handler. 'gui' is an instance of the 'Gui' class for logging purposes. 'eventsonly' is a boolean to spcecify if the log message will only go to the events log. 'icon' is gtk.STOCK_ICON string for the Gui event log """
+    def msg(self, message, gui=False, eventslog=True, detailedmessage=False, icon=None):
+        """ Message handler. 'gui' is an instance of the 'Gui' class for logging purposes. 'eventslog' is a boolean to spcecify if the log message will go to the events log. 'detailedmessage' is to specify that only the simple mesage will go to the events log. 'icon' is gtk.stock_icon string for the gui event log """
         if self.itakaglobals.output['normal']: 
-            print "[*] %s" % (message)
+            if detailedmessage:
+                print "[*] %s" % (message[1])
+            else:
+                print "[*] %s" % (message)
 
-        # Twisted takes a dict with the first key being 'message', coupled with a str()'ed tuple'd message.
+        # twisted takes a dict with the first key being 'message', coupled with a str()'ed tuple'd message.
         if gui: 
-            gui.logger({'message': [str(message)]}, False, None, eventsonly, icon)
+            if detailedmessage:
+                gui.logger({'message': [message[0], message[1]]}, False, None, eventslog, detailedmessage, icon)
+            else:
+                gui.logger({'message': [message]}, False, None, eventslog, detailedmessage, icon)
 
-    def warn(self, caller, message, gui=False, eventsonly=False, icon=None):
+    def warn(self, caller, message, gui=False, eventslog=False, icon=None):
         """ Warning handler. 'caller' is a list or tuple specifying the class and method were the event ocurred. Arguments are inherited from msg() """
         self.array = ".".join(caller)
         if self.itakaglobals.output['normal']: 
             print "[*] WARNING: %s: %s" % (self.array, message)
         if gui: 
-            gui.logger({'message': [str(message), str("WARNING: %s: %s" % (self.array, message))]}, True, 'warning', eventsonly, icon)		
+            gui.logger({'message': [str(message), str("WARNING: %s: %s" % (self.array, message))]}, True, 'warning', eventslog, False, icon)		
 
-    def error(self, caller, message, gui=False, eventsonly=False, icon=None):
+    def error(self, caller, message, gui=False, eventslog=False, icon=None):
         """ Error handler. 'caller' is a list or tuple specifying the class and method were the event ocurred. Arguments are inherited from msg() """
         self.array = ".".join(caller)
         if not self.itakaglobals.output['quiet']:
@@ -63,12 +69,12 @@ class Console:
             if gui.server_listening:
                 gui.startstop(None, "stop", True)
 
-            gui.logger({'message': [str(message), str("ERROR: %s: %s" % (self.array, message))]}, True, 'error', eventsonly, icon)
+            gui.logger({'message': [str(message), str("ERROR: %s: %s" % (self.array, message))]}, True, 'error', eventslog, False, icon)
 
-    def debug(self, caller, message, gui=False, eventsonly=False, icon=None):
+    def debug(self, caller, message, gui=False, eventslog=False, icon=None):
         """ Debug handler. 'caller' is a list or tuple specifying the class and method were the event ocurred. Arguments are inherited from msg() """
         self.array = ".".join(caller)
         if self.itakaglobals.output['debug']: 
             print "[*] DEBUG: %s: %s" % (self.array, message)
         if gui: 
-            gui.logger({'message': [str(message), str("DEBUG: %s: %s" % (self.array, message))]}, True, 'debug', eventsonly, icon)
+            gui.logger({'message': [str(message), str("DEBUG: %s: %s" % (self.array, message))]}, True, 'debug', eventslog, False, icon)

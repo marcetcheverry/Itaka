@@ -24,12 +24,22 @@
 
 import sys, traceback
 
+validarguments = ('-help', '-debug')
+arguments = sys.argv
+
+# Only one option at a time
+if len(arguments) > 2 or (len(arguments) == 2 and arguments[-1] not in validarguments or arguments[-1] == validarguments[0]):
+    print "Usage: %s (-debug|-help)" % (arguments[0])
+    sys.exit(1)
+elif len(arguments) == 1:
+    arguments = None
+
 # Itaka core modules
 try:
     # Initiate our Console and Configuration engines
     import console
     import config as itakaglobals
-    configinstance = itakaglobals.ConfigParser()
+    configinstance = itakaglobals.ConfigParser(arguments)
     configinstance.load()
 
     try:

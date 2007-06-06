@@ -1,2 +1,7 @@
+0.2:
+ * Removed a redundant print in server.py
+ * Fixed a syntax bug in uigtk.py when GTK version is < 2.10
+ * Changed strings in text to be more literal and intuitive 
+ * Added option (-debug) to show all console output)
 0.1:
-* Initial release
+ * Initial release
