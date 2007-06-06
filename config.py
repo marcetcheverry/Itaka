@@ -51,10 +51,16 @@ if (sys.platform.startswith("darwin")): platform = "darwin"
 output = {'normal': False, 'debug': False, 'quiet': False}
 
 # Itaka images/ directory
+# prefix will be changed on install to specify where the installed files are
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
+prefix = "/usr/share/itaka/images/"
+if os.path.exists(prefix):
+    image_dir = prefix
 
-# Local configuration file
-local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
+# See if our images are there before starting
+if not os.path.exists(image_dir):
+    print "[*] ERROR: Could not find images directory '%s'" % (image_dir)
+    sys.exit(1)
 
 # Save path for screenshots (system-specific specified later on)
 save_path = os.getcwd()

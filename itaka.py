@@ -22,7 +22,7 @@
 
 """ Itaka main loader core """
 
-import sys, traceback 
+import sys, traceback
 
 # Itaka core modules
 try:

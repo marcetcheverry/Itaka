@@ -4,7 +4,7 @@ Milestone 1 (first release):
  - FIX: Optimize and thouroughly test preferences dropdown effect.
 
 - Other
- - NEW: Make Ubuntu/Debian/Windows binaries. Python distutils setup.
+ - NEW: Make Ubuntu/Debian/Windows binaries.
 
 Milestone 2 (second release):
 
@@ -15,6 +15,7 @@ Milestone 2 (second release):
 
 - GUI:
  - NEW: Add options to report errors in the system tray (blinking true). The window should pop up
+ - NEW: Translations
 
 - Code:
  - FIX: Recomment and make it beautiful to some sort of python standard

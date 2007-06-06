@@ -590,7 +590,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 elif failuretype == "debug": 
                     icon = ['stock', 'STOCK_DIALOG_INFO']
                
-            # TODO: Set background
             if icon is not None:
                 if icon[0] == "stock":
                     self.insertediter = self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), self.message])
