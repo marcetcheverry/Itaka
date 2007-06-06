@@ -56,7 +56,7 @@ except ImportError:
     sys.exit(1)
 
 if gtk.gtk_version[1] < 10:
-    print "[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed" % ".".join(str(x) for x in gtk.gtk_version)
+    print "[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed" % (".".join(str(x) for x in gtk.gtk_version))
     sys.exit(1)
 
 class Gui:
@@ -235,7 +235,7 @@ class Gui:
         self.logvbox.pack_start(self.lognotebook, False, False, 4)
         self.logvbox.pack_start(self.loghbox, False, False, 4)
 
-        self.logboxLabel = gtk.Label("<b>Event log</b>")
+        self.logboxLabel = gtk.Label("<b>Server log</b>")
         self.logboxLabel.set_use_markup(True)
 
         # Expander
@@ -568,24 +568,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
         return
 
-    def logger(self, args, failure=False, failuretype=None, eventsonly=False, icon=None):
-        """ Handle logging in the GUI. Arguments: 'args' is a dict { 'key': [str(msg)]], however, when handling failures the message tuple contains an extra item containing a detailed message for separation in the GUI log viewers. 'failure' is a boolean specifying whether we are logging an error. 'failuretype' is a string specyfing what kind of failure it is, either 'error', 'warning' or 'debug'. 'eventsonly' is a boolean to spcecify if the log message will only go to the events log. 'icon' is tuple, the first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object. It is used for the event log in the GUI """
+    def logger(self, args, failure=False, failuretype=None, eventslog=False, detailedmessage=False, icon=None):
+        """ Handle logging in the GUI. Arguments: 'args' is a dict { 'key': [str(msg)]], however, when handling failures the message tuple contains an extra item containing a detailed message for separation in the GUI log viewers. 'failure' is a boolean specifying whether we are logging an error. 'failuretype' is a string specyfing what kind of failure it is, either 'error', 'warning' or 'debug'. 'eventslog' is a boolean to specify if the log message will go to the events log. 'eventslog' is a boolean to spcecify if the log message will go to the events log. 'icon' is tuple, the first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object. It is used for the event log in the GUI """
 
         self.message = args['message'][0]
+
         # The detailed log gets the detailed mesage on failures
-        if failure:
+        if failure or detailedmessage:
             self.message = args['message'][1]
     
-        # Write out the message to the GUI	
+        # Write out the message to the detailed GUI	
         self.logdetailsbuffer.insert_at_cursor("\r" +self.message,len("\r" + self.message))
         # Automatically scroll. Use wrap until fix.
         self.logdetailstextview.scroll_mark_onscreen(self.logdetailsbuffer.get_insert())
 
-        if eventsonly or failure:
+        if eventslog or failure:
+            # Use the non-detailed mesage
+            self.message = args['message'][0]
             # The event log
             if failure:
-                # Use the non-detailed mesage
-                self.message = args['message'][0]
                 # Failures can not set icons, we set them.
                 if failuretype == "error":
                     icon = ['stock', 'STOCK_DIALOG_ERROR']
@@ -593,7 +594,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                     icon = ['stock', 'STOCK_DIALOG_WARNING']
                 elif failuretype == "debug": 
                     icon = ['stock', 'STOCK_DIALOG_INFO']
-               
+
             if icon is not None:
                 if icon[0] == "stock":
                     self.insertediter = self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), self.message])
@@ -686,11 +687,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             # Announce on log & console stdout
             if self.configuration['screenshot']['format'] == "jpeg":
-                self.console.msg('Server started on port %s' % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_CONNECT'])
-                self.console.msg('Server started on port %s TCP. Serving %s images with %s%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), self, False, ['stock', 'STOCK_CONNECT'])
+                self.console.msg(['Server started on port %s' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %s%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality'])], self, True, True, ['stock', 'STOCK_CONNECT'])
             else:
-                self.console.msg('Server started on port %s.' % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_CONNECT'])
-                self.console.msg('Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), self, False, ['stock', 'STOCK_CONNECT'])
+                self.console.msg(['Server started on port %s' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper())], self, True, True, ['stock', 'STOCK_CONNECT'])
 
             # Change buttons
             self.buttonStartstop.set_active(True)
@@ -711,7 +710,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         else:
             if self.server_listening:
-                self.console.msg("Server stopped", self, True, ['stock', 'STOCK_DISCONNECT'])
+                self.console.msg("Server stopped", self, True, False, ['stock', 'STOCK_DISCONNECT'])
 
                 self.ilistener.stopListening()
                 self.server_listening = False
@@ -739,7 +738,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def restart_server(self):
         if self.server_listening:
-            self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_REFRESH'])
+            self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']), self, True, False, ['stock', 'STOCK_REFRESH'])
             self.startstop(None, "stop")
             self.startstop(None, "start")
 
@@ -810,7 +809,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def talk(self, action, number=False, ip=False, time=False):
         """ Handler for communcations between the server backend, and the GUI. """
         if (action == "updateGuiStatus" ):
-            self.console.msg("Screenshot number " + str(number) + " served to " + str(ip), self, True, ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+            self.console.msg("Screenshot number " + str(number) + " served to " + str(ip), self, True, False, ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
 
             self.labelServed.set_text("<b>Served</b>: " + str(number))
             self.labelServed.set_use_markup(True)

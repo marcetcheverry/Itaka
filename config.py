@@ -44,12 +44,6 @@ system = os.name
 platform = None
 if (sys.platform.startswith("darwin")): platform = "darwin"
 
-# Specify console output settings. 
-# 'normal' is for all normal operation mesages and warnings (not including errors)
-# 'debug' is for all messages through self.console.debug
-# 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
-output = {'normal': False, 'debug': False, 'quiet': False}
-
 # Itaka images/ directory
 # prefix will be changed on install to specify where the installed files are
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
@@ -84,12 +78,25 @@ if system == "posix" and platform != "darwin":
         print "[*] WARNING: Pynotify module is missing, disabling notifications"
         notifyavailable = False
 
+# Specify console output settings. 
+# 'normal' is for all normal operation mesages and warnings (not including errors)
+# 'debug' is for all messages through self.console.debug
+# 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
+output = {'normal': False, 'debug': False, 'quiet': False}
+
 # User's configuration values 
 values = {}
 
-class ConfigParser:		
+class ConfigParser:
+    def __init__(self, arguments=None):
+        """ 'arguments' the full output of sys.argv """
+        if arguments is not None and len(arguments) > 1 and arguments[-1] == "-debug":
+            global output
+            output = {'normal': True, 'debug': True, 'quiet': False}
+            print "[*] Initializing in debug mode..."
+
     def load(self, notify=True):
-        """Set up and load configuration. """
+        """ Set up and load configuration """
         self.configfile = None
 
         # Check routine
@@ -127,7 +134,7 @@ class ConfigParser:
         return values
 
     def save(self, valuesdict):
-        """ Saves a dict containing the configuration."""
+        """ Saves a dict containing the configuration """
         # Unpack the dict into section, option, value
         for section in valuesdict.keys():
             for key, value in valuesdict[section].items():
@@ -142,7 +149,7 @@ class ConfigParser:
             if output['debug']: traceback.print_exc()
 
     def update(self, section, key, value):
-        """ Update a specific key's value."""	
+        """ Update a specific key's value """	
         config.set(section, key, value)
         # Save
         try:
@@ -153,7 +160,7 @@ class ConfigParser:
             if output['debug']: traceback.print_exc()
 
     def create(self, path):
-        """ Create a configuration file from default values. """
+        """ Create a configuration file from default values """
         # Create sections
         for section in ('server', 'screenshot', 'html'): config.add_section(section)
 
