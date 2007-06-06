@@ -9,9 +9,11 @@ Milestone 2 (second release):
  - NEW: Add options to report errors in the system tray (blinking true). The window should pop up
  - NEW: Translations
  - FIX: Optimize and thouroughly test preferences dropdown effect.
+ - FIX: Update configuration keys on a per-key basis not on a all-or-nothing dict differential
 
 - Code:
  - FIX: Recomment and make it beautiful to some sort of python standard
 
 - Other:
+ - NEW: Add -debug switch to print all output and tracebacks
  - NEW: Make Windows binaries
