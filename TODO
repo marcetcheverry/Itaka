@@ -1,14 +1,21 @@
-* Core
- * Add option to quiet all console output
- * Decide what to do with the screenshot path, home or temp?
+Milestone 1 (first release):
 
-* GUI
- * Consider trayicon support through GTK
-http://72.14.253.104/search?q=cache:RjfAr_bql5QJ:marcin.af.gliwice.pl/if-then-else-20070121143245+gtk.StatusIcon&hl=en&ct=clnk&cd=6&gl=us&client=firefox-a
- 
- * Preferences
-  * Integrate preferences into main window
-  * Support dynamic preferences
+- Preferences  
+ - FIX: Optimize and thouroughly test preferences dropdown effect.
 
-* Other
- * Make Ubuntu/Debian/Windows binaries. Python distutils setup.
+Milestone 2 (second release):
+
+- Server
+ - NEW: Add option to take a screenshot of the current top window (see gnome-screenshot)
+ - MAYBE: Add option to notify via audio
+ - MAYBE: Add options to the preferences to specify console output, animations
+
+- GUI:
+ - NEW: Add options to report errors in the system tray (blinking true). The window should pop up
+ - NEW: Translations
+
+- Code:
+ - FIX: Recomment and make it beautiful to some sort of python standard
+
+- Other:
+ - NEW: Make Windows binaries
