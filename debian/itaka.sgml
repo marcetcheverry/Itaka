@@ -1,0 +1,71 @@
+<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+
+  <!-- Please adjust the date whenever revising the manpage. -->
+  <!ENTITY dhdate      "<date>5 Jun 2007</date>">
+  <!ENTITY dhemail     "<email>santusmarc@gmail.com</email>">
+  <!ENTITY dhusername  "Marc E.">
+  <!ENTITY dhpackage   "itaka">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      <firstname>Marc</firstname>
+      <surname>E.</surname>
+    </author>
+    <copyright>
+      <year>2003-2007</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  <refmeta>
+    <refentrytitle>ITAKA</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+
+    <refpurpose>On-demand screenshooting server</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+      <para>Itaka is a on-demand screenshooting server based on the HTTP protocol. It integrates a specifically coded server to take screenshots on-demand when your machine is queried through a remote browser. It has a GTK GUI for client notification.</para>
+
+  </refsect1>
+  <refsect1>
+    <title>SEE ALSO</title>
+
+    <para>/usr/share/doc/itaka/README.gz</para>
+  </refsect1>
+  <refsect1>
+    <title>AUTHOR</title>
+
+    <para>Itaka was written by: Marc E. &dhemail;.</para>
+
+    <para>This manual page was written by &dhusername; &dhemail; for
+      the &debian; system (but may be used by others).  Permission is
+      granted to copy, distribute and/or modify this document under
+      the terms of the &gnu; General Public License, Version 2 any 
+      later version published by the Free Software Foundation.
+    </para>
+    <para>
+      On Debian systems, the complete text of the GNU General Public
+      License can be found in /usr/share/common-licenses/GPL.
+    </para>
+
+  </refsect1>
+</refentry>
+

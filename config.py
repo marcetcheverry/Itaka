@@ -1,22 +1,23 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# This program is free software; you can redistribute it and/or modify
+# Itaka is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# any later version.
 # 
-# This program is distributed in the hope that it will be useful,
+# Itaka is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
+# along with Itaka; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
 # http://itaka.jardinpresente.com.ar
+#
 # $Id$
 
 """ Itaka Configuration Parser and Engine """
@@ -29,35 +30,61 @@ import ConfigParser, os, sys, shutil, traceback
 # Set up instance
 config = ConfigParser.ConfigParser()
 
-# Set up specific variables
+# Set up global variables
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
 # Version (do not change)
 version = "0.1"
 revision = "$Rev"
 
-#: Check system or specify per os.name standard
+# Check system or specify per os.name standard
 system = os.name
 
 # Support darwin specific stuff
 platform = None
 if (sys.platform.startswith("darwin")): platform = "darwin"
 
+# Specify console output settings. 
+# 'normal' is for all normal operation mesages and warnings (not including errors)
+# 'debug' is for all messages through self.console.debug
+# 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
+output = {'normal': False, 'debug': False, 'quiet': False}
+
 # Itaka images/ directory
-image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "images/")
+# prefix will be changed on install to specify where the installed files are
+image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
+prefix = "/usr/share/itaka/images/"
+if os.path.exists(prefix):
+    image_dir = prefix
 
-# Local configuration file
-local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
+# See if our images are there before starting
+if not os.path.exists(image_dir):
+    print "[*] ERROR: Could not find images directory '%s'" % (image_dir)
+    sys.exit(1)
 
-# Save path for screenshots (system-specific)
+# Save path for screenshots (system-specific specified later on)
 save_path = os.getcwd()
 
-if system == 'posix': 
-    save_path = "/tmp"
-elif system == 'nt': 
+if os.environ.get('HOME') is not None:
+    save_path = os.path.join(os.environ.get('HOME'), ".itaka")
+else:
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
-#: Global configuration values 
+# Use notifications where libnotify is available
+notifyavailable = False
+if system == "posix" and platform != "darwin":
+    try:
+        import pynotify
+        notifyavailable = True
+
+        if not pynotify.init("Itaka"):
+            print "[*] WARNING: Pynotify module is failing, disabling option"
+            notifyavailable = False
+    except ImportError:
+        print "[*] WARNING: Pynotify module is missing, disabling option"
+        notifyavailable = False
+
+# User's configuration values 
 values = {}
 
 class ConfigParser:		
@@ -78,17 +105,18 @@ class ConfigParser:
                 self.configfile = os.path.join(os.environ['APPDATA'], "itaka/itaka.ini")
         else:
             # Generic system/paths (using local)	
-                if (os.path.exists(local_config)): 
-                    self.configfile = local_config
-                else:	
-                    self.create(local_config)
+            if (os.path.exists(local_config)): 
+                self.configfile = local_config
+            else:	
+                self.create(local_config)
         # Read and assign values from the configuration file 
         try:
             config.read(self.configfile)
-            if notify: print "[*] Read configuration (%s)" % (self.configfile)
+            if output['normal']: print "[*] Read configuration (%s)" % (self.configfile)
+
         except:
-            if notify: print "[*] ERROR: Could not read config! (%s)" % (self.configfile)
-            traceback.print_exc()
+            if output['normal']: print "[*] ERROR: Could not read configuration file (%s)" % (self.configfile)
+            if output['debug']: traceback.print_exc()
 
         """ Retrieve values and return them as a dict."""
         global values
@@ -108,10 +136,10 @@ class ConfigParser:
         # Save
         try:
             config.write(open(self.configfile, 'w'))
-            print "[*] Saving configuration... "	
+            if output['normal']: print "[*] Saving configuration... "	
         except:		
-            print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-            traceback.print_exc()
+            if not output['quiet']: print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+            if output['debug']: traceback.print_exc()
 
     def update(self, section, key, value):
         """ Update a specific key's value."""	
@@ -119,23 +147,23 @@ class ConfigParser:
         # Save
         try:
             config.write(open(self.configfile, 'w'))
-            print "[*] Updating configuration key %s to %s" % (key, value)	
+            if output['normal']: print "[*] Updating configuration key %s to %s" % (key, value)	
         except:
-            print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
-            traceback.print_exc()
+            if not output['quiet']: print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
+            if output['debug']: traceback.print_exc()
 
     def create(self, path):
         """ Create a configuration file from default values. """
         # Create sections
         for section in ('server', 'screenshot', 'html'): config.add_section(section)
 
-        print "[*] Creating default configuration..."
+        if output['normal']: print "[*] Creating default configuration..."
         # Set default values
         config.set("server", "port", 8000)
         config.set("server", "notify", True)
 
         config.set("screenshot", "format", "jpeg")
-        config.set("screenshot", "quality", 80)
+        config.set("screenshot", "quality", 30)
         config.set("screenshot", "path", save_path)
 
 	config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
@@ -148,7 +176,7 @@ class ConfigParser:
         try:
             config.write(open(path, 'w'))
         except:
-            print "[*] ERROR: Could not write configuration file %s" % (path)
-            traceback.print_exc()
+            if not output['quiet']: print "[*] ERROR: Could not write configuration file %s" % (path)
+            if output['debug']: traceback.print_exc()
 
         self.configfile = path		
