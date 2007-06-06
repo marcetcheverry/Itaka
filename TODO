@@ -1,8 +1,3 @@
-Milestone 1 (first release):
-
-- Preferences  
- - FIX: Optimize and thouroughly test preferences dropdown effect.
-
 Milestone 2 (second release):
 
 - Server
@@ -13,6 +8,7 @@ Milestone 2 (second release):
 - GUI:
  - NEW: Add options to report errors in the system tray (blinking true). The window should pop up
  - NEW: Translations
+ - FIX: Optimize and thouroughly test preferences dropdown effect.
 
 - Code:
  - FIX: Recomment and make it beautiful to some sort of python standard
