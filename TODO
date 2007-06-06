@@ -1,19 +1,18 @@
-Milestone 2 (second release):
+Please see the roadmap at: http://www.jardinpresente.com.ar/trac/itaka/roadmap
 
-- Server
- - NEW: Add option to take a screenshot of the current top window (see gnome-screenshot)
- - MAYBE: Add option to notify via audio
- - MAYBE: Add options to the preferences to specify console output, animations
+Milestone 0.2:
+ * Server
+  * Add option to take a screenshot of the current top window (see gnome-screenshot) #3
 
-- GUI:
- - NEW: Add options to report errors in the system tray (blinking true). The window should pop up
- - NEW: Translations
- - FIX: Optimize and thouroughly test preferences dropdown effect.
- - FIX: Update configuration keys on a per-key basis not on a all-or-nothing dict differential
+ * GUI:
+  * Add options to report errors in the system tray (blinking true). #7
+  * Optimize and thouroughly test preferences dropdown effect. #2
+  * Update configuration keys on a per-key basis not on a all-or-nothing dict differential #9
 
-- Code:
- - FIX: Recomment and make it beautiful to some sort of python standard
+ * Code:
+  * Recomment and make it beautiful to some sort of python standard. Use a checker. #8
 
-- Other:
- - NEW: Add -debug switch to print all output and tracebacks
- - NEW: Make Windows binaries
+ * Other:
+  * Add -debug switch to print all output and tracebacks #5
+  * Make Windows binaries #6
+
