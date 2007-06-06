@@ -787,7 +787,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         # "Time: " + ", ".join(self.pieces[:-1]) + "and" + self.pieces[-1] + " ago" 
 
-        self.labelTime.set_text("<b>Time</b>: " + ", ".join(self.pieces) + " ago")
+        self.labelTime.set_text("<b>When</b>: " + ", ".join(self.pieces) + " ago")
         self.labelTime.set_use_markup(True)
 
         # Need this so it runs more than once. Weird.
@@ -814,7 +814,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             self.labelServed.set_text("<b>Served</b>: " + str(number))
             self.labelServed.set_use_markup(True)
-            self.labelLastip.set_text("<b>IP</b>: " + str(ip))
+            self.labelLastip.set_text("<b>Client</b>: " + str(ip))
             self.labelLastip.set_use_markup(True)
             self.statusIcon.set_tooltip("Itaka - %s served" % (self.__plural(int(number), 'screenshot')))
             # if (self.configuration['server']['notify'] == "True"):
