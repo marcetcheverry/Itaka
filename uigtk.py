@@ -107,10 +107,12 @@ class Gui:
         self.menuitemstop.set_image(self.stopimage)
         self.menuitemstop.connect('activate', self.startstop, "stop")
         self.menuitemstop.set_sensitive(False)
-        self.menuitemnotifications = gtk.CheckMenuItem("Show Notifications")
-        if (self.configuration['server']['notify'] == "True"):
-            self.menuitemnotifications.set_active(True)
-        self.menuitemnotifications.connect('toggled', self.__statusicon_notify)
+
+        if self.itakaglobals.notifyavailable: 
+            self.menuitemnotifications = gtk.CheckMenuItem("Show Notifications")
+            if (self.configuration['server']['notify'] == "True"):
+                self.menuitemnotifications.set_active(True)
+            self.menuitemnotifications.connect('toggled', self.__statusicon_notify)
 
         self.menuitemseparator = gtk.SeparatorMenuItem()
         self.menuitemseparator1 = gtk.SeparatorMenuItem()
@@ -121,8 +123,9 @@ class Gui:
 
         self.statusmenu.append(self.menuitemstart)
         self.statusmenu.append(self.menuitemstop)
-        self.statusmenu.append(self.menuitemseparator)
-        self.statusmenu.append(self.menuitemnotifications)
+        if self.itakaglobals.notifyavailable: 
+            self.statusmenu.append(self.menuitemseparator)
+            self.statusmenu.append(self.menuitemnotifications)
         self.statusmenu.append(self.menuitemseparator1)
         self.statusmenu.append(self.menuitemabout)
         self.statusmenu.append(self.menuitemquit)
@@ -740,6 +743,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Remove stale screenshot and quit
         if os.path.exists(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))): 
             os.remove(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format'])))
+
+        # Windows needs this...
+        del self.statusIcon
 
         gtk.main_quit()
 
