@@ -294,12 +294,14 @@ class Gui:
 
         # Combos
         self.preferencesComboformat = gtk.combo_box_new_text()
+        self.preferencesComboformat.connect('changed', self.__preferencesComboChanged)
         self.preferencesComboformat.append_text("JPG")
         self.preferencesComboformat.append_text("PNG")
         if (self.configuration['screenshot']['format'] == "jpeg"):
             self.preferencesComboformat.set_active(0)
         else: 
             self.preferencesComboformat.set_active(1)
+            self.preferencesHBox3.set_sensitive(False)
 
         self.preferencesChecknotifications = gtk.CheckButton()
         if (self.configuration['server']['notify'] == "True"):
@@ -395,11 +397,7 @@ class Gui:
 
         if self.configuration['server']['port'] !=  str(self.preferencesSpinport.get_value_as_int()):
             self.configuration['server']['port'] =  str(self.preferencesSpinport.get_value_as_int())
-            # Restart the server
-            if self.server_listening:
-                self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_REFRESH'])
-                self.startstop(None, "stop")
-                self.startstop(None, "start")
+            self.restart_server()
 
         # Check if the configuration changed
         if (self.configurationdict != self.currentconfiguration):
@@ -528,7 +526,6 @@ class Gui:
             self.configuration['server']['notify'] = 'True'
         else:
             self.configuration['server']['notify'] = 'False'
-        # TODO: This should also save
 
     def about(self, data=None):
         """ Create the About dialog. """
@@ -649,6 +646,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
 
+    def __preferencesComboChanged(self, widget):
+        """ Callback for when a preferenes gtk.combo_box is changed """
+        if self.preferencesComboformat.get_active_text() == "PNG":
+            self.preferencesHBox3.set_sensitive(False)
+        else:
+            self.preferencesHBox3.set_sensitive(True)
+
     def __checkwidget(self, widget):
         """ Check the status of the toggle button """
         if hasattr(widget, 'get_active'):
@@ -656,15 +660,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         else:
             return False
 
-    def startstop(self, widget, traydata=None):
-        """ Start or stop the screenshooting server. 'traydata' is a string either 'start' or 'stop' to be used from the Status tray icon """
+    def startstop(self, widget, traydata=None, dontexpandlogger = False):
+        """ Start or stop the screenshooting server. 'traydata' is a string either 'start' or 'stop' to be used from the Status tray icon or error handling. 'dontexpandlogger' handles whether the logger is expanded or not by default when changing status. """
         if (self.__checkwidget(widget) or traydata == "start"):
             if self.server_listening: return
             # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
             # Set up the twisted site
             # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
-            self.sinstance = iserver.ImageResource(self, self.console, (self.itakaglobals, self.configuration))
+            self.sinstance = iserver.ImageResource(self, self.console)
             self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
             self.root.putChild('screenshot', self.sinstance)
             self.root.putChild('', self.root)
@@ -675,7 +679,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 self.ilistener = reactor.listenTCP(int(self.configuration['server']['port']), self.site)
                 self.server_listening = True
             except twisted.internet.error.CannotListenError:
-                self.console.error(('Gui', 'startstop'), 'Failed to start server, another server is listening on port %s' % (self.configuration['server']['port']), self)
+                self.console.error(('Gui', 'startstop'), 'Failed to start server, port %s is already in use' % (self.configuration['server']['port']), self)
                 # NOTE: This actually calls startstop to stop the server again, acts as a click
                 self.buttonStartstop.set_active(False)
                 return
@@ -726,11 +730,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 self.labelLastip.set_text('')
                 self.labelTime.set_text('')
                 self.labelServed.set_text('')
-                self.expander.set_expanded(False)				
-                self.expander.set_sensitive(False)
+                if not dontexpandlogger:
+                    self.expander.set_expanded(False)				
+                    self.expander.set_sensitive(False)
                 self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
                 self.menuitemstart.set_sensitive(True)
                 self.menuitemstop.set_sensitive(False)
+
+    def restart_server(self):
+        if self.server_listening:
+            self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']), self, True, ['stock', 'STOCK_REFRESH'])
+            self.startstop(None, "stop")
+            self.startstop(None, "start")
 
     def destroy(self, *args):
         """ Callback for the main window's destroy. """
