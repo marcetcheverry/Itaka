@@ -66,7 +66,6 @@ class ImageResource(Resource):
                 lcounter += 1
 
                 # Call libnotify
-                print self.configuration['server']['notify']
                 if (self.configuration['server']['notify'] == "True") and self.itakaglobals.notifyavailable != False:
                     import pynotify
 
