@@ -63,6 +63,12 @@ class Console:
         if not self.itakaglobals.output['quiet']:
             print "[*] ERROR: %s: %s" % (self.array, message)
         if gui:
+            # Show the window and its widgets, set the status icon blinking timeout
+            if not gui.window.get_property("visible"):
+                gui.window.present()
+                gui.statusicon_blinktimeout()
+                gui.window.move(gui.window_position[0], gui.window_position[1])
+
             gui.expander.set_expanded(True)
             gui.expander.set_sensitive(True)
             # Stop the server

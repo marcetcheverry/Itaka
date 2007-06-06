@@ -5,7 +5,6 @@ Milestone 0.2:
   * Add option to take a screenshot of the current top window (see gnome-screenshot) #3
 
  * GUI:
-  * Add options to report errors in the system tray (blinking true). #7
   * Optimize and thouroughly test preferences dropdown effect. #2
   * Update configuration keys on a per-key basis not on a all-or-nothing dict differential #9
 
@@ -13,6 +12,5 @@ Milestone 0.2:
   * Recomment and make it beautiful to some sort of python standard. Use a checker. #8
 
  * Other:
-  * Add -debug switch to print all output and tracebacks #5
   * Make Windows binaries #6
 
