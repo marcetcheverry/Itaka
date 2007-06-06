@@ -78,10 +78,10 @@ if system == "posix" and platform != "darwin":
         notifyavailable = True
 
         if not pynotify.init("Itaka"):
-            print "[*] WARNING: Pynotify module is failing, disabling option"
+            print "[*] WARNING: Pynotify module is failing, disabling notifications"
             notifyavailable = False
     except ImportError:
-        print "[*] WARNING: Pynotify module is missing, disabling option"
+        print "[*] WARNING: Pynotify module is missing, disabling notifications"
         notifyavailable = False
 
 # User's configuration values 
@@ -160,7 +160,7 @@ class ConfigParser:
         if output['normal']: print "[*] Creating default configuration..."
         # Set default values
         config.set("server", "port", 8000)
-        config.set("server", "notify", True)
+        config.set("server", "notify", notifyavailable)
 
         config.set("screenshot", "format", "jpeg")
         config.set("screenshot", "quality", 30)

@@ -359,14 +359,18 @@ class Gui:
             formatvalue = "jpeg"
             self.configuration['screenshot']['format'] = 'jpeg'
 
-        notifyvalue = self.preferencesChecknotifications.get_active()
-        if notifyvalue:
-            notifyvalue = 'True'
-            self.menuitemnotifications.set_active(True)
-            self.configuration['server']['notify'] = 'True'
+        if self.itakaglobals.notifyavailable:
+            notifyvalue = self.preferencesChecknotifications.get_active()
+            if notifyvalue:
+                notifyvalue = 'True'
+                self.menuitemnotifications.set_active(True)
+                self.configuration['server']['notify'] = 'True'
+            else:
+                notifyvalue = 'False'
+                self.menuitemnotifications.set_active(False)
+                self.configuration['server']['notify'] = 'False'
         else:
             notifyvalue = 'False'
-            self.menuitemnotifications.set_active(False)
             self.configuration['server']['notify'] = 'False'
 
         # Build a configuration dictionary to send to the configuration engine's
