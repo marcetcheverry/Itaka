@@ -38,15 +38,17 @@ lcounter = 0
 class ImageResource(Resource):
     """ Take the screenshot code and handle the requests. """
 
-    def __init__(self, guiinstance, consoleinstance, configuration):
-        """ Intialize inherited GUI, Console and global Configuration values """
+    def __init__(self, guiinstance, consoleinstance):
+        """ Intialize inherited GUI, Console and global Configuration (through GUI instance) values """
         self.gui = guiinstance
         self.console = consoleinstance
-        self.itakaglobals = configuration[0]
-        self.configuration = configuration[1]
+        self.itakaglobals = self.gui.itakaglobals
 
     def render_GET(self, request):
         """ Handle GET requests for screenshot. """
+
+        # Get up to date configuration values
+        self.configuration = self.gui.configuration
 
         if (request.uri == "/screenshot"):
             request.setHeader("Content-type", "image/" + self.configuration['screenshot']['format'])
@@ -57,25 +59,24 @@ class ImageResource(Resource):
             # self.icbrowser = request.getClient()
 
             # This takes the screenshot
-            try:
-                self.shotFile = iscreenshot.Screenshot(self.gui, self.configuration)
-            except:
-                self.console.error(['ImageResource','render_get'], "Could not take screenshot", self.gui)
+            self.shotFile = iscreenshot.Screenshot(self.gui)
 
-            global lcounter
-            lcounter += 1
+            if self.shotFile is not False:
+                global lcounter
+                lcounter += 1
 
-            # Call libnotify
-            if (self.configuration['server']['notify'] == "True") and self.itakaglobals.notifyavailable != False:
-                import pynotify
+                # Call libnotify
+                print self.configuration['server']['notify']
+                if (self.configuration['server']['notify'] == "True") and self.itakaglobals.notifyavailable != False:
+                    import pynotify
 
-                uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
+                    uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
-                n = pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
-                if not n.show():
-                    pass
+                    n = pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
+                    if not n.show():
+                        pass
 
-            # Tell the GUI what changed
-            self.gui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
+                # Tell the GUI what changed
+                self.gui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
 
-            return open(self.shotFile, 'rb').read()		
+                return open(self.shotFile, 'rb').read()		

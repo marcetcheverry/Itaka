@@ -59,6 +59,10 @@ class Console:
         if gui:
             gui.expander.set_expanded(True)
             gui.expander.set_sensitive(True)
+            # Stop the server
+            if gui.server_listening:
+                gui.startstop(None, "stop", True)
+
             gui.logger({'message': [str(message), str("ERROR: %s: %s" % (self.array, message))]}, True, 'error', eventsonly, icon)
 
     def debug(self, caller, message, gui=False, eventsonly=False, icon=None):

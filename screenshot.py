@@ -26,8 +26,11 @@ import gc, os, gtk, pygtk
 pygtk.require("2.0")
 
 
-def Screenshot(guiinstance, configuration):
-    """ Returns a screenshot file. 'configuration' is configuration values """
+def Screenshot(guiinstance):
+    """ Returns a screenshot file. """
+    # Use the GUI's instance configuration, to support dynamic preferences
+    configuration = guiinstance.configuration
+    console = guiinstance.console
 
     # Final absolute path to the screenshot file
     shotFile = os.path.join(configuration['screenshot']['path'], 'itakashot.%s' % (configuration['screenshot']['format']))
@@ -44,10 +47,12 @@ def Screenshot(guiinstance, configuration):
     try:
         if configuration['screenshot']['format'] == 'jpeg':
             screenshot.save(shotFile, configuration['screenshot']['format'].lower(), {"quality":str(configuration['screenshot']['quality'])})
+
         else:
             screenshot.save(shotFile, configuration['screenshot']['format'].lower())
     except:
-        self.console.error(['ImageResource','screenshot'], "Could not save screenshot", guiinstance)
+        console.error(['ImageResource','screenshot'], "Could not save screenshot", guiinstance)
+        return False
 
     # Important workaround to avoid a memory leak.
     # http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp
