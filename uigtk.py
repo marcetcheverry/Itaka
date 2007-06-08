@@ -38,8 +38,9 @@ except ImportError:
 
 try:
     import server as iserver
+    import screenshot
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka server module"
+    print "[*] ERROR: Failed to import Itaka modules"
     traceback.print_exc()
     sys.exit(1)
 
@@ -60,11 +61,18 @@ if gtk.gtk_version[1] < 10:
     sys.exit(1)
 
 class Gui:
-    """ GTK GUI """
+    """
+    GTK+ GUI
+    """
     def __init__(self, consoleinstance, configuration):
-        """ 'consoleinstance' is an instance of the Console class. 'configuration' is a tuple of configuration globals and an instance of the user's configuration values """
-       
-        # Set up some variables
+        """
+        @type consoleinstance: instance
+        @param consoleinstance: An instance of the L{Console} class.
+        @type configuration: tuple
+        @param configuration: A tuple of configuration globals and an instance of L{ConfigParser}
+        """
+
+        #: Server status
         self.server_listening = False
 
         # Load our configuration and console instances and values
@@ -111,7 +119,7 @@ class Gui:
 
         if self.itakaglobals.notifyavailable: 
             self.menuitemnotifications = gtk.CheckMenuItem("Show Notifications")
-            if (self.configuration['server']['notify'] == "True"):
+            if (self.configuration['server']['notify']):
                 self.menuitemnotifications.set_active(True)
             self.menuitemnotifications.connect('toggled', self.__statusicon_notify)
 
@@ -368,14 +376,14 @@ class Gui:
             if notifyvalue:
                 notifyvalue = 'True'
                 self.menuitemnotifications.set_active(True)
-                self.configuration['server']['notify'] = 'True'
+                self.configuration['server']['notify'] = True
             else:
                 notifyvalue = 'False'
                 self.menuitemnotifications.set_active(False)
-                self.configuration['server']['notify'] = 'False'
+                self.configuration['server']['notify'] = False
         else:
             notifyvalue = 'False'
-            self.configuration['server']['notify'] = 'False'
+            self.configuration['server']['notify'] = False
 
         # Build a configuration dictionary to send to the configuration engine's
         # save method. Redundant values must be included for the comparison
@@ -537,9 +545,9 @@ class Gui:
     def __statusicon_notify(self, widget):
         """ Callback to disable or enable notifications on the fly from the status icon. 'active' is a boolean for the checkbox """
         if self.menuitemnotifications.get_active():
-            self.configuration['server']['notify'] = 'True'
+            self.configuration['server']['notify'] = True
         else:
-            self.configuration['server']['notify'] = 'False'
+            self.configuration['server']['notify'] = False
 
     def about(self, data=None):
         """ Create the About dialog. """
@@ -585,7 +593,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def logger(self, args, failure=False, failuretype=None, eventslog=False, detailedmessage=False, icon=None):
         """ Handle logging in the GUI. Arguments: 'args' is a dict { 'key': [str(msg)]], however, when handling failures the message tuple contains an extra item containing a detailed message for separation in the GUI log viewers. 'failure' is a boolean specifying whether we are logging an error. 'failuretype' is a string specyfing what kind of failure it is, either 'error', 'warning' or 'debug'. 'eventslog' is a boolean to specify if the log message will go to the events log. 'eventslog' is a boolean to spcecify if the log message will go to the events log. 'icon' is tuple, the first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object. It is used for the event log in the GUI """
 
-        self.message = args['message'][0]
+        # Handle twisted errors
+        # 'isError': 1, 'failure': <twisted.python.failure.Failure <type 'exceptions.AttributeError'>> 
+        if args.has_key('isError') and args['isError'] == 1:
+            self.message = str(args['failure'])
+        else:
+            self.message = args['message'][0]
 
         # The detailed log gets the detailed mesage on failures
         if failure or detailedmessage:
@@ -691,19 +704,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             # Start the server. Make an instance to distinguish from self.sreactor().
             try:
-                self.ilistener = reactor.listenTCP(int(self.configuration['server']['port']), self.site)
+                self.ilistener = reactor.listenTCP(self.configuration['server']['port'], self.site)
                 self.server_listening = True
             except twisted.internet.error.CannotListenError:
-                self.console.error(('Gui', 'startstop'), 'Failed to start server, port %s is already in use' % (self.configuration['server']['port']), self)
+                self.console.error(('Gui', 'startstop'), 'Failed to start server, port %d is already in use' % (self.configuration['server']['port']), self)
                 # NOTE: This actually calls startstop to stop the server again, acts as a click
                 self.buttonStartstop.set_active(False)
                 return
 
             # Announce on log & console stdout
             if self.configuration['screenshot']['format'] == "jpeg":
-                self.console.msg(['Server started on port %s' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %s%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality'])], self, True, True, ['stock', 'STOCK_CONNECT'])
+                self.console.msg(['Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %d%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality'])], self, True, True, ['stock', 'STOCK_CONNECT'])
             else:
-                self.console.msg(['Server started on port %s' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper())], self, True, True, ['stock', 'STOCK_CONNECT'])
+                self.console.msg(['Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper())], self, True, True, ['stock', 'STOCK_CONNECT'])
 
             # Change buttons
             self.buttonStartstop.set_active(True)
@@ -717,11 +730,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             # Close the expander
             self.expander.set_sensitive(True)
-
-            # I am not sure about this, notification
-            # if (self.configuration['server']['notify'] == "True"):
-            #        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-
         else:
             if self.server_listening:
                 self.console.msg("Server stopped", self, True, False, ['stock', 'STOCK_DISCONNECT'])
@@ -753,7 +761,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def restart_server(self):
         if self.server_listening:
-            self.console.msg("Restarting the server to listen on port %s" % (self.configuration['server']['port']), self, True, False, ['stock', 'STOCK_REFRESH'])
+            self.console.msg("Restarting the server to listen on port %d" % (self.configuration['server']['port']), self, True, False, ['stock', 'STOCK_REFRESH'])
             self.startstop(None, "stop")
             self.startstop(None, "start")
 
@@ -808,7 +816,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         return True
 
     def __plural(self, count, singular):
-        """ This is a helper function that handles english plural translations """
+        """ 
+        Helper method to handle simple english plural translations.
+        
+        @type count: int
+        @param count: Number.
+        @type singular: str
+        @param singular: Singular version of the word to pluralize.
+        """
 
         # This is the simplest version; a more general version
         # should handle -y -> -ies, child -> children, etc.
@@ -821,25 +836,39 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Only run this event once
         return False
 
-    def talk(self, action, number=False, ip=False, time=False):
-        """ Handler for communcations between the server backend, and the GUI. """
-        if (action == "updateGuiStatus" ):
-            self.console.msg("Screenshot number " + str(number) + " served to " + str(ip), self, True, False, ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+    def update_gui(self, counter=False, ip=False, time=False):
+        """ 
+        Updates the GUI on request from the server.
+        
+        @type counter: int
+        @param counter: Total number of server hits.
+        @type ip: str
+        @param ip: IP address of the client.
+        @type time: datetime.datetime
+        @param time: Time of the request.
+        
+        """
 
-            self.labelServed.set_text("<b>Served</b>: " + str(number))
-            self.labelServed.set_use_markup(True)
-            self.labelLastip.set_text("<b>Client</b>: " + str(ip))
-            self.labelLastip.set_use_markup(True)
-            self.statusIcon.set_tooltip("Itaka - %s served" % (self.__plural(int(number), 'screenshot')))
-            # if (self.configuration['server']['notify'] == "True"):
-            # Show the camera image on tray and interface for 1.5 seconds
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-            self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-            self.notifyimg = gobject.timeout_add(1500, self.notify)
+        self.counter = counter
+        self.ip = ip
+        self.time = time
 
-            # Call the update timer function, and add a timer to update the GUI of its
-            # "Last screenshot taken" time
-            self.__calcsince(time)
-            if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
-            self.iagotimer = gobject.timeout_add(60000, self.__calcsince, time)
+        self.console.msg("Screenshot number %d served to %s" % (self.counter, self.ip), self, True, False, ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+
+        self.labelServed.set_text("<b>Served</b>: %d" % (self.counter))
+        self.labelServed.set_use_markup(True)
+        self.labelLastip.set_text("<b>Client</b>: %s " % (self.ip))
+        self.labelLastip.set_use_markup(True)
+        self.statusIcon.set_tooltip("Itaka - %s served" % (self.__plural(self.counter, 'screenshot')))
+
+        # Show the camera image on tray and interface for 1.5 seconds
+        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
+        self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
+        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
+        self.notifyimg = gobject.timeout_add(1500, self.notify)
+
+        # Call the update timer function, and add a timer to update the GUI of its
+        # "Last screenshot taken" time
+        self.__calcsince(time)
+        if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
+        self.iagotimer = gobject.timeout_add(60000, self.__calcsince, time)

@@ -34,7 +34,7 @@ install:
 	gzip -9 -c share/itaka.1 > share/itaka.1.gz
 	$(INSTALL) -m 644 share/itaka.1.gz $(MANDIR)
 	if test -f $(BINDIR)/itaka; then rm $(BINDIR)/itaka; fi	
-	ln -s  $(LIBDIR)/itaka.py $(BINDIR)/itaka
+	ln -sf  $(LIBDIR)/itaka.py $(BINDIR)/itaka
 	echo $( ls $(BINDIR)/itaka )
 	chmod +x $(BINDIR)/itaka
 	mv config.py.old config.py

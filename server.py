@@ -26,56 +26,74 @@ from twisted.web.resource import Resource
 import datetime, os, traceback, sys
 
 try:
-    import screenshot as iscreenshot
+    import screenshot
+    import error
 except ImportError:
     print "[*] ERROR: Failed to import Itaka screenshot module."
     traceback.print_exc()
     sys.exit(1)
     
-# Server hit iteration counter
-lcounter = 0
-
 class ImageResource(Resource):
-    """ Take the screenshot code and handle the requests. """
+    """ 
+    Handle server requests and call for a screenshot.
+    """
 
     def __init__(self, guiinstance, consoleinstance):
-        """ Intialize inherited GUI, Console and global Configuration (through GUI instance) values """
+        """ 
+        @type guiinstance: instance
+        @param guiinstance: An instance of our L{Gui} class.
+        @type consoleinstance: instance
+        @param consoleinstance: An instance of our L{Console} class.
+        """
+
         self.gui = guiinstance
         self.console = consoleinstance
         self.itakaglobals = self.gui.itakaglobals
+        self.screenshot = screenshot.Screenshot(self.gui)
+        
+        #: Server hits counter
+        self.counter = 0
 
     def render_GET(self, request):
-        """ Handle GET requests for screenshot. """
+        """
+        Handle GET requests for screenshot.
 
-        # Get up to date configuration values
+        @type request: instance
+        @param request: twisted.web.server.Request instance.
+
+        @rtype: str
+        @return: Screenshot image.
+        """
+
+        self.request = request
+
+        # Get up to date configuration values everytime there is a request
+        # FIXME place up
         self.configuration = self.gui.configuration
 
-        if (request.uri == "/screenshot"):
-            request.setHeader("Content-type", "image/" + self.configuration['screenshot']['format'])
-            request.setHeader("Connection", "close")
+        if (self.request.uri == "/screenshot"):
+            self.request.setHeader("Content-type", "image/" + self.configuration['screenshot']['format'])
+            self.request.setHeader("Connection", "close")
 
-            self.icip = request.getClientIP()
+            self.ip = self.request.getClientIP()
             self.time = datetime.datetime.now()
-            # self.icbrowser = request.getClient()
 
-            # This takes the screenshot
-            self.shotFile = iscreenshot.Screenshot(self.gui)
+            try:
+                self.shotFile = self.screenshot.take_screenshot()
+            except error.ItakaScreenshotError:
+                return
 
-            if self.shotFile is not False:
-                global lcounter
-                lcounter += 1
+            self.counter += 1
 
-                # Call libnotify
-                if (self.configuration['server']['notify'] == "True") and self.itakaglobals.notifyavailable != False:
-                    import pynotify
+            if (self.configuration['server']['notify']) and self.itakaglobals.notifyavailable != False:
+                import pynotify
 
-                    uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
+                uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
-                    n = pynotify.Notification("Itaka Screenshot taken", "%s took screenshot number %d" % (self.icip, lcounter), uri)
-                    if not n.show():
-                        pass
+                n = pynotify.Notification("Itaka screenshot taken", "%s took screenshot number %d" % (self.ip, self.counter), uri)
+                n.show()
 
-                # Tell the GUI what changed
-                self.gui.talk('updateGuiStatus', str(lcounter), str(self.icip), self.time)
+            # Tell the GUI what changed
+            self.gui.update_gui(self.counter, self.ip, self.time)
 
-                return open(self.shotFile, 'rb').read()		
+            return open(self.shotFile, 'rb').read()		
