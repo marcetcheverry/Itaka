@@ -54,6 +54,7 @@ class Screenshot():
         
         self.rootscreen = gtk.gdk.screen_get_default()
         self.rootwindow = gtk.gdk.get_default_root_window()
+
         self.screenwidth = gtk.gdk.screen_width()
         self.screenheight = gtk.gdk.screen_height()
 
@@ -108,16 +109,18 @@ class Screenshot():
 
             if not self.currentwindowfailed:
                 # Make the window size also the screen size for scaling purposes
-                self.screenwidth = self.currentwindow[0]
-                self.screenheight = self.currentwindow[1]
+                self.activewindowwidth = self.currentwindow[0]
+                self.activewindowheight = self.currentwindow[1]
 
                 self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
-                        gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screenwidth, self.screenheight),
+                        gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.activewindowwidth, self.activewindowheight),
                         self.rootwindow,
                         gtk.gdk.colormap_get_system(),
-                        self.currentwindow[2], self.currentwindow[3], 0, 0, self.screenwidth, self.screenheight)
+                        self.currentwindow[2], self.currentwindow[3], 0, 0, self.activewindowwidth, self.activewindowheight)
 
         elif not self.configuration['screenshot']['currentwindow'] or self.currentwindowfailed:
+            print "Not current"
+            print self.screenwidth, self.screenheight
             self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
                     gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screenwidth, self.screenheight),
                     self.rootwindow,
@@ -130,11 +133,17 @@ class Screenshot():
             raise error.ItakaScreenshotError, 'Could not grab screenshot, GTK+ error'
 
         if self.configuration['screenshot']['scale']:
+            print "Scaling!"
             # Make it just work, dont bother warning about very rare cases
             if self.configuration['screenshot']['scalepercent'] == 0:
                 self.configuration['screenshot']['scalepercent'] = 1
-            self.scalewidth = self.screenwidth * int(self.configuration['screenshot']['scalepercent']) / 100
-            self.scaleheight = self.screenheight * int(self.configuration['screenshot']['scalepercent']) / 100
+
+            if self.configuration['screenshot']['currentwindow'] and not self.currentwindowfailed:
+                self.scalewidth = self.activewindowwidth * int(self.configuration['screenshot']['scalepercent']) / 100
+                self.scaleheight = self.activewindowheight * int(self.configuration['screenshot']['scalepercent']) / 100
+            else:
+                self.scalewidth = self.screenwidth * int(self.configuration['screenshot']['scalepercent']) / 100
+                self.scaleheight = self.screenheight * int(self.configuration['screenshot']['scalepercent']) / 100
             self.screenshot = self.screenshot.scale_simple(self.scalewidth, self.scaleheight, self.scalingmethod)
 
         # Save the screnshot, checking before if to set JPEG quality

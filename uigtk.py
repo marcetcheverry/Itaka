@@ -93,7 +93,7 @@ class Gui:
         self.window.set_title("Itaka")
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
-        self.window.set_default_size(400, 1)
+        self.window.set_default_size(415, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window_position = self.window.get_position()
 
@@ -270,6 +270,8 @@ class Gui:
         self.preferencesHBox3 = gtk.HBox(False, 0)
         self.preferencesHBox4 = gtk.HBox(False, 0)
         self.preferencesHBox5 = gtk.HBox(False, 0)
+        self.preferencesHBox6 = gtk.HBox(False, 0)
+        self.preferencesHBox7 = gtk.HBox(False, 0)
 
         self.preferencesFramesettings = gtk.Frame()
         self.preferencesSettingslabel = gtk.Label("<b>Preferences</b>")
@@ -280,14 +282,21 @@ class Gui:
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelport.set_alignment(0, 0.50)
 
+        self.preferencesLabelformat = gtk.Label("Format:")
+        self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
+        self.preferencesLabelformat.set_alignment(0, 0.50)
+
         self.preferencesLabelquality = gtk.Label("Quality:")
         self.preferencesLabelquality.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelquality.set_alignment(0, 0.50)
 
+        self.preferencesLabelscale = gtk.Label("Scale:")
+        self.preferencesLabelscale.set_justify(gtk.JUSTIFY_LEFT)
+        self.preferencesLabelscale.set_alignment(0, 0.50)
 
-        self.preferencesLabelformat = gtk.Label("Format:")
-        self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelformat.set_alignment(0, 0.50)
+        self.preferencesLabelactive = gtk.Label("Active window:")
+        self.preferencesLabelactive.set_justify(gtk.JUSTIFY_LEFT)
+        self.preferencesLabelactive.set_alignment(0, 0.50)
 
         self.preferencesLabelnotifications = gtk.Label("Notifications:")
         self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
@@ -300,6 +309,10 @@ class Gui:
         self.adjustmentquality = gtk.Adjustment(float(self.configuration['screenshot']['quality']), 0, 100, 1, 0, 0)
         self.preferencesSpinquality = gtk.SpinButton(self.adjustmentquality)
         self.preferencesSpinquality.set_numeric(True)
+
+        self.adjustmentscale = gtk.Adjustment(float(self.configuration['screenshot']['scalepercent']), 0, 100, 1, 0, 0)
+        self.preferencesSpinscale = gtk.SpinButton(self.adjustmentscale)
+        self.preferencesSpinscale.set_numeric(True)
 
         self.preferencesComboformat = gtk.combo_box_new_text()
         self.preferencesComboformat.connect('changed', self.preferencesComboChanged)
@@ -317,6 +330,12 @@ class Gui:
         else: 
             self.preferencesChecknotifications.set_active(0)
 
+        self.preferencesCheckactive = gtk.CheckButton()
+        if self.configuration['screenshot']['currentwindow']:
+            self.preferencesCheckactive.set_active(1)
+        else: 
+            self.preferencesCheckactive.set_active(0)
+
         self.preferencesButtonClose = gtk.Button("Close", gtk.STOCK_CLOSE)
         self.preferencesButtonClose.connect("clicked", lambda wid: self.contractpreferences())
         
@@ -326,14 +345,18 @@ class Gui:
         self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
         self.preferencesHBox2.pack_start(self.preferencesLabelformat, False, False, 12)
         self.preferencesHBox3.pack_start(self.preferencesLabelquality, False, False, 12)
-        self.preferencesHBox4.pack_start(self.preferencesLabelnotifications, False, False, 12)
+        self.preferencesHBox4.pack_start(self.preferencesLabelactive, False, False, 12)
+        self.preferencesHBox5.pack_start(self.preferencesLabelscale, False, False, 12)
+        self.preferencesHBox6.pack_start(self.preferencesLabelnotifications, False, False, 12)
 
         self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
         self.preferencesHBox2.pack_end(self.preferencesComboformat, False, False, 7)
         self.preferencesHBox3.pack_end(self.preferencesSpinquality, False, False, 7)
-        self.preferencesHBox4.pack_end(self.preferencesChecknotifications, False, False, 7)
-        self.preferencesHBox5.pack_start(self.preferencesButtonAbout, False, False, 7)
-        self.preferencesHBox5.pack_end(self.preferencesButtonClose, False, False, 7)
+        self.preferencesHBox4.pack_end(self.preferencesCheckactive, False, False, 7)
+        self.preferencesHBox5.pack_end(self.preferencesSpinscale, False, False, 7)
+        self.preferencesHBox6.pack_end(self.preferencesChecknotifications, False, False, 7)
+        self.preferencesHBox7.pack_start(self.preferencesButtonAbout, False, False, 7)
+        self.preferencesHBox7.pack_end(self.preferencesButtonClose, False, False, 7)
 
         # Hbox4 contains notifications which is only available in some systems
         if not self.itakaglobals.notifyavailable: 
@@ -343,10 +366,12 @@ class Gui:
         self.preferencesVBoxitems.pack_start(self.preferencesHBox2, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox3, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox5, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox6, False, False, 0)
 
         self.preferencesFramesettings.add(self.preferencesVBoxitems)
         self.preferencesVBox.pack_start(self.preferencesFramesettings, False, False, 0)
-        self.preferencesVBox.pack_start(self.preferencesHBox5, False, False, 4)
+        self.preferencesVBox.pack_start(self.preferencesHBox7, False, False, 4)
 
         self.window.add(self.vbox)
         self.window.show_all()
@@ -385,6 +410,24 @@ class Gui:
             notifyvalue = False
             self.configuration['server']['notify'] = False
 
+        if self.preferencesCheckactive.get_active():
+            self.configuration['screenshot']['currentwindow'] = True
+            activevalue = True
+        else:
+            self.configuration['screenshot']['currentwindow'] = False
+            activevalue = False
+
+        scale = [self.preferencesSpinscale.get_value_as_int()]
+        if scale[0] == 100:
+            self.configuration['screenshot']['scale'] = False
+            scale.append(False)
+        else:
+            self.configuration['screenshot']['scale'] = True
+            scale.append(True)
+
+        if self.configuration['screenshot']['scalepercent'] != scale[0]:
+            self.configuration['screenshot']['scalepercent'] = scale[0]
+        
         # Build a configuration dictionary to send to the configuration engine's
         # save method. Redundant values must be included for the comparison
         self.configurationdict = {
@@ -394,7 +437,10 @@ class Gui:
             'screenshot': 
                 {'path': '/tmp', 
                 'format': formatvalue,
-                'quality': self.preferencesSpinquality.get_value_as_int()},
+                'quality': self.preferencesSpinquality.get_value_as_int(),
+                'currentwindow': activevalue,
+                'scale': scale[1],
+                'scalepercent': scale[0]},
 
             'server': 
                 {'port': self.preferencesSpinport.get_value_as_int(),
@@ -437,7 +483,7 @@ class Gui:
                 however, it has to be show()ned before. For our little hack, we show the preferencesVBox widgets
                 but not itself, which should yield a close enough calculation."""
                 self.preferencesFramesettings.show_all()
-                self.preferencesHBox5.show_all()
+                self.preferencesHBox7.show_all()
 
                 """If the logger is expanded, use that as the initial size. 
                 _expander_size is set by our GtkWindow resize callback
