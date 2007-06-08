@@ -131,6 +131,14 @@ class ConfigParser:
         # Get values as a dict and return it
         for section in config.sections():
             values[section] = dict(config.items(section))
+            # Convert 'False' and 'True' into booleans, and numbers into ints
+            for option, value in values[section].iteritems():
+                if value.strip() == "True":
+                    values[section][option] = True
+                elif value.strip() == "False":
+                    values[section][option] = False
+                elif value.isdigit():
+                    values[section][option] = int(value)
         return values
 
     def save(self, valuesdict):
@@ -172,6 +180,9 @@ class ConfigParser:
         config.set("screenshot", "format", "jpeg")
         config.set("screenshot", "quality", 30)
         config.set("screenshot", "path", save_path)
+        config.set("screenshot", "currentwindow", False)
+        config.set("screenshot", "scale", False)
+        config.set("screenshot", "scalepercent", 50)
 
 	config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
 
