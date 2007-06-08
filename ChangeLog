@@ -1,0 +1,5 @@
+0.1.1:
+ * Fix Debian Makefile
+ * Remove bad print call in notify procedures
+0.1 (Mercado):
+ * Initial release

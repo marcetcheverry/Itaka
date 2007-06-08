@@ -1,0 +1,17 @@
+Milestone 2 (second release):
+
+- Server
+ - NEW: Add option to take a screenshot of the current top window (see gnome-screenshot)
+ - MAYBE: Add option to notify via audio
+ - MAYBE: Add options to the preferences to specify console output, animations
+
+- GUI:
+ - NEW: Add options to report errors in the system tray (blinking true). The window should pop up
+ - NEW: Translations
+ - FIX: Optimize and thouroughly test preferences dropdown effect.
+
+- Code:
+ - FIX: Recomment and make it beautiful to some sort of python standard
+
+- Other:
+ - NEW: Make Windows binaries
