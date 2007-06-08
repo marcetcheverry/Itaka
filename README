@@ -44,8 +44,8 @@ To uninstall, once again as root type 'make uninstall'
 
 to install the debian package simply:
 
-    cp makefile makefile.dist
-    cp makefile.debian makefile
+    cp Makefile Makefile.dist
+    cp Makefile.debian Makefile
 
     # make sure you have your gpg keys and debian development environment 
     # correctly setup

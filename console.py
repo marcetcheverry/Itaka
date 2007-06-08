@@ -27,10 +27,9 @@ class Console:
     Console I/O handler organized by message type. Also handle GUI logging when passed an instance.
     """
 
-
     def __init__(self, itakaglobals):
         """
-        Initiate console handler with configuration globals.
+        Constructor for console output handler.
         
         @type itakaglobals: module
         @param itakaglobals: Configuration module.
@@ -41,7 +40,7 @@ class Console:
 
     def __del__(self):
         """
-        Destruction handler.
+        Destructor.
         """
         
         if self.itakaglobals.output['normal']: print "[*] Itaka shutting down..."
@@ -51,8 +50,7 @@ class Console:
         Console message handler.
         
         @type message: str/tuple
-        @param message: Message to print to the console. If it is a L{detailedmessage} then it becomes a tuple
-        with the first item being the simple message and the latter being the detailed.
+        @param message: Message to print to the console. If it is a L{detailedmessage} then it becomes a tuple with the first item being the simple message and the latter being the detailed.
 
         @type gui: instance
         @param gui: Instance of the L{Gui} class for logging purposes.
@@ -64,7 +62,7 @@ class Console:
         @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
 
         @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log
+        @param icon: A gtk.stock_icon string for the Gui event log.
         """
         
         if self.itakaglobals.output['normal']: 
@@ -93,11 +91,8 @@ class Console:
         @type eventslog: bool
         @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
 
-        @type detailedmessage: bool
-        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
-
         @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log
+        @param icon: A gtk.stock_icon string for the Gui event log.
         """
         self.array = ".".join(caller)
         if self.itakaglobals.output['normal']: 
@@ -108,7 +103,8 @@ class Console:
     def error(self, caller, message, gui=False, eventslog=False, icon=None):
         """
         Console error handler.
-                @type caller: tuple
+        
+        @type caller: tuple
         @param caller: Specifies the class and method were the warning ocurred.
 
         @type gui: instance
@@ -117,11 +113,8 @@ class Console:
         @type eventslog: bool
         @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
 
-        @type detailedmessage: bool
-        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
-
         @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log
+        @param icon: A gtk.stock_icon string for the Gui event log.
         """
 
         self.array = ".".join(caller)
@@ -155,11 +148,8 @@ class Console:
         @type eventslog: bool
         @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
 
-        @type detailedmessage: bool
-        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
-
         @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log
+        @param icon: A gtk.stock_icon string for the Gui event log.
         """
 
         self.array = ".".join(caller)

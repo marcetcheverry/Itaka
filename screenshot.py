@@ -32,6 +32,8 @@ class Screenshot():
 
     def __init__(self, guiinstance, scalingmethod=gtk.gdk.INTERP_BILINEAR): 
         """
+        Constructor.
+
         @type scalingmethod: gtk.gdk.INTERP_TYPE
         @param scalingmethod: A type of interpolation for screenshot scaling. U{http://pygtk.org/pygtk2reference/class-gdkpixbuf.html#method-gdkpixbuf--scale-simple}
 
@@ -90,7 +92,7 @@ class Screenshot():
         Take a screenshot of the whole screen or a window.
 
         @rtype: str
-        @return: L{self.shotFile}
+        @return: Path to the screenshot (L{self.shotFile})
         """
 
         if self.configuration['screenshot']['currentwindow']:
@@ -139,7 +141,7 @@ class Screenshot():
             else:
                 self.screenshot.save(self.shotFile, self.configuration['screenshot']['format'].lower())
         except:
-            self.console.error(['ImageResource','screenshot'], "Could not save screenshot", self.gui)
+            self.console.error(['Screenshot','take_screenshot'], "Could not save screenshot", self.gui)
             raise error.ItakaScreenshotError, "Could not save screenshot"
 
         # Important workaround to avoid a memory leak.
