@@ -10,5 +10,8 @@
  * Better handling of Twisted errors in logging
  * Improved the configuration engine to convert numbers and bools into int and
  bool rather than str.
+0.1.1:
+ * Fix Debian Makefile
+ * Remove bad print call in notify procedures
 0.1 (Mercado):
  * Initial release

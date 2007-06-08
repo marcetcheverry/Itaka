@@ -14,7 +14,7 @@ DESTDIR = $(PREFIX)
 LIBDIR = $(DESTDIR)$(PREFIX)/lib/itaka
 BINDIR = $(DESTDIR)$(PREFIX)/bin
 DATADIR = $(DESTDIR)$(PREFIX)/share/itaka
-IMAGESDIR = $(DATADIR)$(PREFIX)/images
+IMAGESDIR = $(DATADIR)/images
 # For debian compatibility
 REPLACEIMAGESDIR = $(PREFIX)/share/itaka/images
 APPLICATIONSDIR = $(DESTDIR)$(PREFIX)/share/applications
