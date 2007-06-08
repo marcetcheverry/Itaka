@@ -26,6 +26,7 @@ class ItakaError(Exception):
     """
     Base class for all Itaka Errors.
     """
+
     def __init__(self, message):
         """
         Constructor.
@@ -35,16 +36,6 @@ class ItakaError(Exception):
         """
 
         self.message = message
-
-    def __str__(self):
-        """
-        Returns a string representation.
-        
-        @rtype str
-        @return: String representation of the exception L{message}.
-        """
-
-        return repr(self.value)
 
 class ItakaScreenshotError(ItakaError):
     """

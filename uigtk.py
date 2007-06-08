@@ -66,6 +66,8 @@ class Gui:
 
     def __init__(self, consoleinstance, configuration):
         """
+        Constructor.
+
         @type consoleinstance: instance
         @param consoleinstance: An instance of the L{Console} class.
 
@@ -109,11 +111,10 @@ class Gui:
 
         self.stopimage = gtk.Image()
         self.stopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
-
- 	self.menuitemstart = gtk.ImageMenuItem("Start") 
+        self.menuitemstart = gtk.ImageMenuItem("Start") 
         self.menuitemstart.set_image(self.startimage)
         self.menuitemstart.connect('activate', self.startstop, "start")
- 	self.menuitemstop = gtk.ImageMenuItem("Stop") 
+        self.menuitemstop = gtk.ImageMenuItem("Stop") 
         self.menuitemstop.set_image(self.stopimage)
         self.menuitemstop.connect('activate', self.startstop, "stop")
         self.menuitemstop.set_sensitive(False)
@@ -128,7 +129,7 @@ class Gui:
         self.menuitemseparator1 = gtk.SeparatorMenuItem()
         self.menuitemabout = gtk.ImageMenuItem(gtk.STOCK_ABOUT) 
         self.menuitemabout.connect('activate', self.about)
- 	self.menuitemquit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        self.menuitemquit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
         self.menuitemquit.connect('activate', self.destroy)
 
         self.statusmenu.append(self.menuitemstart)
@@ -160,7 +161,6 @@ class Gui:
 
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
         self.preferencesButton.connect("clicked", self.__expandpreferences)
-        #self.preferencesButton.connect("clicked", ipreferences.Preferences().prefwindow, [config, self.configinstance], self, self.icon_pixbuf)
 
         # Set up some variables for our timeouts/animations
         self.preferenceshidden = False
@@ -249,7 +249,6 @@ class Gui:
         self.logboxLabel = gtk.Label("<b>Server log</b>")
         self.logboxLabel.set_use_markup(True)
 
-        # Expander
         self.expander_size_finalized = False
         self.expander = gtk.Expander(None)
         self.expander.set_label_widget(self.logboxLabel)
@@ -294,7 +293,6 @@ class Gui:
         self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelnotifications.set_alignment(0, 0.50)
 
-        # Spinbuttons
         self.adjustmentport = gtk.Adjustment(float(self.configuration['server']['port']), 1024, 65535, 1, 0, 0)
         self.preferencesSpinport = gtk.SpinButton(self.adjustmentport)
         self.preferencesSpinport.set_numeric(True)
@@ -303,7 +301,6 @@ class Gui:
         self.preferencesSpinquality = gtk.SpinButton(self.adjustmentquality)
         self.preferencesSpinquality.set_numeric(True)
 
-        # Combos
         self.preferencesComboformat = gtk.combo_box_new_text()
         self.preferencesComboformat.connect('changed', self.__preferencesComboChanged)
         self.preferencesComboformat.append_text("JPG")
@@ -342,7 +339,6 @@ class Gui:
         if not self.itakaglobals.notifyavailable: 
             self.preferencesHBox4.set_sensitive(False)
 
-        # Add Hboxes to the Vbox
         self.preferencesVBoxitems.pack_start(self.preferencesHBox1, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox2, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox3, False, False, 0)
@@ -904,9 +900,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def destroy(self, *args):
         """
         Main window destroy event.
-
-        @type *args: unknown
-        @param *args: Unknown.
         """
 
         if self.server_listening:

@@ -20,7 +20,7 @@
 #
 # $Id$
 
-""" Itaka Configuration Parser and Engine """
+""" Itaka Configuration parser and engine """
 
 # It works by the core initiating the main instance, and the
 # modules accessing the global values variables set up by the initation.
@@ -30,23 +30,26 @@ import ConfigParser, os, sys, shutil, traceback
 # Set up instance
 config = ConfigParser.ConfigParser()
 
-# Set up global variables
+# Set up global variables (itakaglobals)
+
+#: Configuration file
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
-# Version (do not change)
+#: Version
 version = "0.1.1"
+#: Revision
 revision = "$Rev$"
 
-# Check system or specify per os.name standard
+#: System
 system = os.name
 
-# Support darwin specific stuff
+#: Platform
 platform = None
 if (sys.platform.startswith("darwin")): platform = "darwin"
 
-# Itaka images/ directory
-# prefix will be changed on install to specify where the installed files are
+#: Images directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
+#: To be changed on install to specify where the installed files actually are
 prefix = "/usr/share/itaka/images/"
 if os.path.exists(prefix):
     image_dir = prefix
@@ -64,7 +67,7 @@ if os.environ.get('HOME') is not None:
 else:
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
-# Use notifications where libnotify is available
+#: Availability of libnotify
 notifyavailable = False
 if system == "posix" and platform != "darwin":
     try:
@@ -91,9 +94,10 @@ class ConfigParser:
     """
     Itaka configuration engine.
     """
+
     def __init__(self, arguments=None):
         """
-        Configuration engine initiation. It also handles whether the L{output} setting is set to print everything to the console.
+        Configuration engine constructor. It also handles whether the L{output} setting is set to print everything to the console.
 
         @type arguments: tuple
         @param arguments: A tuple of sys.argv 
@@ -139,7 +143,7 @@ class ConfigParser:
             if output['normal']: print "[*] ERROR: Could not read configuration file (%s)" % (self.configfile)
             if output['debug']: traceback.print_exc()
 
-        """ Retrieve values and return them as a dict."""
+        """ Retrieve values and return them as a dict """
         global values
         values = {}
         # Get values as a dict and return it

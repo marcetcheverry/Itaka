@@ -20,7 +20,7 @@
 #
 # $Id$ 
 
-""" Itaka main loader core """
+""" Itaka core """
 
 import sys, traceback
 
@@ -45,13 +45,12 @@ try:
     try:
         # Initiate console with a reference to our global configuration values
         console = console.Console(itakaglobals)
-    except AttributeError:
+    except:
         print "[*] ERROR: Could not initiate Console engine."
         traceback.print_exc()
         sys.exit(1)
 
     import uigtk as igui
-
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules."
     traceback.print_exc()
@@ -61,7 +60,7 @@ if __name__ == "__main__":
     try:
         gui = igui.Gui(console, (itakaglobals, configinstance))
         gui.main()
-    except AttributeError:
+    except:
         console.error(('Itaka', 'core'), "Could not initiate GUI")
         traceback.print_exc()
         sys.exit(1)
