@@ -23,19 +23,50 @@
 """ Itaka console output and logging engine """
 
 class Console:
-    """ Console I/O handler organized by message type. Also handle GUI logging when passed an instance """
+    """
+    Console I/O handler organized by message type. Also handle GUI logging when passed an instance.
+    """
+
 
     def __init__(self, itakaglobals):
-        """ Initiate console handler with configuration globals """
+        """
+        Initiate console handler with configuration globals.
+        
+        @type itakaglobals: module
+        @param itakaglobals: Configuration module.
+        """
+
         self.itakaglobals = itakaglobals
         if self.itakaglobals.output['normal']: print "[*] Itaka %s starting..." % (itakaglobals.version)
 
     def __del__(self):
-        """ Quitting message """
+        """
+        Destruction handler.
+        """
+        
         if self.itakaglobals.output['normal']: print "[*] Itaka shutting down..."
 
     def msg(self, message, gui=False, eventslog=True, detailedmessage=False, icon=None):
-        """ Message handler. 'gui' is an instance of the 'Gui' class for logging purposes. 'eventslog' is a boolean to spcecify if the log message will go to the events log. 'detailedmessage' is to specify that only the simple mesage will go to the events log. 'icon' is gtk.stock_icon string for the gui event log """
+        """
+        Console message handler.
+        
+        @type message: str/tuple
+        @param message: Message to print to the console. If it is a L{detailedmessage} then it becomes a tuple
+        with the first item being the simple message and the latter being the detailed.
+
+        @type gui: instance
+        @param gui: Instance of the L{Gui} class for logging purposes.
+
+        @type eventslog: bool
+        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
+
+        @type detailedmessage: bool
+        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
+
+        @type icon: str
+        @param icon: A gtk.stock_icon string for the Gui event log
+        """
+        
         if self.itakaglobals.output['normal']: 
             if detailedmessage:
                 print "[*] %s" % (message[1])
@@ -50,7 +81,24 @@ class Console:
                 gui.logger({'message': [message]}, False, None, eventslog, detailedmessage, icon)
 
     def warn(self, caller, message, gui=False, eventslog=False, icon=None):
-        """ Warning handler. 'caller' is a list or tuple specifying the class and method were the event ocurred. Arguments are inherited from msg() """
+        """
+        Console warning handler.
+        
+        @type caller: tuple
+        @param caller: Specifies the class and method were the warning ocurred.
+
+        @type gui: instance
+        @param gui: Instance of the L{Gui} class for logging purposes.
+
+        @type eventslog: bool
+        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
+
+        @type detailedmessage: bool
+        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
+
+        @type icon: str
+        @param icon: A gtk.stock_icon string for the Gui event log
+        """
         self.array = ".".join(caller)
         if self.itakaglobals.output['normal']: 
             print "[*] WARNING: %s: %s" % (self.array, message)
@@ -58,7 +106,24 @@ class Console:
             gui.logger({'message': [str(message), str("WARNING: %s: %s" % (self.array, message))]}, True, 'warning', eventslog, False, icon)		
 
     def error(self, caller, message, gui=False, eventslog=False, icon=None):
-        """ Error handler. 'caller' is a list or tuple specifying the class and method were the event ocurred. Arguments are inherited from msg() """
+        """
+        Console error handler.
+                @type caller: tuple
+        @param caller: Specifies the class and method were the warning ocurred.
+
+        @type gui: instance
+        @param gui: Instance of the L{Gui} class for logging purposes.
+
+        @type eventslog: bool
+        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
+
+        @type detailedmessage: bool
+        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
+
+        @type icon: str
+        @param icon: A gtk.stock_icon string for the Gui event log
+        """
+
         self.array = ".".join(caller)
         if not self.itakaglobals.output['quiet']:
             print "[*] ERROR: %s: %s" % (self.array, message)
@@ -78,7 +143,25 @@ class Console:
             gui.logger({'message': [str(message), str("ERROR: %s: %s" % (self.array, message))]}, True, 'error', eventslog, False, icon)
 
     def debug(self, caller, message, gui=False, eventslog=False, icon=None):
-        """ Debug handler. 'caller' is a list or tuple specifying the class and method were the event ocurred. Arguments are inherited from msg() """
+        """
+        Console debug handler.
+        
+        @type caller: tuple
+        @param caller: Specifies the class and method were the warning ocurred.
+
+        @type gui: instance
+        @param gui: Instance of the L{Gui} class for logging purposes.
+
+        @type eventslog: bool
+        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
+
+        @type detailedmessage: bool
+        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
+
+        @type icon: str
+        @param icon: A gtk.stock_icon string for the Gui event log
+        """
+
         self.array = ".".join(caller)
         if self.itakaglobals.output['debug']: 
             print "[*] DEBUG: %s: %s" % (self.array, message)

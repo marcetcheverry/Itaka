@@ -23,21 +23,42 @@
 """ Itaka error handling exception definitions """
 
 class ItakaError(Exception):
-    """Base class for all Itaka Errors."""
+    """
+    Base class for all Itaka Errors.
+    """
     def __init__(self, message):
+        """
+        Constructor.
+
+        @type message: str
+        @param message: exception message.
+        """
+
         self.message = message
+
     def __str__(self):
+        """
+        Returns a string representation.
+        
+        @rtype str
+        @return: String representation of the exception L{message}
         return repr(self.value)
 
 class ItakaScreenshotError(ItakaError):
-    """Exception raised by screenshooting methods."""
+    """
+    Exception raised by screenshooting methods.
+    """
     pass
 
 class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
-    """Exception raised by screenshooting methods."""
+    """
+    Exception raised by screenshooting methods.
+    """
     pass
 
 class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
-    """Exception raised by screenshooting methods."""
+    ""
+    "Exception raised by screenshooting methods.
+    """
     pass
     
