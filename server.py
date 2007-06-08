@@ -40,6 +40,8 @@ class ImageResource(Resource):
 
     def __init__(self, guiinstance, consoleinstance):
         """ 
+        Constructor.
+
         @type guiinstance: instance
         @param guiinstance: An instance of our L{Gui} class.
 
@@ -66,11 +68,10 @@ class ImageResource(Resource):
         @return: Screenshot image.
         """
 
-        self.request = request
-
         # Get up to date configuration values everytime there is a request
-        # FIXME place up
         self.configuration = self.gui.configuration
+
+        self.request = request
 
         if (self.request.uri == "/screenshot"):
             self.request.setHeader("Content-type", "image/" + self.configuration['screenshot']['format'])

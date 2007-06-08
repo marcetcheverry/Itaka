@@ -95,6 +95,9 @@ class Screenshot():
         @return: Path to the screenshot (L{self.shotFile})
         """
 
+        # Get up to date configuration values everytime there is a request
+        self.configuration = self.gui.configuration
+
         if self.configuration['screenshot']['currentwindow']:
             try:
                 self.currentwindow = self.find_current_active_window()

@@ -89,7 +89,7 @@ class Gui:
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.connect("destroy", self.destroy)
-        self.window.connect("size-allocate", self.__windowsizechanged)
+        self.window.connect("size-allocate", self.windowsizechanged)
         self.window.set_title("Itaka")
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
@@ -103,8 +103,8 @@ class Gui:
         self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
         self.statusIcon.set_tooltip("Itaka")
         self.statusIcon.set_visible(True)
-        self.statusIcon.connect('activate', self.__statusicon_activate)
-        self.statusIcon.connect('popup-menu', self.__statusicon_menu, self.statusmenu)
+        self.statusIcon.connect('activate', self.statusicon_activate)
+        self.statusIcon.connect('popup-menu', self.statusicon_menu, self.statusmenu)
 
         self.startimage = gtk.Image()
         self.startimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU)
@@ -123,7 +123,7 @@ class Gui:
             self.menuitemnotifications = gtk.CheckMenuItem("Show Notifications")
             if (self.configuration['server']['notify']):
                 self.menuitemnotifications.set_active(True)
-            self.menuitemnotifications.connect('toggled', self.__statusicon_notify)
+            self.menuitemnotifications.connect('toggled', self.statusicon_notify)
 
         self.menuitemseparator = gtk.SeparatorMenuItem()
         self.menuitemseparator1 = gtk.SeparatorMenuItem()
@@ -160,7 +160,7 @@ class Gui:
         self.ibox.pack_start(self.buttonStartstop, True, True, 8)
 
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect("clicked", self.__expandpreferences)
+        self.preferencesButton.connect("clicked", self.expandpreferences)
 
         # Set up some variables for our timeouts/animations
         self.preferenceshidden = False
@@ -252,7 +252,7 @@ class Gui:
         self.expander_size_finalized = False
         self.expander = gtk.Expander(None)
         self.expander.set_label_widget(self.logboxLabel)
-        self.expander.connect('notify::expanded', self.__expandlogger)
+        self.expander.connect('notify::expanded', self.expandlogger)
 
         # Log to the self.logger function, which sets the buffer for self.debubuffer
         log.addObserver(self.logger)
@@ -302,7 +302,7 @@ class Gui:
         self.preferencesSpinquality.set_numeric(True)
 
         self.preferencesComboformat = gtk.combo_box_new_text()
-        self.preferencesComboformat.connect('changed', self.__preferencesComboChanged)
+        self.preferencesComboformat.connect('changed', self.preferencesComboChanged)
         self.preferencesComboformat.append_text("JPG")
         self.preferencesComboformat.append_text("PNG")
         if (self.configuration['screenshot']['format'] == "jpeg"):
@@ -318,7 +318,7 @@ class Gui:
             self.preferencesChecknotifications.set_active(0)
 
         self.preferencesButtonClose = gtk.Button("Close", gtk.STOCK_CLOSE)
-        self.preferencesButtonClose.connect("clicked", lambda wid: self.__contractpreferences())
+        self.preferencesButtonClose.connect("clicked", lambda wid: self.contractpreferences())
         
         self.preferencesButtonAbout = gtk.Button("About", gtk.STOCK_ABOUT)
         self.preferencesButtonAbout.connect("clicked", lambda wid: self.about())
@@ -394,19 +394,19 @@ class Gui:
             'screenshot': 
                 {'path': '/tmp', 
                 'format': formatvalue,
-                'quality': str(self.preferencesSpinquality.get_value_as_int())},
+                'quality': self.preferencesSpinquality.get_value_as_int()},
 
             'server': 
-                {'port': str(self.preferencesSpinport.get_value_as_int()),
+                {'port': self.preferencesSpinport.get_value_as_int(),
                 'notify': notifyvalue}
             }
 
         # Set them for local use now
-        if self.configuration['screenshot']['quality'] != str(self.preferencesSpinquality.get_value_as_int()):
-            self.configuration['screenshot']['quality'] = str(self.preferencesSpinquality.get_value_as_int())
+        if self.configuration['screenshot']['quality'] != self.preferencesSpinquality.get_value_as_int():
+            self.configuration['screenshot']['quality'] = self.preferencesSpinquality.get_value_as_int()
 
-        if self.configuration['server']['port'] !=  str(self.preferencesSpinport.get_value_as_int()):
-            self.configuration['server']['port'] =  str(self.preferencesSpinport.get_value_as_int())
+        if self.configuration['server']['port'] !=  self.preferencesSpinport.get_value_as_int():
+            self.configuration['server']['port'] =  self.preferencesSpinport.get_value_as_int()
             self.restart_server()
 
         # Check if the configuration changed
@@ -416,7 +416,7 @@ class Gui:
             except:
                 self.console.error(['Gui', 'save'], "Could not save preferences")
 
-    def __expandpreferences(self, params=None):
+    def expandpreferences(self, params=None):
         """
         Expands the window for preferences.
         
@@ -472,9 +472,9 @@ class Gui:
                     self.expandtimeout = None
                     return False
             else:
-                self.expandtimeout = gobject.timeout_add(30, self.__expandpreferences)
+                self.expandtimeout = gobject.timeout_add(30, self.expandpreferences)
 
-    def __contractpreferences(self, params=None):
+    def contractpreferences(self, params=None):
         """
         Contracts the window of preferences.
         
@@ -511,9 +511,9 @@ class Gui:
                 self.contracttimeout = None
                 return False
         else:
-            self.contracttimeout = gobject.timeout_add(30, self.__contractpreferences)
+            self.contracttimeout = gobject.timeout_add(30, self.contractpreferences)
 
-    def __windowsizechanged(self, widget=None, data=None):
+    def windowsizechanged(self, widget=None, data=None):
         """
         Report the window size on change.
         
@@ -534,7 +534,7 @@ class Gui:
                 # Cant assign tuple items
                 self.expander_size = [self.expander_size[0], self.expander_size[1] - self.preferencesVBox.size_request()[1]]
 
-    def __statusicon_menu(self, widget, button, time, menu):
+    def statusicon_menu(self, widget, button, time, menu):
         """
         Display the menu on the status icon.
         
@@ -573,7 +573,7 @@ class Gui:
             self.blinktimeout = None
             return False
  
-    def __statusicon_activate(self, widget):
+    def statusicon_activate(self, widget):
         """
         Toggle the window visibility from the status icon when clicked.
         
@@ -588,7 +588,7 @@ class Gui:
         else:
             self.window.show()
 
-    def __statusicon_notify(self, widget):
+    def statusicon_notify(self, widget):
         """
         Disable or enable notifications on the fly from the status icon.
         
@@ -635,27 +635,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.aboutdialog.set_icon(self.icon_pixbuf)
         self.aboutdialog.run()
         self.aboutdialog.destroy()
-
-    def __expandlogger(self, expander, params):
-        """
-        Expand or contract the logger.
-        
-        @type expander: instance
-        @param expander: gtk.Expander instance
-
-        @type params: unknown
-        @param params: Unknown.
-        """
-
-        if self.expander.get_expanded():
-            # Show the debugvbox() and it's subwidgets
-            self.logvbox.show_all()
-
-            self.expander.add(self.logvbox)
-        else:
-            self.expander.remove(self.expander.child)
-            self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
-        return
 
     def logger(self, args, failure=False, failuretype=None, eventslog=False, detailedmessage=False, icon=None):
         """
@@ -722,6 +701,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             else:
                 self.logeventsstore.append([None, self.message])
 
+    def expandlogger(self, expander, params):
+        """
+        Expand or contract the logger.
+        
+        @type expander: instance
+        @param expander: gtk.Expander instance
+
+        @type params: unknown
+        @param params: Unknown.
+        """
+
+        if self.expander.get_expanded():
+            # Show the debugvbox() and it's subwidgets
+            self.logvbox.show_all()
+
+            self.expander.add(self.logvbox)
+        else:
+            self.expander.remove(self.expander.child)
+            self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
+        return
+
     def clearlogger(self, args):
         """
         Clear the log.
@@ -778,7 +778,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
 
-    def __preferencesComboChanged(self, widget):
+    def preferencesComboChanged(self, widget):
         """
         Preferenes gtk.ComboBox changed callback.
 
@@ -791,18 +791,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         else:
             self.preferencesHBox3.set_sensitive(True)
 
-    def __checkwidget(self, widget):
+    def checkwidget(self, widget):
         """
-        Checks the status of the toggle button.
+        Checks if a gtk.Widget is active.
 
         @type widget: unknown
         @param widget: Unknown.
         """
 
-        if hasattr(widget, 'get_active'):
+        if hasattr(widget, 'get_active') and callable(getattr(widget, 'get_active')):
             return widget.get_active()
         else:
-            return False
+            return None
 
     def startstop(self, widget, switch=None, dontexpandlogger = False):
         """
@@ -818,7 +818,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param dontexpandlogger: Whether the logger is expanded or not by default when changing server status.
         """
 
-        if (self.__checkwidget(widget) or switch == "start"):
+        if (self.checkwidget(widget) or switch == "start"):
             if self.server_listening: return
             # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
@@ -920,7 +920,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         gtk.main_quit()
 
-    def __calcsince(self, dtime):
+    def calcsince(self, dtime):
         """
         Calculates the time difference from the last server request to 
         the current time. Express a datetime.timedelta using a
@@ -937,24 +937,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         self.pieces = []
         if self.td.days:
-                self.pieces.append(self.__plural(self.td.days, 'day'))
+                self.pieces.append(self.plural(self.td.days, 'day'))
 
         self.minutes, self.seconds = divmod(self.td.seconds, 60)
         self.hours, self.minutes = divmod(self.minutes, 60)
         if self.hours:
-            self.pieces.append(self.__plural(self.hours, 'hour'))
+            self.pieces.append(self.plural(self.hours, 'hour'))
         if self.minutes or len(self.pieces) == 0:
-            self.pieces.append(self.__plural(self.minutes, 'minute'))
+            self.pieces.append(self.plural(self.minutes, 'minute'))
 
         # "Time: " + ", ".join(self.pieces[:-1]) + "and" + self.pieces[-1] + " ago" 
 
         self.labelTime.set_text("<b>When</b>: " + ", ".join(self.pieces) + " ago")
         self.labelTime.set_use_markup(True)
 
-        # Need this so it runs more than once. Weird.
+        # Need this so it runs more than once.
         return True
 
-    def __plural(self, count, singular):
+    def plural(self, count, singular):
         """ 
         Helper method to handle simple english plural translations.
         
@@ -969,7 +969,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # should handle -y -> -ies, child -> children, etc.
         return '%d %s%s' % (count, singular, ("", 's')[count != 1])
 
-    def notify(self):
+    def set_standard_images(self):
         """
         Changes the logo on the main window.
         """
@@ -1004,16 +1004,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.labelServed.set_use_markup(True)
         self.labelLastip.set_text("<b>Client</b>: %s " % (self.ip))
         self.labelLastip.set_use_markup(True)
-        self.statusIcon.set_tooltip("Itaka - %s served" % (self.__plural(self.counter, 'screenshot')))
+        self.statusIcon.set_tooltip("Itaka - %s served" % (self.plural(self.counter, 'screenshot')))
 
         # Show the camera image on tray and interface for 1.5 seconds
         self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
         self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
         self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-        self.notifyimg = gobject.timeout_add(1500, self.notify)
+        gobject.timeout_add(1500, self.set_standard_images)
 
         # Call the update timer function, and add a timer to update the GUI of its
         # "Last screenshot taken" time
-        self.__calcsince(time)
-        if hasattr(self, 'iagotimer'): gobject.source_remove(self.iagotimer)
-        self.iagotimer = gobject.timeout_add(60000, self.__calcsince, time)
+        self.calcsince(time)
+        if hasattr(self, 'iagotimer'): 
+            gobject.source_remove(self.iagotimer)
+        self.iagotimer = gobject.timeout_add(60000, self.calcsince, time)
