@@ -121,7 +121,7 @@ class Gui:
 
         if self.itakaglobals.notifyavailable: 
             self.menuitemnotifications = gtk.CheckMenuItem("Show Notifications")
-            if (self.configuration['server']['notify']):
+            if self.configuration['server']['notify']:
                 self.menuitemnotifications.set_active(True)
             self.menuitemnotifications.connect('toggled', self.statusicon_notify)
 
@@ -312,7 +312,7 @@ class Gui:
             self.preferencesHBox3.set_sensitive(False)
 
         self.preferencesChecknotifications = gtk.CheckButton()
-        if (self.configuration['server']['notify'] == "True"):
+        if self.configuration['server']['notify']:
             self.preferencesChecknotifications.set_active(1)
         else: 
             self.preferencesChecknotifications.set_active(0)
@@ -374,15 +374,15 @@ class Gui:
         if self.itakaglobals.notifyavailable:
             notifyvalue = self.preferencesChecknotifications.get_active()
             if notifyvalue:
-                notifyvalue = 'True'
+                notifyvalue = True
                 self.menuitemnotifications.set_active(True)
                 self.configuration['server']['notify'] = True
             else:
-                notifyvalue = 'False'
+                notifyvalue = False
                 self.menuitemnotifications.set_active(False)
                 self.configuration['server']['notify'] = False
         else:
-            notifyvalue = 'False'
+            notifyvalue = False
             self.configuration['server']['notify'] = False
 
         # Build a configuration dictionary to send to the configuration engine's
@@ -411,8 +411,12 @@ class Gui:
 
         # Check if the configuration changed
         if (self.configurationdict != self.currentconfiguration):
+
+            # Update the needed keys.
             try:
-                self.configinstance.save(self.configurationdict)
+                # self.configinstance.save(self.configurationdict)
+                for section in self.configurationdict:
+                    [self.configinstance.update(section, key, value) for key, value in self.configurationdict[section].iteritems() if key not in self.currentconfiguration[section] or self.currentconfiguration[section][key] != value]
             except:
                 self.console.error(['Gui', 'save'], "Could not save preferences")
 
