@@ -86,7 +86,7 @@ class ImageResource(Resource):
 
             self.counter += 1
 
-            if (self.configuration['server']['notify']) and self.itakaglobals.notifyavailable != False:
+            if self.configuration['server']['notify'] and self.itakaglobals.notifyavailable:
                 import pynotify
 
                 uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 

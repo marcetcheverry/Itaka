@@ -38,7 +38,6 @@ except ImportError:
 
 try:
     import server as iserver
-    import screenshot
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules"
     traceback.print_exc()
@@ -432,7 +431,7 @@ class Gui:
         # We have a race condition here. If GTK cant resize fast enough, then it gets very sluggish
         # See configure-event signal of gtk.Widget
         # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
-        if self.preferencesexpanded != True:
+        if not self.preferencesexpanded:
             if self.expandtimeout is not None:
                 """NOTE: GTK+ GtkWidget.size_request() method can give you the amount of size a widget will take.
                 however, it has to be show()ned before. For our little hack, we show the preferencesVBox widgets
@@ -467,7 +466,7 @@ class Gui:
                     self.preferencesexpanded = True
 
                     # Reload our configuration and show the preferences
-                    self.configuration = self.configinstance.load(False)
+                    self.configuration = self.configinstance.load()
                     if self.preferenceshidden:
                         self.preferencesVBox.show_all()
                     else:
@@ -758,11 +757,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             self.logdetailsbuffer.create_tag ('center-image', justification = gtk.JUSTIFY_CENTER)
             self.logdetailsimageiter = self.logdetailsbuffer.get_iter_at_offset(0)
-            self.logdetailsbuffer.insert_pixbuf(self.logdetailsimageiter, self.logdetailstextview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PAUSE'), size=gtk.ICON_SIZE_DIALOG, detail=None))
+            self.logdetailsbuffer.insert_pixbuf(self.logdetailsimageiter, self.logdetailstextview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_DIALOG, detail=None))
             self.logdetailsbuffer.apply_tag_by_name('center-image', self.logdetailsbuffer.get_iter_at_offset(0), self.logdetailsimageiter)
 
             """
-            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PAUSE'), size=gtk.ICON_SIZE_MENU, detail=None), "Logging paused"])
+            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), "Logging paused"])
             
             self.logeventstreeview.set_sensitive(False)
             self.logdetailstextview.set_sensitive(False)
@@ -773,7 +772,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.logdetailstextview.set_sensitive(True)
             self.logeventstreeview.set_sensitive(True)
 
-            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PLAY'), size=gtk.ICON_SIZE_MENU, detail=None), "Logging resumed"])
+            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), "Logging resumed"])
 
     def main(self):
         """
