@@ -37,7 +37,7 @@ elif len(arguments) == 1:
 # Itaka core modules
 try:
     # Initiate our Console and Configuration engines
-    import error, console
+    import console
     import config as itakaglobals
     configinstance = itakaglobals.ConfigParser(arguments)
     configinstance.load()

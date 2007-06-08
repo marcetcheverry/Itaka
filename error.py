@@ -41,7 +41,9 @@ class ItakaError(Exception):
         Returns a string representation.
         
         @rtype str
-        @return: String representation of the exception L{message}
+        @return: String representation of the exception L{message}.
+        """
+
         return repr(self.value)
 
 class ItakaScreenshotError(ItakaError):
@@ -57,8 +59,8 @@ class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
     pass
 
 class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
-    ""
-    "Exception raised by screenshooting methods.
+    """
+    Exception raised by screenshooting methods.
     """
     pass
     
