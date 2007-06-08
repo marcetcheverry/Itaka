@@ -222,7 +222,7 @@ class ConfigParser:
         config.set("screenshot", "path", save_path)
         config.set("screenshot", "currentwindow", False)
         config.set("screenshot", "scale", False)
-        config.set("screenshot", "scalepercent", 50)
+        config.set("screenshot", "scalepercent", 100)
 
 	config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
 
