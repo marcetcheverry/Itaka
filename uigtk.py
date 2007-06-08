@@ -93,7 +93,7 @@ class Gui:
         self.window.set_title("Itaka")
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
-        self.window.set_default_size(415, 1)
+        self.window.set_default_size(400, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window_position = self.window.get_position()
 
@@ -278,27 +278,27 @@ class Gui:
         self.preferencesSettingslabel.set_use_markup(True)
         self.preferencesFramesettings.set_label_widget(self.preferencesSettingslabel)
 
-        self.preferencesLabelport = gtk.Label("Port:")
+        self.preferencesLabelport = gtk.Label("Port  ")
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelport.set_alignment(0, 0.50)
+        self.preferencesLabelport.set_alignment(0, 0.60)
 
-        self.preferencesLabelformat = gtk.Label("Format:")
+        self.preferencesLabelformat = gtk.Label("Format  ")
         self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelformat.set_alignment(0, 0.50)
 
-        self.preferencesLabelquality = gtk.Label("Quality:")
+        self.preferencesLabelquality = gtk.Label("Quality  ")
         self.preferencesLabelquality.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelquality.set_alignment(0, 0.50)
 
-        self.preferencesLabelscale = gtk.Label("Scale:")
+        self.preferencesLabelscale = gtk.Label("Scale  ")
         self.preferencesLabelscale.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelscale.set_alignment(0, 0.50)
 
-        self.preferencesLabelactive = gtk.Label("Active window:")
+        self.preferencesLabelactive = gtk.Label("Active window  ")
         self.preferencesLabelactive.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelactive.set_alignment(0, 0.50)
 
-        self.preferencesLabelnotifications = gtk.Label("Notifications:")
+        self.preferencesLabelnotifications = gtk.Label("Notifications  ")
         self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelnotifications.set_alignment(0, 0.50)
 
