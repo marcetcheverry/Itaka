@@ -92,7 +92,12 @@ class ImageResource(Resource):
 
                 uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
-                n = pynotify.Notification("Itaka screenshot taken", "%s took screenshot number %d" % (self.ip, self.counter), uri)
+                n = pynotify.Notification("Screenshot taken", 
+                "%s requested screenshot number %d"
+                % (self.ip, self.counter), uri)
+
+                n.set_timeout(1500)
+                n.attach_to_status_icon(self.gui.statusIcon)
                 n.show()
 
             # Tell the GUI what changed

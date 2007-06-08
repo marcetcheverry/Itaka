@@ -119,8 +119,6 @@ class Screenshot():
                         self.currentwindow[2], self.currentwindow[3], 0, 0, self.activewindowwidth, self.activewindowheight)
 
         elif not self.configuration['screenshot']['currentwindow'] or self.currentwindowfailed:
-            print "Not current"
-            print self.screenwidth, self.screenheight
             self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
                     gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screenwidth, self.screenheight),
                     self.rootwindow,
