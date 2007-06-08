@@ -64,10 +64,12 @@ class Gui:
     """
     GTK+ GUI
     """
+
     def __init__(self, consoleinstance, configuration):
         """
         @type consoleinstance: instance
         @param consoleinstance: An instance of the L{Console} class.
+
         @type configuration: tuple
         @param configuration: A tuple of configuration globals and an instance of L{ConfigParser}
         """
@@ -358,7 +360,10 @@ class Gui:
         self.window.initial_size = self.window.get_size()
 
     def save_preferences(self):
-        """ Save and hide the preferences dialog """
+        """
+        Saves and hides the preferences dialog.
+        """
+        
         # So we can mess with the values in the running one and not mess up our comparison
         self.currentconfiguration = copy.deepcopy(self.configuration)
 
@@ -417,7 +422,13 @@ class Gui:
                 self.console.error(['Gui', 'save'], "Could not save preferences")
 
     def __expandpreferences(self, params=None):
-        """ Callback to expand the window for preferences. """
+        """
+        Expands the window for preferences.
+        
+        @type params: unknown
+        @param params: Unknown.
+        """
+        
         # We have a race condition here. If GTK cant resize fast enough, then it gets very sluggish
         # See configure-event signal of gtk.Widget
         # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
@@ -469,8 +480,12 @@ class Gui:
                 self.expandtimeout = gobject.timeout_add(30, self.__expandpreferences)
 
     def __contractpreferences(self, params=None):
-        """ Callback to contract the window of preferences. """
-        # TODO: Add save
+        """
+        Contracts the window of preferences.
+        
+        @type params: unknown
+        @param params: Unknown.
+        """
 
         if self.contracttimeout is not None:
             # If you dont use the normal_size proxy to our window sizes,
@@ -504,7 +519,16 @@ class Gui:
             self.contracttimeout = gobject.timeout_add(30, self.__contractpreferences)
 
     def __windowsizechanged(self, widget=None, data=None):
-        """ This is a callback to always have the latest window size  """
+        """
+        Report the window size on change.
+        
+        @type widget: unknown
+        @param widget: Unknown.
+
+        @type data: unknown
+        @param data: Unknown.
+        """
+        
         self.window.current_size = self.window.get_size()
         
         # If the logger is expanded, give them a new size unless our preferences expander is working
@@ -516,7 +540,22 @@ class Gui:
                 self.expander_size = [self.expander_size[0], self.expander_size[1] - self.preferencesVBox.size_request()[1]]
 
     def __statusicon_menu(self, widget, button, time, menu):
-        """ Callback to display the menu on the status icon """
+        """
+        Display the menu on the status icon.
+        
+        @type widget: unknown
+        @param widget: Unknown.
+        
+        @type button: int
+        @param button: The button pressed..
+
+        @type time: unknown
+        @param time: Unknown.
+
+        @type menu: instance
+        @param menu: A gtk.Menu instance.
+        """
+
         if button == 3:
             if menu:
                 menu.show_all()
@@ -524,7 +563,13 @@ class Gui:
             pass
 
     def statusicon_blinktimeout(self, time=3000):
-        """ Callback to set timeout in miliseconds to blink and stop blinking the status icon """
+        """
+        Sets the timeout in miliseconds to blink and stop blinking the status icon.
+        
+        @type time: int
+        @param time: Time in milliseconds to blink the status icon
+        """
+
         if self.blinktimeout is None:
             self.statusIcon.set_blinking(True)
             self.blinktimeout = gobject.timeout_add(time, self.statusicon_blinktimeout)
@@ -534,7 +579,13 @@ class Gui:
             return False
  
     def __statusicon_activate(self, widget):
-        """ Callback to toggle the window visibility from the status icon """
+        """
+        Toggle the window visibility from the status icon when clicked.
+        
+        @type widget: unknown
+        @param widget: Unknown.
+        """
+
         if self.window.get_property("visible"):
             # Save it for when we undock because of errors
             self.window_position = self.window.get_position()
@@ -543,14 +594,26 @@ class Gui:
             self.window.show()
 
     def __statusicon_notify(self, widget):
-        """ Callback to disable or enable notifications on the fly from the status icon. 'active' is a boolean for the checkbox """
+        """
+        Disable or enable notifications on the fly from the status icon.
+        
+        @type widget: unknown
+        @param widget: Unknown.
+        """
+
         if self.menuitemnotifications.get_active():
             self.configuration['server']['notify'] = True
         else:
             self.configuration['server']['notify'] = False
 
     def about(self, data=None):
-        """ Create the About dialog. """
+        """
+        Creates the About dialog.
+
+        @type data: unknown.
+        @param data: Unknown.
+        """
+
         self.aboutdialog = gtk.AboutDialog()
         self.aboutdialog.set_transient_for(self.window)
         self.aboutdialog.set_name('Itaka')
@@ -579,7 +642,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.aboutdialog.destroy()
 
     def __expandlogger(self, expander, params):
-        """ Callback for the expander widget. """
+        """
+        Expand or contract the logger.
+        
+        @type expander: instance
+        @param expander: gtk.Expander instance
+
+        @type params: unknown
+        @param params: Unknown.
+        """
+
         if self.expander.get_expanded():
             # Show the debugvbox() and it's subwidgets
             self.logvbox.show_all()
@@ -591,7 +663,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         return
 
     def logger(self, args, failure=False, failuretype=None, eventslog=False, detailedmessage=False, icon=None):
-        """ Handle logging in the GUI. Arguments: 'args' is a dict { 'key': [str(msg)]], however, when handling failures the message tuple contains an extra item containing a detailed message for separation in the GUI log viewers. 'failure' is a boolean specifying whether we are logging an error. 'failuretype' is a string specyfing what kind of failure it is, either 'error', 'warning' or 'debug'. 'eventslog' is a boolean to specify if the log message will go to the events log. 'eventslog' is a boolean to spcecify if the log message will go to the events log. 'icon' is tuple, the first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object. It is used for the event log in the GUI """
+        """
+        Gui logging handler.
+        
+        @type args: dict
+        @param args: dict {'key': [str(msg)]]}, however, when handling failures the message tuple contains an extra item containing a detailed message for separation in the two GUI log viewers.
+        
+        @type failure: bool
+        @param failure: Specifies whether we are logging a failure.
+        
+        @type failuretype: str
+        @param failuretype: Specifies what kind of failure it is, either 'error', 'warning' or 'debug'. 
+        
+        @type eventslog: bool
+        @param eventslog: Specifies if the log message will go to the events log. 
+        
+        @type detailedmessage: bool
+        @param detailedmessage: specifies whether the message contained in L{args} is a detailed message.
+        
+        @type icon: tuple
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        """
 
         # Handle twisted errors
         # 'isError': 1, 'failure': <twisted.python.failure.Failure <type 'exceptions.AttributeError'>> 
@@ -636,12 +728,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 self.logeventsstore.append([None, self.message])
 
     def clearlogger(self, args):
-        """ Callback to clear the log """
+        """
+        Clear the log.
+
+        @type args: Unknown
+        @param args: unknown
+        """
+
         self.logeventsstore.clear()
         self.logdetailsbuffer.set_text("")
 
     def pauselogger(self, widget, data=None):
-        """ Callback to pause log output. """
+        """
+        Pause log output.
+
+        @type widget: unknown
+        @param widget: Unknown.
+
+        @type data: unknown.
+        @param data: Unknown.
+        """
+
         if widget.get_active():
             # It would be nice if we could set a center background image to our textview.
             # However, GTK makes that very hard.
@@ -669,28 +776,54 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, 'STOCK_MEDIA_PLAY'), size=gtk.ICON_SIZE_MENU, detail=None), "Logging resumed"])
 
     def main(self):
-        """ Main init function. Starts the GUI reactors."""
+        """
+        Main initiation function. Starts the Twisted GUI reactors.
+        """
 
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
 
     def __preferencesComboChanged(self, widget):
-        """ Callback for when a preferenes gtk.combo_box is changed """
+        """
+        Preferenes gtk.ComboBox changed callback.
+
+        @type widget: unknown
+        @param widget: Unknown.
+        """
+        
         if self.preferencesComboformat.get_active_text() == "PNG":
             self.preferencesHBox3.set_sensitive(False)
         else:
             self.preferencesHBox3.set_sensitive(True)
 
     def __checkwidget(self, widget):
-        """ Check the status of the toggle button """
+        """
+        Checks the status of the toggle button.
+
+        @type widget: unknown
+        @param widget: Unknown.
+        """
+
         if hasattr(widget, 'get_active'):
             return widget.get_active()
         else:
             return False
 
-    def startstop(self, widget, traydata=None, dontexpandlogger = False):
-        """ Start or stop the screenshooting server. 'traydata' is a string either 'start' or 'stop' to be used from the Status tray icon or error handling. 'dontexpandlogger' handles whether the logger is expanded or not by default when changing status. """
-        if (self.__checkwidget(widget) or traydata == "start"):
+    def startstop(self, widget, switch=None, dontexpandlogger = False):
+        """
+        Start or stop the screenshooting server.
+        
+        @type widget: unknown
+        @param widget: Unknown.
+
+        @type switch: str
+        @param switch: Either 'start' or 'stop' to be used from the status icon or error handling (turns on or off).
+        
+        @type dontexpandlogger: bool
+        @param dontexpandlogger: Whether the logger is expanded or not by default when changing server status.
+        """
+
+        if (self.__checkwidget(widget) or switch == "start"):
             if self.server_listening: return
             # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
@@ -742,7 +875,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                     gobject.source_remove(self.iagotimer)
 
                 # Change GUI elements
-                if (traydata):
+                if (switch):
                     self.buttonStartstop.set_active(False)
 
                 self.statusIcon.set_tooltip("Itaka")
@@ -760,14 +893,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 self.menuitemstop.set_sensitive(False)
 
     def restart_server(self):
+        """
+        Restarts the Twisted server.
+        """
+
         if self.server_listening:
             self.console.msg("Restarting the server to listen on port %d" % (self.configuration['server']['port']), self, True, False, ['stock', 'STOCK_REFRESH'])
             self.startstop(None, "stop")
             self.startstop(None, "start")
 
     def destroy(self, *args):
-        """ Callback for the main window's destroy. """
-        # Stop server.
+        """
+        Main window destroy event.
+
+        @type *args: unknown
+        @param *args: Unknown.
+        """
+
         if self.server_listening:
             self.console.msg("Shutting down server...")
             self.ilistener.stopListening()
@@ -787,9 +929,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         gtk.main_quit()
 
     def __calcsince(self, dtime):
-        """ Function to calculate the time difference from the last request to 
+        """
+        Calculates the time difference from the last server request to 
         the current time. Express a datetime.timedelta using a
-        phrase such as "1 hour, 20 minutes". """
+        string such as "1 hour, 20 minutes".
+        
+        @type dtime: datetime.datetime
+        @param dtime: A starting datetime.datetime object.
+        """
 
         # Create a timedelta from the datetime.datetime and the current time
         # (you can create your own timedeltas with datetime.timedelta(5, (650 *
@@ -821,6 +968,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         
         @type count: int
         @param count: Number.
+
         @type singular: str
         @param singular: Singular version of the word to pluralize.
         """
@@ -830,7 +978,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         return '%d %s%s' % (count, singular, ("", 's')[count != 1])
 
     def notify(self):
-        """ Change the image on the main screen, for notification purpose. """
+        """
+        Changes the logo on the main window.
+        """
+        
         self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
         self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
         # Only run this event once
@@ -842,8 +993,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         
         @type counter: int
         @param counter: Total number of server hits.
+
         @type ip: str
         @param ip: IP address of the client.
+
         @type time: datetime.datetime
         @param time: Time of the request.
         

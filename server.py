@@ -42,6 +42,7 @@ class ImageResource(Resource):
         """ 
         @type guiinstance: instance
         @param guiinstance: An instance of our L{Gui} class.
+
         @type consoleinstance: instance
         @param consoleinstance: An instance of our L{Console} class.
         """

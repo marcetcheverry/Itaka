@@ -29,10 +29,12 @@ class Screenshot():
     """
     Takes screenshots of windows or screens.
     """
+
     def __init__(self, guiinstance, scalingmethod=gtk.gdk.INTERP_BILINEAR): 
         """
         @type scalingmethod: gtk.gdk.INTERP_TYPE
         @param scalingmethod: A type of interpolation for screenshot scaling. U{http://pygtk.org/pygtk2reference/class-gdkpixbuf.html#method-gdkpixbuf--scale-simple}
+
         @type guiinstance: instance
         @param guiinstance: An instance of our L{Gui} class.
         """

@@ -35,7 +35,7 @@ local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itak
 
 # Version (do not change)
 version = "0.1.1"
-revision = "$Rev"
+revision = "$Rev$"
 
 # Check system or specify per os.name standard
 system = os.name
@@ -56,7 +56,7 @@ if not os.path.exists(image_dir):
     print "[*] ERROR: Could not find images directory '%s'" % (image_dir)
     sys.exit(1)
 
-# Save path for screenshots (system-specific specified later on)
+#: Save path for screenshots (system-specific specified later on)
 save_path = os.getcwd()
 
 if os.environ.get('HOME') is not None:
@@ -78,25 +78,39 @@ if system == "posix" and platform != "darwin":
         print "[*] WARNING: Pynotify module is missing, disabling notifications"
         notifyavailable = False
 
-# Specify console output settings. 
+#: Console output setting
 # 'normal' is for all normal operation mesages and warnings (not including errors)
 # 'debug' is for all messages through self.console.debug
 # 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
 output = {'normal': False, 'debug': False, 'quiet': False}
 
-# User's configuration values 
+#: User's configuration values 
 values = {}
 
 class ConfigParser:
+    """
+    Itaka configuration engine.
+    """
     def __init__(self, arguments=None):
-        """ 'arguments' the full output of sys.argv """
+        """
+        Configuration engine initiation. It also handles whether the L{output} setting is set to print everything to the console.
+
+        @type arguments: tuple
+        @param arguments: A tuple of sys.argv 
+        """
         if arguments is not None and len(arguments) > 1 and arguments[-1] == "-debug":
             global output
             output = {'normal': True, 'debug': True, 'quiet': False}
             print "[*] Initializing in debug mode..."
 
-    def load(self, notify=True):
-        """ Set up and load configuration """
+    def load(self):
+        """
+        Set up and load configuration
+
+        @rtype: dict
+        @return: Dictionary of configuration values.
+        """
+
         self.configfile = None
 
         # Check routine
@@ -142,7 +156,13 @@ class ConfigParser:
         return values
 
     def save(self, valuesdict):
-        """ Saves a dict containing the configuration """
+        """ 
+        Saves a dictionary containing the configuration.
+
+        @type valuesdict: dict
+        @param valuesdict: Dictionary of configuration.
+        """
+
         # Unpack the dict into section, option, value
         for section in valuesdict.keys():
             for key, value in valuesdict[section].items():
@@ -157,9 +177,19 @@ class ConfigParser:
             if output['debug']: traceback.print_exc()
 
     def update(self, section, key, value):
-        """ Update a specific key's value """	
+        """ 
+        Update a specific key's value.
+        
+        @type section: str
+        @param section: String of the section of the key to update.
+        @type key: str
+        @param key: String of the key to update.
+        @type value: str/int/bool
+        @param value: Value of the key to update.
+        """	
+        
         config.set(section, key, value)
-        # Save
+        
         try:
             config.write(open(self.configfile, 'w'))
             if output['normal']: print "[*] Updating configuration key %s to %s" % (key, value)	
@@ -168,7 +198,13 @@ class ConfigParser:
             if output['debug']: traceback.print_exc()
 
     def create(self, path):
-        """ Create a configuration file from default values """
+        """
+        Create a configuration file from default values.
+        
+        @type path: str
+        @param path: Path to the configuration file.
+        """
+        
         # Create sections
         for section in ('server', 'screenshot', 'html'): config.add_section(section)
 
