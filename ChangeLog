@@ -1,17 +1,20 @@
 0.2 (I've been watching you...):
- * Removed a redundant print in server.py
  * Fixed a syntax bug in uigtk.py when GTK version is < 2.10
  * Changed strings in text to be more literal and intuitive 
- * Added option (-debug) to show all console output)
+ * Added option (-debug) to show all console output #5
  * Add options to report errors in the system tray (blinking true). #7
- * Rewrote the screenshot module completely to support active window screenshots and scaling. 
+ * Rewrote the screenshot module completely to support active window
+ screenshots and scaling. #3 #10 
  * Removed all useless type-checking and started relying on my own exceptions.
- * Recommented the whole code according to Epytext Markup and also did major tweaks to naming.
+ * Recommented the whole code according to Epytext Markup and also did major
+ tweaks to naming. #8
  * Better handling of Twisted errors in logging
  * Improved the configuration engine to convert numbers and bools into int and
  bool rather than str.
+
 0.1.1:
  * Fix Debian Makefile
  * Remove bad print call in notify procedures
+
 0.1 (Mercado):
  * Initial release
