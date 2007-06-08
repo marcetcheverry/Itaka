@@ -9,8 +9,9 @@ CONTENTS:
 2. REQUIRED LIBRARIES
 3. INSTALLATION
 4. DEBIAN PACKAGE
-5. RELEASE NOTES
-6. PROGRAM CREDITS
+5. DOCUMENTATION
+6. RELEASE NOTES
+7. PROGRAM CREDITS
 
 1. ABOUT ITAKA:
 
@@ -42,16 +43,26 @@ To uninstall, once again as root type 'make uninstall'
 
 4. DEBIAN PACKAGE:
 
-to install the debian package simply:
+To create the Debian package simply do:
 
     cp Makefile Makefile.dist
     cp Makefile.debian Makefile
 
-    # make sure you have your gpg keys and debian development environment 
-    # correctly setup
+    # Make sure you have your gpg keys and debian development environment correctly setup
     debuild
 
-5. RELEASE NOTES:
+5. DOCUMENTATION:
+
+Itaka uses Epytext Markup Language to comment its code. 
+
+You can ownload epydoc from http://epydoc.sourceforge.net/
+
+You can generate documentation using epydoc.
+
+mkdir doc
+epydoc --html -o doc -n Itaka -u "http://itaka.jardinpresente.com.ar" *.py
+
+6. RELEASE NOTES:
 
 This is the first feature-complete release of Itaka. 
 
@@ -67,7 +78,7 @@ This program was developed under Ubuntu GNU/Linux and is released under the GPL 
 
 See COPYING file for further license information
 
-6. PROGRAM CREDITS:
+7. PROGRAM CREDITS:
 
 Special thanks to James Henstridge for the excellent Python-GTK bindings and 
 their equally excellent documentation.
