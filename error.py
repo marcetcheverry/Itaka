@@ -50,17 +50,20 @@ class ItakaScreenshotError(ItakaError):
     """
     Exception raised by screenshooting methods.
     """
+
     pass
 
 class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods.
     """
+    
     pass
 
 class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods.
     """
+
     pass
     
