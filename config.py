@@ -85,7 +85,7 @@ if system == "posix" and platform != "darwin":
 # 'normal' is for all normal operation mesages and warnings (not including errors)
 # 'debug' is for all messages through self.console.debug
 # 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
-output = {'normal': True, 'debug': False, 'quiet': False}
+output = {'normal': False, 'debug': False, 'quiet': False}
 
 #: User's configuration values 
 values = {}
