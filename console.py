@@ -22,13 +22,63 @@
 
 """ Itaka console output and logging engine """
 
+class BaseMessage():
+    """
+    Base class for console output.
+    """
+
+    def __init__(self, message):
+        """
+        Constructor.
+
+        @type message: str
+        @param message: The message to print on the Console.
+        """
+
+        self.message = message
+        print '[*] %s' % (str(self.message))
+
+class BaseFailureMessage(BaseMessage):
+    """
+    Base class for failure messages.
+    """
+
+    def __init__(self, debug, caller, message, type):
+        """
+        Constructor.
+
+        @type debug: bool
+        @param debug: Whether the L{caller} arguments will be printed.
+
+        @type caller: tuple
+        @param caller: Specifies the class and method were the failure ocurred.
+
+        @type message: str
+        @param message: The message to print.
+
+        @type type: str
+        @param type: The type of failure: 'WARNING', 'ERROR', 'DEBUG'.
+        """
+
+        self.caller = '.'.join(caller)
+        self.message = message
+        self.debug = debug
+        self.type = type
+
+        if self.debug:
+            self.message = ' '.join((self.caller, self.message))
+
+        print '[*] %s: %s' % (str(self.type), str(self.message))
+                
+
 class Console:
     """
     Console I/O handler organized by message type. Also handle GUI logging when passed an instance.
     """
 
     def __init__(self, itakaglobals):
-        """
+        """ailuretype == 'ERROR':
+
         Constructor for console output handler.
         
         @type itakaglobals: module
@@ -36,124 +86,51 @@ class Console:
         """
 
         self.itakaglobals = itakaglobals
-        if self.itakaglobals.output['normal']: print "[*] Itaka %s starting..." % (itakaglobals.version)
-
+        if self.itakaglobals.output['normal']: 
+            BaseMessage('Itaka %s starting...' % (itakaglobals.version))
+            
     def __del__(self):
         """
         Destructor.
         """
         
-        if self.itakaglobals.output['normal']: print "[*] Itaka shutting down..."
-
-    def msg(self, message, gui=False, eventslog=True, detailedmessage=False, icon=None):
-        """
-        Console message handler.
-        
-        @type message: str/tuple
-        @param message: Message to print to the console. If it is a L{detailedmessage} then it becomes a tuple with the first item being the simple message and the latter being the detailed.
-
-        @type gui: instance
-        @param gui: Instance of the L{Gui} class for logging purposes.
-
-        @type eventslog: bool
-        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
-
-        @type detailedmessage: bool
-        @param detailedmessage: Specifies wheter the only the simple message will go to the events log. 
-
-        @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log.
-        """
-        
         if self.itakaglobals.output['normal']: 
-            if detailedmessage:
-                print "[*] %s" % (message[1])
-            else:
-                print "[*] %s" % (message)
+            BaseMessage('Itaka shutting down')
 
-        # twisted takes a dict with the first key being 'message', coupled with a str()'ed tuple'd message.
-        if gui: 
-            if detailedmessage:
-                gui.logger({'message': [message[0], message[1]]}, False, None, eventslog, detailedmessage, icon)
-            else:
-                gui.logger({'message': [message]}, False, None, eventslog, detailedmessage, icon)
-
-    def warn(self, caller, message, gui=False, eventslog=False, icon=None):
+    def msg(self, message):
         """
-        Console warning handler.
+        Message handler.
         
+        @type message: str
+        @param message: Message to print to the console. 
+        """
+        
+        if self.itakaglobals.output['normal']:
+            BaseMessage(message)
+
+    def failure(self, caller, message, failuretype='ERROR'):
+        """
+        Failure handler abstract.
+
         @type caller: tuple
         @param caller: Specifies the class and method were the warning ocurred.
 
-        @type gui: instance
-        @param gui: Instance of the L{Gui} class for logging purposes.
+        @type message: str
+        @param message: Message to print to the console.
 
-        @type eventslog: bool
-        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
-
-        @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log.
-        """
-        self.array = ".".join(caller)
-        if self.itakaglobals.output['normal']: 
-            print "[*] WARNING: %s: %s" % (self.array, message)
-        if gui: 
-            gui.logger({'message': [str(message), str("WARNING: %s: %s" % (self.array, message))]}, True, 'warning', eventslog, False, icon)		
-
-    def error(self, caller, message, gui=False, eventslog=False, icon=None):
-        """
-        Console error handler.
-        
-        @type caller: tuple
-        @param caller: Specifies the class and method were the warning ocurred.
-
-        @type gui: instance
-        @param gui: Instance of the L{Gui} class for logging purposes.
-
-        @type eventslog: bool
-        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
-
-        @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log.
+        @type failuretype: str
+        @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
         """
 
-        self.array = ".".join(caller)
-        if not self.itakaglobals.output['quiet']:
-            print "[*] ERROR: %s: %s" % (self.array, message)
-        if gui:
-            # Show the window and its widgets, set the status icon blinking timeout
-            if not gui.window.get_property("visible"):
-                gui.window.present()
-                gui.statusicon_blinktimeout()
-                gui.window.move(gui.window_position[0], gui.window_position[1])
+        if failuretype == 'ERROR':
+            if not self.itakaglobals.output['quiet']:
+                BaseFailureMessage(self.itakaglobals.output['quiet'], caller, message, failuretype)
 
-            gui.expander.set_expanded(True)
-            gui.expander.set_sensitive(True)
-            # Stop the server
-            if gui.server_listening:
-                gui.startstop(None, "stop", True)
+        elif failuretype == 'WARNING':
+            if self.itakaglobals.output['normal']:
+                BaseFailureMessage(self.itakaglobals.output['normal'], caller, message, failuretype)
 
-            gui.logger({'message': [str(message), str("ERROR: %s: %s" % (self.array, message))]}, True, 'error', eventslog, False, icon)
+        elif failuretype == 'DEBUG':
+            if self.itakaglobals.output['debug']:
+                BaseFailureMessage(self.itakaglobals.output['debug'], caller, message, failuretype)
 
-    def debug(self, caller, message, gui=False, eventslog=False, icon=None):
-        """
-        Console debug handler.
-        
-        @type caller: tuple
-        @param caller: Specifies the class and method were the warning ocurred.
-
-        @type gui: instance
-        @param gui: Instance of the L{Gui} class for logging purposes.
-
-        @type eventslog: bool
-        @param eventslog: Specifies if the L{message} will go to the events log in the Gui.
-
-        @type icon: str
-        @param icon: A gtk.stock_icon string for the Gui event log.
-        """
-
-        self.array = ".".join(caller)
-        if self.itakaglobals.output['debug']: 
-            print "[*] DEBUG: %s: %s" % (self.array, message)
-        if gui: 
-            gui.logger({'message': [str(message), str("DEBUG: %s: %s" % (self.array, message))]}, True, 'debug', eventslog, False, icon)

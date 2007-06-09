@@ -103,9 +103,9 @@ class Screenshot():
             try:
                 self.currentwindow = self.find_current_active_window()
             except error.ItakaScreenshotErrorWmHints:
-                self.console.warn(['Screenshot', 'take_screenshot'], 'Can not grab the current window. Window manager unsupported', self.gui, True)
+                self.gui.log.failure(('Screenshot', 'take_screenshot'), 'Can not grab the current window. Window manager unsupported', 'WARNING')
             except error.ItakaScreenshotErrorActiveDesktop:
-                self.console.warn(['Screenshot', 'take_screenshot'], 'Not grabing the desktop as the current window')
+                self.gui.log.failure(('Screenshot', 'take_screenshot'), 'Not grabing the desktop as the current window', 'WARNING')
 
             if not self.currentwindowfailed:
                 # Make the window size also the screen size for scaling purposes
@@ -118,7 +118,7 @@ class Screenshot():
                         gtk.gdk.colormap_get_system(),
                         self.currentwindow[2], self.currentwindow[3], 0, 0, self.activewindowwidth, self.activewindowheight)
 
-        elif not self.configuration['screenshot']['currentwindow'] or self.currentwindowfailed:
+        elif not self.configuration['screenshot']['currentwindow'] or self.currentwindowfailed: 
             self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
                     gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screenwidth, self.screenheight),
                     self.rootwindow,
@@ -127,7 +127,7 @@ class Screenshot():
 
         # GTK manages errors this way
         if self.screenshot is None:
-            self.console.error(['Screenshot', 'take_screenshot', 'Could not grab screenshot, GTK+ error'], self.gui, True)
+            self.gui.log.failure(('Screenshot', 'take_screenshot'), 'Could not grab screenshot, GTK+ error', 'ERROR')
             raise error.ItakaScreenshotError, 'Could not grab screenshot, GTK+ error'
 
         if self.configuration['screenshot']['scale']:
@@ -151,7 +151,7 @@ class Screenshot():
             else:
                 self.screenshot.save(self.shotFile, self.configuration['screenshot']['format'].lower())
         except:
-            self.console.error(['Screenshot','take_screenshot'], "Could not save screenshot", self.gui)
+            self.gui.log.failure(('Screenshot','take_screenshot'), "Could not save screenshot", 'ERROR')
             raise error.ItakaScreenshotError, "Could not save screenshot"
 
         # Important workaround to avoid a memory leak.
