@@ -1091,8 +1091,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if self.server_listening:
             self.log.message('Restarting the server to listen on port %d' % (self.configuration['server']['port']), ['stock', 'STOCK_REFRESH'])
-            self.start_server()
-            self.stop_server(True, False)
+            self.stop_server(None, True, False)
+            self.start_server(None, True)
 
     def destroy(self, *args):
         """
