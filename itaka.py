@@ -53,7 +53,8 @@ try:
     import uigtk as igui
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules."
-    traceback.print_exc()
+    if itakaglobals.output['debug']:
+        traceback.print_exc()
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -61,6 +62,7 @@ if __name__ == "__main__":
         gui = igui.Gui(console, (itakaglobals, configinstance))
         gui.main()
     except:
-        console.error(('Itaka', 'core'), "Could not initiate GUI")
-        traceback.print_exc()
+        console.failure(('Itaka', 'core'), "Could not initiate GUI", 'ERROR')
+        if itakaglobals.output['debug']:
+            traceback.print_exc()
         sys.exit(1)

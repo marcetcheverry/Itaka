@@ -59,6 +59,196 @@ if gtk.gtk_version[1] < 10:
     print "[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed" % (".".join(str(x) for x in gtk.gtk_version))
     sys.exit(1)
 
+class GuiLog:
+    """
+    GTK+ GUI logging handler.
+    """
+
+    def __init__(self, guiinstance, console, configuration):
+        """
+        Constructor.
+
+        @type guiinstance: instance
+        @param guiinstance: Instance of L{Gui}
+
+        @type console: instance
+        @param console: Instance of L{Console}
+
+        @type configuration: dict
+        @param configuration: Configuration values dictionary from L{ConfigParser}
+        """
+
+        self.gui = guiinstance
+        self.console = console
+        self.configuration = configuration
+
+    def twisted_observer(self, args):
+        """
+        A log observer for our Twisted server
+
+        @type args: dict
+        @param args: dict {'key': [str(message)]]}
+        """
+
+        # Handle twisted errors
+        # 'isError': 1, 'failure': <twisted.python.failure.Failure <type 'exceptions.AttributeError'>> 
+        if args.has_key('isError') and args['isError'] == 1:
+            self.msg = str(args['failure'])
+        else:
+            self.msg = args['message'][0]
+
+        self._write_detailed_log(self.msg)
+
+    def message(self, message, icon=None):
+        """
+        Write normal message on Gui log widgets.
+
+        @type message: str
+        @param message: Message to be inserted.
+
+        @type icon: tuple
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        """
+        
+        self.console.msg(message)
+        self._write_gui_log(message, None, icon, False)
+
+    def detailed_message(self, message, detailedmessage, icon=None):
+        """
+        Write detailed message on Gui log widgets.
+
+        @type message: str
+        @param message: Message to be inserted in the events log.
+
+        @type detailedmessage: str
+        @param detailedmessage: Message to be inserted in the detailed log.
+
+        @type icon: tuple
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        """
+
+        self.console.msg(detailedmessage)
+        self._write_gui_log(message, detailedmessage, icon, False)
+
+    def failure(self, caller, message, failuretype='ERROR'):
+        """
+        Write failure message on Gui log widgets.
+
+        @type caller: tuple
+        @param caller: Specifies the class and method were the warning ocurred.
+
+        @type message: str
+        @param message: A tuple containing first the simple message to the events log, and then the detailed message for the detailed log.
+
+        @type failuretype: str
+        @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
+        """
+        
+        self.simplemessage = message[0]
+        self.detailedmessage = message[1]
+
+        self.console.failure(caller, self.detailedmessage, failuretype)
+
+        # ERRORS require some more actions
+        if failuretype == 'ERROR':
+            # Show the window and its widgets, set the status icon blinking timeout
+            if not self.gui.window.get_property("visible"):
+                self.gui.window.present()
+                self.gui.statusicon_blinktimeout()
+                self.gui.window.move(self.gui.window_position[0], self.gui.window_position[1])
+
+            self.gui.expander.set_expanded(True)
+            self.gui.expander.set_sensitive(True)
+            # Stop the server
+            if self.gui.server_listening:
+                self.gui.startstop(None, "stop", True)
+
+        self._write_gui_log(self.simplemessage, self.detailedmessage, _get_failure_icon(failuretype))
+
+    def _get_failure_icon(self, failuretype):
+        """
+        Return a default stock icon for a failure type.
+
+        @type failuretype: str
+        @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
+
+        @rtype: tuple
+        @return: An GTK+ stock icon definition. ['stock', 'STOCK_ICON']
+        """
+        # Default icon is always STOCK_DIALOG_ERROR
+        icon = ['stock', 'STOCK_DIALOG_ERROR']
+        
+        if failuretype == "WARNING":
+            icon = ['stock', 'STOCK_DIALOG_WARNING']
+        elif failuretype == "DEBUG": 
+            icon = ['stock', 'STOCK_DIALOG_INFO']
+
+        return icon
+
+    def _write_gui_log(self, message, detailedmessage=None, icon=None, considerpaused=True):
+        """
+        Private method to write to both Gui logs.
+
+        @type message: str
+        @param message: Message to be inserted.
+
+        @type detailedmessage: str
+        @param detailedmessage: Optional detailed message if the event log and detailed log messages differ.
+
+        @type icon: tuple
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+
+        @type considerpaused: bool
+        @param considerpaused: Whether to write the message if the Gui logging is paused. (This unpauses it)
+        """
+
+        if detailedmessage is None:
+            detailedmessage = message
+
+        if self.gui.logpaused:
+            if considerpaused:
+                self.gui.pauselogger(None, "unpause")
+                self._write_events_log(message, icon)
+                self._write_detailed_log(detailedmessage)
+        else:
+            self._write_events_log(message, icon)
+            self._write_detailed_log(detailedmessage)
+
+    def _write_events_log(self, message, icon=None):
+        """
+        Private method to write to the events log Gui widget.
+
+        @type message: str
+        @param message: Message to be inserted.
+
+        @type icon: tuple
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        """
+
+        if icon is not None:
+            if icon[0] == "stock":
+                self.inserted_iter = self.gui.logeventsstore.append([self.gui.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), message])
+                # Select the item if its a failure
+                #if failure:
+                #self.selection = self.logeventstreeview.get_selection()
+                #    self.selection.select_iter(self.inserted_iter)
+            else:
+                self.gui.logeventsstore.append([icon[1], message])
+        else:
+            self.gui.logeventsstore.append([icon, message])
+
+    def _write_detailed_log(self, message):
+        """
+        Private method to write to the detailed log Gui widget.
+
+        @type message: str
+        @param message: Message to be inserted.
+        """
+
+        self.gui.logdetailsbuffer.insert_at_cursor("\r" +message,len("\r" + message))
+        # Automatically scroll. Use wrap until fix.
+        self.gui.logdetailstextview.scroll_mark_onscreen(self.gui.logdetailsbuffer.get_insert())
+
 class Gui:
     """
     GTK+ GUI
@@ -84,6 +274,8 @@ class Gui:
         # The configuration instance has the user's preferences already loaded.
         self.configinstance = configuration[1]
         self.configuration = self.itakaglobals.values
+
+        self.log = GuiLog(self, self.console, self.configuration)
 
         # Start defining widgets
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
@@ -127,8 +319,6 @@ class Gui:
 
         self.menuitemseparator = gtk.SeparatorMenuItem()
         self.menuitemseparator1 = gtk.SeparatorMenuItem()
-        self.menuitemabout = gtk.ImageMenuItem(gtk.STOCK_ABOUT) 
-        self.menuitemabout.connect('activate', self.about)
         self.menuitemquit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
         self.menuitemquit.connect('activate', self.destroy)
 
@@ -138,7 +328,6 @@ class Gui:
             self.statusmenu.append(self.menuitemseparator)
             self.statusmenu.append(self.menuitemnotifications)
         self.statusmenu.append(self.menuitemseparator1)
-        self.statusmenu.append(self.menuitemabout)
         self.statusmenu.append(self.menuitemquit)
 
         self.vbox = gtk.VBox(False, 6)
@@ -255,7 +444,7 @@ class Gui:
         self.expander.connect('notify::expanded', self.expandlogger)
 
         # Log to the self.logger function, which sets the buffer for self.debubuffer
-        log.addObserver(self.logger)
+        log.addObserver(self.log.twisted_observer)
 
         self.vbox.pack_start(self.statusBox, False, False, 4)
         self.vbox.pack_start(self.expander, False, False, 0)
@@ -464,7 +653,7 @@ class Gui:
                 for section in self.configurationdict:
                     [self.configinstance.update(section, key, value) for key, value in self.configurationdict[section].iteritems() if key not in self.currentconfiguration[section] or self.currentconfiguration[section][key] != value]
             except:
-                self.console.error(['Gui', 'save'], "Could not save preferences")
+                self.log.failure(('Gui', 'save'), "Could not save preferences", 'ERROR')
 
     def expandpreferences(self, params=None):
         """
@@ -686,71 +875,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.aboutdialog.run()
         self.aboutdialog.destroy()
 
-    def logger(self, args, failure=False, failuretype=None, eventslog=False, detailedmessage=False, icon=None):
-        """
-        Gui logging handler.
-        
-        @type args: dict
-        @param args: dict {'key': [str(msg)]]}, however, when handling failures the message tuple contains an extra item containing a detailed message for separation in the two GUI log viewers.
-        
-        @type failure: bool
-        @param failure: Specifies whether we are logging a failure.
-        
-        @type failuretype: str
-        @param failuretype: Specifies what kind of failure it is, either 'error', 'warning' or 'debug'. 
-        
-        @type eventslog: bool
-        @param eventslog: Specifies if the log message will go to the events log. 
-        
-        @type detailedmessage: bool
-        @param detailedmessage: specifies whether the message contained in L{args} is a detailed message.
-        
-        @type icon: tuple
-        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
-        """
-
-        # Handle twisted errors
-        # 'isError': 1, 'failure': <twisted.python.failure.Failure <type 'exceptions.AttributeError'>> 
-        if args.has_key('isError') and args['isError'] == 1:
-            self.message = str(args['failure'])
-        else:
-            self.message = args['message'][0]
-
-        # The detailed log gets the detailed mesage on failures
-        if failure or detailedmessage:
-            self.message = args['message'][1]
-    
-        # Write out the message to the detailed GUI	
-        self.logdetailsbuffer.insert_at_cursor("\r" +self.message,len("\r" + self.message))
-        # Automatically scroll. Use wrap until fix.
-        self.logdetailstextview.scroll_mark_onscreen(self.logdetailsbuffer.get_insert())
-
-        if eventslog or failure:
-            # Use the non-detailed mesage
-            self.message = args['message'][0]
-            # The event log
-            if failure:
-                # Failures can not set icons, we set them.
-                if failuretype == "error":
-                    icon = ['stock', 'STOCK_DIALOG_ERROR']
-                elif failuretype == "warning":
-                    icon = ['stock', 'STOCK_DIALOG_WARNING']
-                elif failuretype == "debug": 
-                    icon = ['stock', 'STOCK_DIALOG_INFO']
-
-            if icon is not None:
-                if icon[0] == "stock":
-                    self.insertediter = self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), self.message])
-                    # Select the item if its a failure
-                    if failure:
-                        self.selection = self.logeventstreeview.get_selection()
-                        self.selection.select_iter(self.insertediter)
-
-                else:
-                    self.logeventsstore.append([icon[1], self.message])
-            else:
-                self.logeventsstore.append([None, self.message])
-
     def expandlogger(self, expander, params):
         """
         Expand or contract the logger.
@@ -783,18 +907,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.logeventsstore.clear()
         self.logdetailsbuffer.set_text("")
 
-    def pauselogger(self, widget, data=None):
+    def pauselogger(self, widget, switch=None, data=None):
         """
         Pause log output.
 
         @type widget: unknown
         @param widget: Unknown.
 
+        @type switch: str
+        @param switch: Either 'pause' or 'unpause' to change the status.
+
         @type data: unknown.
         @param data: Unknown.
         """
 
-        if widget.get_active():
+        if self.checkwidget(widget) or switch == "pause":
             # It would be nice if we could set a center background image to our textview.
             # However, GTK makes that very hard.
             """
@@ -812,9 +939,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.logeventstreeview.set_sensitive(False)
             self.logdetailstextview.set_sensitive(False)
 
-            log.removeObserver(self.logger)
+            log.removeObserver(self.log.twisted_observer)
+            self.logpaused = True
         else:
-            log.addObserver(self.logger)
+            log.addObserver(self.log.twisted_observer)
+            self.logpaused = False
+            if (switch):
+                self.logpausebutton.set_active(False)
             self.logdetailstextview.set_sensitive(True)
             self.logeventstreeview.set_sensitive(True)
 
@@ -868,7 +999,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param dontexpandlogger: Whether the logger is expanded or not by default when changing server status.
         """
 
-        if (self.checkwidget(widget) or switch == "start"):
+        if self.checkwidget(widget) or switch == "start":
             if self.server_listening: return
             # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
@@ -884,25 +1015,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             try:
                 self.ilistener = reactor.listenTCP(self.configuration['server']['port'], self.site)
                 self.server_listening = True
+                self.logpaused = False
             except twisted.internet.error.CannotListenError:
-                self.console.error(('Gui', 'startstop'), 'Failed to start server, port %d is already in use' % (self.configuration['server']['port']), self)
+                self.log.failure(('Gui', 'startstop'), 'Failed to start server, port %d is already in use' % (self.configuration['server']['port']), 'ERROR')
                 # NOTE: This actually calls startstop to stop the server again, acts as a click
                 self.buttonStartstop.set_active(False)
                 return
 
-            # Announce on log & console stdout
             if self.configuration['screenshot']['format'] == "jpeg":
-                self.console.msg(['Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %d%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality'])], self, True, True, ['stock', 'STOCK_CONNECT'])
+                self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %d%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', 'STOCK_CONNECT'])
             else:
-                self.console.msg(['Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper())], self, True, True, ['stock', 'STOCK_CONNECT'])
+                self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', 'STOCK_CONNECT'])
 
             # Change buttons
             self.buttonStartstop.set_active(True)
-            self.buttonStartstop.set_label("Stop")
+            self.buttonStartstop.set_label('Stop')
             self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
             self.buttonStartstop.set_image(self.startstopimage)
 
-            self.statusIcon.set_tooltip("Itaka - Server running")
+            self.statusIcon.set_tooltip('Itaka - Server running')
             self.menuitemstart.set_sensitive(False)
             self.menuitemstop.set_sensitive(True)
 
@@ -910,8 +1041,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.expander.set_sensitive(True)
         else:
             if self.server_listening:
-                self.console.msg("Server stopped", self, True, False, ['stock', 'STOCK_DISCONNECT'])
-
+                self.log.message('Server stopped', ['stock', 'STOCK_DISCONNECT'])
 
                 self.ilistener.stopListening()
                 self.server_listening = False
@@ -943,9 +1073,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.server_listening:
-            self.console.msg("Restarting the server to listen on port %d" % (self.configuration['server']['port']), self, True, False, ['stock', 'STOCK_REFRESH'])
-            self.startstop(None, "stop")
-            self.startstop(None, "start")
+            self.log.message('Restarting the server to listen on port %d' % (self.configuration['server']['port']), ['stock', 'STOCK_REFRESH'])
+            self.startstop(None, 'stop')
+            self.startstop(None, 'start')
 
     def destroy(self, *args):
         """
@@ -953,7 +1083,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.server_listening:
-            self.console.msg("Shutting down server...")
+            self.console.msg('Shutting down server')
             self.ilistener.stopListening()
             del self.console
         else:
@@ -1048,18 +1178,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.ip = ip
         self.time = time
 
-        self.console.msg("Screenshot number %d served to %s" % (self.counter, self.ip), self, True, False, ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+        self.log.message('Screenshot number %d served to %s' % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
 
-        self.labelServed.set_text("<b>Served</b>: %d" % (self.counter))
+        self.labelServed.set_text('<b>Served</b>: %d' % (self.counter))
         self.labelServed.set_use_markup(True)
-        self.labelLastip.set_text("<b>Client</b>: %s " % (self.ip))
+        self.labelLastip.set_text('<b>Client</b>: %s' % (self.ip))
         self.labelLastip.set_use_markup(True)
-        self.statusIcon.set_tooltip("Itaka - %s served" % (self.plural(self.counter, 'screenshot')))
+        self.statusIcon.set_tooltip('Itaka - %s served' % (self.plural(self.counter, 'screenshot')))
 
         # Show the camera image on tray and interface for 1.5 seconds
-        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-        self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
-        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-take.png"))
+        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
+        self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
+        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
         gobject.timeout_add(1500, self.set_standard_images)
 
         # Call the update timer function, and add a timer to update the GUI of its

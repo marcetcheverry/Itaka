@@ -36,7 +36,7 @@ config = ConfigParser.ConfigParser()
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
 #: Version
-version = "0.1.1"
+version = "0.2"
 #: Revision
 revision = "$Rev$"
 
@@ -85,7 +85,7 @@ if system == "posix" and platform != "darwin":
 # 'normal' is for all normal operation mesages and warnings (not including errors)
 # 'debug' is for all messages through self.console.debug
 # 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
-output = {'normal': False, 'debug': False, 'quiet': False}
+output = {'normal': True, 'debug': False, 'quiet': False}
 
 #: User's configuration values 
 values = {}
@@ -196,7 +196,7 @@ class ConfigParser:
         
         try:
             config.write(open(self.configfile, 'w'))
-            if output['normal']: print "[*] Updating configuration key %s to %s" % (key, value)	
+            if output['debug']: print "[*] Updating configuration key %s to %s" % (key, value)	
         except:
             if not output['quiet']: print "[*] ERROR: Could not write configuration file %s" % (self.configfile)
             if output['debug']: traceback.print_exc()
