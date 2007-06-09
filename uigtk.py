@@ -110,7 +110,7 @@ class GuiLog:
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
         """
         
-        self.console.msg(message)
+        self.console.message(message)
         self._write_gui_log(message, None, icon, False)
 
     def detailed_message(self, message, detailedmessage, icon=None):
@@ -127,7 +127,7 @@ class GuiLog:
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
         """
 
-        self.console.msg(detailedmessage)
+        self.console.message(detailedmessage)
         self._write_gui_log(message, detailedmessage, icon, False)
 
     def failure(self, caller, message, failuretype='ERROR'):
@@ -161,7 +161,7 @@ class GuiLog:
             self.gui.expander.set_sensitive(True)
             # Stop the server
             if self.gui.server_listening:
-                self.gui.startstop(None, "stop", True)
+                self.gui.stop(True, False)
 
         self._write_gui_log(self.simplemessage, self.detailedmessage, _get_failure_icon(failuretype))
 
@@ -305,10 +305,10 @@ class Gui:
         self.stopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
         self.menuitemstart = gtk.ImageMenuItem("Start") 
         self.menuitemstart.set_image(self.startimage)
-        self.menuitemstart.connect('activate', self.startstop, "start")
+        self.menuitemstart.connect('activate', self.start_server, True)
         self.menuitemstop = gtk.ImageMenuItem("Stop") 
         self.menuitemstop.set_image(self.stopimage)
-        self.menuitemstop.connect('activate', self.startstop, "stop")
+        self.menuitemstop.connect('activate', self.stop_server, True)
         self.menuitemstop.set_sensitive(False)
 
         if self.itakaglobals.notifyavailable: 
@@ -345,7 +345,7 @@ class Gui:
 
         self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
         self.buttonStartstop.set_image(self.startstopimage)
-        self.buttonStartstop.connect("toggled", self.startstop, "Start/Stop button")
+        self.buttonStartstop.connect("toggled", self.button_start_server)
         self.ibox.pack_start(self.buttonStartstop, True, True, 8)
 
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
@@ -985,87 +985,104 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         else:
             return None
 
-    def startstop(self, widget, switch=None, dontexpandlogger = False):
+    def button_start_server(self, widget):
         """
-        Start or stop the screenshooting server.
+        Interface to start or stop the server by checking the status of a gtk.ToggleButton
         
         @type widget: unknown
         @param widget: Unknown.
+        """
+        if self.checkwidget(widget):
+            self.start_server()
+        else:
+            self.stop_server()
 
-        @type switch: str
-        @param switch: Either 'start' or 'stop' to be used from the status icon or error handling (turns on or off).
-        
-        @type dontexpandlogger: bool
-        @param dontexpandlogger: Whether the logger is expanded or not by default when changing server status.
+    def start_server(self, widget=None, foreign=False):
+        """
+        Starts the Twisted server.
+
+        @type foreign: bool
+        @param foreign: Whether the caller of this method is not self.buttonStartstop.
+
         """
 
-        if self.checkwidget(widget) or switch == "start":
-            if self.server_listening: return
-            # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
+        if self.server_listening: return
+        # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
 
-            # Set up the twisted site
-            # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
-            self.sinstance = iserver.ImageResource(self, self.console)
-            self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
-            self.root.putChild('screenshot', self.sinstance)
-            self.root.putChild('', self.root)
-            self.site = server.Site(self.root)
+        # Set up the twisted site
+        # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
+        self.sinstance = iserver.ImageResource(self, self.console)
+        self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
+        self.root.putChild('screenshot', self.sinstance)
+        self.root.putChild('', self.root)
+        self.site = server.Site(self.root)
 
-            # Start the server. Make an instance to distinguish from self.sreactor().
-            try:
-                self.ilistener = reactor.listenTCP(self.configuration['server']['port'], self.site)
-                self.server_listening = True
-                self.logpaused = False
-            except twisted.internet.error.CannotListenError:
-                self.log.failure(('Gui', 'startstop'), 'Failed to start server, port %d is already in use' % (self.configuration['server']['port']), 'ERROR')
-                # NOTE: This actually calls startstop to stop the server again, acts as a click
-                self.buttonStartstop.set_active(False)
-                return
+        # Start the server. Make an instance to distinguish from self.sreactor().
+        try:
+            self.ilistener = reactor.listenTCP(self.configuration['server']['port'], self.site)
+            self.server_listening = True
+            self.logpaused = False
+        except twisted.internet.error.CannotListenError:
+            self.log.failure(('Gui', 'startstop'), 'Failed to start server, port %d is already in use' % (self.configuration['server']['port']), 'ERROR')
+            # NOTE: This actually calls startstop to stop the server again, acts as a click
+            self.buttonStartstop.set_active(False)
+            return
 
-            if self.configuration['screenshot']['format'] == "jpeg":
-                self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %d%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', 'STOCK_CONNECT'])
-            else:
-                self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', 'STOCK_CONNECT'])
-
-            # Change buttons
-            self.buttonStartstop.set_active(True)
-            self.buttonStartstop.set_label('Stop')
-            self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
-            self.buttonStartstop.set_image(self.startstopimage)
-
-            self.statusIcon.set_tooltip('Itaka - Server running')
-            self.menuitemstart.set_sensitive(False)
-            self.menuitemstop.set_sensitive(True)
-
-            # Close the expander
-            self.expander.set_sensitive(True)
+        if self.configuration['screenshot']['format'] == "jpeg":
+            self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %d%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', 'STOCK_CONNECT'])
         else:
-            if self.server_listening:
-                self.log.message('Server stopped', ['stock', 'STOCK_DISCONNECT'])
+            self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', 'STOCK_CONNECT'])
 
-                self.ilistener.stopListening()
-                self.server_listening = False
-                # Stop the g_timeout
-                if hasattr(self, 'iagotimer'):
-                    gobject.source_remove(self.iagotimer)
+        # Change buttons
+        if foreign:
+            self.buttonStartstop.set_active(True)
+        self.buttonStartstop.set_label('Stop')
+        self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
+        self.buttonStartstop.set_image(self.startstopimage)
 
-                # Change GUI elements
-                if (switch):
-                    self.buttonStartstop.set_active(False)
+        self.statusIcon.set_tooltip('Itaka - Server running')
+        self.menuitemstart.set_sensitive(False)
+        self.menuitemstop.set_sensitive(True)
 
-                self.statusIcon.set_tooltip("Itaka")
-                self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
-                self.buttonStartstop.set_image(self.startstopimage)
-                self.buttonStartstop.set_label("Start")
-                self.labelLastip.set_text('')
-                self.labelTime.set_text('')
-                self.labelServed.set_text('')
-                if not dontexpandlogger:
-                    self.expander.set_expanded(False)				
-                    self.expander.set_sensitive(False)
-                self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
-                self.menuitemstart.set_sensitive(True)
-                self.menuitemstop.set_sensitive(False)
+        self.expander.set_sensitive(True)
+
+    def stop_server(self, widget=None, foreign=False, contractlog=True):
+        """
+        Stops the Twisted server.
+
+        @type foreign: bool
+        @param foreign: Whether the caller of this method is not self.buttonStartstop.
+
+        @type contractlog: bool
+        @param contractlog: Whether the log widget is contracted.
+        """
+
+        if self.server_listening:
+            self.log.message('Server stopped', ['stock', 'STOCK_DISCONNECT'])
+
+            self.ilistener.stopListening()
+            self.server_listening = False
+            # Stop the g_timeout
+            if hasattr(self, 'iagotimer'):
+                gobject.source_remove(self.iagotimer)
+
+            # Change GUI elements
+            if (foreign):
+                self.buttonStartstop.set_active(False)
+
+            self.statusIcon.set_tooltip("Itaka")
+            self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
+            self.buttonStartstop.set_image(self.startstopimage)
+            self.buttonStartstop.set_label("Start")
+            self.labelLastip.set_text('')
+            self.labelTime.set_text('')
+            self.labelServed.set_text('')
+            if contractlog:
+                self.expander.set_expanded(False)				
+                self.expander.set_sensitive(False)
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+            self.menuitemstart.set_sensitive(True)
+            self.menuitemstop.set_sensitive(False)
 
     def restart_server(self):
         """
@@ -1074,8 +1091,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if self.server_listening:
             self.log.message('Restarting the server to listen on port %d' % (self.configuration['server']['port']), ['stock', 'STOCK_REFRESH'])
-            self.startstop(None, 'stop')
-            self.startstop(None, 'start')
+            self.start_server()
+            self.stop_server(True, False)
 
     def destroy(self, *args):
         """
@@ -1083,7 +1100,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.server_listening:
-            self.console.msg('Shutting down server')
+            self.console.message('Shutting down server')
             self.ilistener.stopListening()
             del self.console
         else:
