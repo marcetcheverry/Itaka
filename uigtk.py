@@ -655,14 +655,11 @@ class Gui:
             except:
                 self.log.failure(('Gui', 'save'), "Could not save preferences", 'ERROR')
 
-    def expandpreferences(self, params=None):
+    def expandpreferences(self, *args):
         """
         Expands the window for preferences.
-        
-        @type params: unknown
-        @param params: Unknown.
         """
-        
+
         # We have a race condition here. If GTK cant resize fast enough, then it gets very sluggish
         # See configure-event signal of gtk.Widget
         # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
@@ -713,12 +710,9 @@ class Gui:
             else:
                 self.expandtimeout = gobject.timeout_add(30, self.expandpreferences)
 
-    def contractpreferences(self, params=None):
+    def contractpreferences(self, *args):
         """
         Contracts the window of preferences.
-        
-        @type params: unknown
-        @param params: Unknown.
         """
 
         if self.contracttimeout is not None:
@@ -756,8 +750,8 @@ class Gui:
         """
         Report the window size on change.
         
-        @type widget: unknown
-        @param widget: Unknown.
+        @type widget: instance
+        @param widget: gtk.Widget.
 
         @type data: unknown
         @param data: Unknown.
@@ -777,9 +771,9 @@ class Gui:
         """
         Display the menu on the status icon.
         
-        @type widget: unknown
-        @param widget: Unknown.
-        
+        @type widget: instance
+        @param widget: gtk.Widget.
+
         @type button: int
         @param button: The button pressed..
 
@@ -816,8 +810,8 @@ class Gui:
         """
         Toggle the window visibility from the status icon when clicked.
         
-        @type widget: unknown
-        @param widget: Unknown.
+        @type widget: instance
+        @param widget: gtk.Widget.
         """
 
         if self.window.get_property("visible"):
@@ -831,8 +825,8 @@ class Gui:
         """
         Disable or enable notifications on the fly from the status icon.
         
-        @type widget: unknown
-        @param widget: Unknown.
+        @type widget: instance
+        @param widget: gtk.Widget.
         """
 
         if self.menuitemnotifications.get_active():
@@ -840,12 +834,9 @@ class Gui:
         else:
             self.configuration['server']['notify'] = False
 
-    def about(self, data=None):
+    def about(self, *args):
         """
         Creates the About dialog.
-
-        @type data: unknown.
-        @param data: Unknown.
         """
 
         self.aboutdialog = gtk.AboutDialog()
@@ -896,12 +887,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
         return
 
-    def clearlogger(self, args):
+    def clearlogger(self, *args):
         """
         Clear the log.
-
-        @type args: Unknown
-        @param args: unknown
         """
 
         self.logeventsstore.clear()
@@ -911,8 +899,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
         Pause log output.
 
-        @type widget: unknown
-        @param widget: Unknown.
+        @type widget: instance
+        @param widget: gtk.Widget.
 
         @type switch: str
         @param switch: Either 'pause' or 'unpause' to change the status.
@@ -963,8 +951,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
         Preferenes gtk.ComboBox changed callback.
 
-        @type widget: unknown
-        @param widget: Unknown.
+        @type widget: instance
+        @param widget: gtk.Widget.
         """
         
         if self.preferencesComboformat.get_active_text() == "PNG":
@@ -976,8 +964,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
         Checks if a gtk.Widget is active.
 
-        @type widget: unknown
-        @param widget: Unknown.
+        @type widget: instance
+        @param widget: gtk.Widget.
         """
 
         if hasattr(widget, 'get_active') and callable(getattr(widget, 'get_active')):
@@ -989,8 +977,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
         Interface to start or stop the server by checking the status of a gtk.ToggleButton
         
-        @type widget: unknown
-        @param widget: Unknown.
+        @type widget: instance
+        @param widget: gtk.Widget.
         """
         if self.checkwidget(widget):
             self.start_server()
@@ -1000,6 +988,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def start_server(self, widget=None, foreign=False):
         """
         Starts the Twisted server.
+
+        @type widget: instance
+        @param widget: gtk.Widget.
 
         @type foreign: bool
         @param foreign: Whether the caller of this method is not self.buttonStartstop.
@@ -1049,6 +1040,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
     def stop_server(self, widget=None, foreign=False, contractlog=True):
         """
         Stops the Twisted server.
+
+        @type widget: instance
+        @param widget: gtk.Widget.
 
         @type foreign: bool
         @param foreign: Whether the caller of this method is not self.buttonStartstop.
