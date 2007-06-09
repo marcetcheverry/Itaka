@@ -87,7 +87,7 @@ class Console:
 
         self.itakaglobals = itakaglobals
         if self.itakaglobals.output['normal']: 
-            BaseMessage('Itaka %s starting...' % (itakaglobals.version))
+            BaseMessage('Itaka %s starting' % (itakaglobals.version))
             
     def __del__(self):
         """
@@ -97,7 +97,7 @@ class Console:
         if self.itakaglobals.output['normal']: 
             BaseMessage('Itaka shutting down')
 
-    def msg(self, message):
+    def message(self, message):
         """
         Message handler.
         

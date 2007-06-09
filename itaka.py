@@ -46,13 +46,13 @@ try:
         # Initiate console with a reference to our global configuration values
         console = console.Console(itakaglobals)
     except:
-        print "[*] ERROR: Could not initiate Console engine."
+        print "[*] ERROR: Could not initiate Console engine"
         traceback.print_exc()
         sys.exit(1)
 
     import uigtk as igui
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka modules."
+    print "[*] ERROR: Failed to import Itaka modules"
     if itakaglobals.output['debug']:
         traceback.print_exc()
     sys.exit(1)

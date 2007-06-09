@@ -20,7 +20,7 @@
 #
 # $Id$
 
-""" Itaka Configuration parser and engine """
+""" Itaka configuration parser and engine """
 
 # It works by the core initiating the main instance, and the
 # modules accessing the global values variables set up by the initation.
@@ -105,7 +105,7 @@ class ConfigParser:
         if arguments is not None and len(arguments) > 1 and arguments[-1] == "-debug":
             global output
             output = {'normal': True, 'debug': True, 'quiet': False}
-            print "[*] Initializing in debug mode..."
+            print "[*] Initializing in debug mode"
 
     def load(self):
         """
