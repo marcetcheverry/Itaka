@@ -63,13 +63,9 @@ if not os.path.exists(image_dir):
 save_path = os.getcwd()
 
 if os.environ.get('HOME'):
-    print "is not None"
     save_path = os.path.join(os.environ.get('HOME'), ".itaka")
 else:
-    print "temp"
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
-
-print save_path
 
 #: Availability of libnotify
 notifyavailable = False
@@ -88,7 +84,7 @@ if system == "posix" and platform != "darwin":
 #: Console output setting
 # 'normal' is for all normal operation mesages and warnings (not including errors)
 # 'debug' is for all messages through self.console.debug
-# 'quiet' is to quiet all errors. (totally quiet is in conjunction with 'normal')
+# 'quiet' is to quiet all errors and warnings. (totally quiet is in conjunction with 'normal')
 output = {'normal': False, 'debug': False, 'quiet': False}
 
 #: User's configuration values 
@@ -170,22 +166,25 @@ class ConfigParser:
                     values[section][option] = int(value)
 
         # Compare it to our default configuration set, to see if there is anything missing
+        # This is useful for updates, and corrupted files.
+        # NOTE: The setting of values[section][key] here is purely pragmatical, so we
+        # dont have to reload
         for configdict in self.defaultoptions:
             for section in configdict:
                 if not values.has_key(section):
-                    print "Values doenst have " + str(section)
+                    if not output['quiet']: print "[*] WARNING: Detected old or broken configuration file. Updating."
+                    config.add_section(section)
+                    values[section] = {}
                     for keyset in configdict[section]:
                         key, val = keyset
-                        print "Adding", section, key, val
                         self.update(section, key, val)
-                        # Worried about order...
                         values[section][key] = val
                 else:
                     # Check if all the key:vals are in the section
                     for keyset in configdict[section]:
                         key, val = keyset
                         if not values[section].has_key(key):
-                            print "adding minor", section, key, val
+                            if not output['quiet']: print "[*] WARNING: Detected old or broken configuration file. Updating."
                             self.update(section, key, val)
                             values[section][key] = val
         return values
