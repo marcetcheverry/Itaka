@@ -58,3 +58,9 @@ class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
 
     pass
     
+class ItakaSaveScreenshotError(ItakaScreenshotError):
+    """
+    Exception raised by screenshooting methods.
+    """
+
+    pass

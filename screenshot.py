@@ -22,7 +22,7 @@
 
 """ Itaka screenshot engine """
 
-import gc, os, gtk, pygtk, error
+import gc, os, gtk, pygtk, error, traceback
 pygtk.require("2.0")
 
 class Screenshot():
@@ -42,6 +42,7 @@ class Screenshot():
         """
 
         self.gui = guiinstance
+        self.itakaglobals = self.gui.itakaglobals
         self.configuration = self.gui.configuration
         self.console = self.gui.console
         self.scalingmethod = scalingmethod
@@ -66,7 +67,7 @@ class Screenshot():
         @return: (int) window width, (int) window heigth, (int) window position x, (int) window position y.
         """
 
-        if self.rootscreen.supports_net_wm_hint("_NET_ACTIVE_WINDOW") and self.rootscreen.supports_net_wm_hint("_NET_WM_WINDOW_TYPE"):
+        if self.self.rootscreen.supports_net_wm_hint("_NET_ACTIVE_WINDOW") and self.rootscreen.supports_net_wm_hint("_NET_WM_WINDOW_TYPE"):
             self.activewindow = self.rootscreen.get_active_window()
 
             # Calculate the size of the window including window manager decorations
@@ -97,9 +98,10 @@ class Screenshot():
         """
 
         # Get up to date configuration values everytime there is a request
+        
         self.configuration = self.gui.configuration
 
-        if self.configuration['screenshot']['currentwindow']:
+        if self.configuration['screenshot']['currentwindow'] and not self.itakaglobals.system == 'nt':
             try:
                 self.currentwindow = self.find_current_active_window()
             except error.ItakaScreenshotErrorWmHints:
@@ -118,7 +120,7 @@ class Screenshot():
                         gtk.gdk.colormap_get_system(),
                         self.currentwindow[2], self.currentwindow[3], 0, 0, self.activewindowwidth, self.activewindowheight)
 
-        elif not self.configuration['screenshot']['currentwindow'] or self.currentwindowfailed: 
+        elif not self.configuration['screenshot']['currentwindow'] or self.currentwindowfailed or self.itakaglobals.system == 'nt': 
             self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
                     gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screenwidth, self.screenheight),
                     self.rootwindow,
@@ -131,12 +133,11 @@ class Screenshot():
             raise error.ItakaScreenshotError, 'Could not grab screenshot, GTK+ error'
 
         if self.configuration['screenshot']['scale']:
-            print "Scaling!"
             # Make it just work, dont bother warning about very rare cases
             if self.configuration['screenshot']['scalepercent'] == 0:
                 self.configuration['screenshot']['scalepercent'] = 1
 
-            if self.configuration['screenshot']['currentwindow'] and not self.currentwindowfailed:
+            if self.configuration['screenshot']['currentwindow'] and not self.currentwindowfailed and not self.itakaglobals.system == 'nt':
                 self.scalewidth = self.activewindowwidth * int(self.configuration['screenshot']['scalepercent']) / 100
                 self.scaleheight = self.activewindowheight * int(self.configuration['screenshot']['scalepercent']) / 100
             else:
@@ -151,8 +152,8 @@ class Screenshot():
             else:
                 self.screenshot.save(self.shotFile, self.configuration['screenshot']['format'].lower())
         except:
-            self.gui.log.failure(('Screenshot','take_screenshot'), "Could not save screenshot", 'ERROR')
-            raise error.ItakaScreenshotError, "Could not save screenshot"
+            self.gui.log.failure(('Screenshot','take_screenshot'), ('Could not save screenshot', 'Could not save screenshot %s' % (traceback.format_exc())), 'ERROR')
+            raise error.ItakaSaveScreenshotError, "Could not save screenshot"
 
         # Important workaround to avoid a memory leak.
         # http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp
