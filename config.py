@@ -62,10 +62,14 @@ if not os.path.exists(image_dir):
 #: Save path for screenshots (system-specific specified later on)
 save_path = os.getcwd()
 
-if os.environ.get('HOME') is not None:
+if os.environ.get('HOME'):
+    print "is not None"
     save_path = os.path.join(os.environ.get('HOME'), ".itaka")
 else:
+    print "temp"
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
+
+print save_path
 
 #: Availability of libnotify
 notifyavailable = False
@@ -106,6 +110,12 @@ class ConfigParser:
             global output
             output = {'normal': True, 'debug': True, 'quiet': False}
             print "[*] Initializing in debug mode"
+
+        #: Default configuration sections and values
+        self.defaultoptions = (
+                {'server': (('port', 8000), ('notify', notifyavailable))},
+                {'screenshot': (('format', 'jpeg'), ('quality', 30), ('path', save_path), ('currentwindow', False), ('scale', False), ('scalepercent', 100))},
+                {'html': (('html', '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>'),)})
 
     def load(self):
         """
@@ -150,6 +160,7 @@ class ConfigParser:
         for section in config.sections():
             values[section] = dict(config.items(section))
             # Convert 'False' and 'True' into booleans, and numbers into ints
+            # Add config options that are not there
             for option, value in values[section].iteritems():
                 if value.strip() == "True":
                     values[section][option] = True
@@ -157,6 +168,26 @@ class ConfigParser:
                     values[section][option] = False
                 elif value.isdigit():
                     values[section][option] = int(value)
+
+        # Compare it to our default configuration set, to see if there is anything missing
+        for configdict in self.defaultoptions:
+            for section in configdict:
+                if not values.has_key(section):
+                    print "Values doenst have " + str(section)
+                    for keyset in configdict[section]:
+                        key, val = keyset
+                        print "Adding", section, key, val
+                        self.update(section, key, val)
+                        # Worried about order...
+                        values[section][key] = val
+                else:
+                    # Check if all the key:vals are in the section
+                    for keyset in configdict[section]:
+                        key, val = keyset
+                        if not values[section].has_key(key):
+                            print "adding minor", section, key, val
+                            self.update(section, key, val)
+                            values[section][key] = val
         return values
 
     def save(self, valuesdict):
@@ -209,22 +240,15 @@ class ConfigParser:
         @param path: Path to the configuration file.
         """
         
-        # Create sections
-        for section in ('server', 'screenshot', 'html'): config.add_section(section)
-
         if output['normal']: print "[*] Creating default configuration..."
-        # Set default values
-        config.set("server", "port", 8000)
-        config.set("server", "notify", notifyavailable)
 
-        config.set("screenshot", "format", "jpeg")
-        config.set("screenshot", "quality", 30)
-        config.set("screenshot", "path", save_path)
-        config.set("screenshot", "currentwindow", False)
-        config.set("screenshot", "scale", False)
-        config.set("screenshot", "scalepercent", 100)
-
-	config.set("html", "html", '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>')
+        # Set default sections and options
+        for configdict in self.defaultoptions:
+            for section in configdict:
+                config.add_section(section)
+                for keyset in configdict[section]:
+                    key, val = keyset
+                    config.set(section, key, val)
 
         # Check if the directory exists, if not create it
         # and write the config file with its variables

@@ -137,7 +137,7 @@ class GuiLog:
         @type caller: tuple
         @param caller: Specifies the class and method were the warning ocurred.
 
-        @type message: str
+        @type message: tuple
         @param message: A tuple containing first the simple message to the events log, and then the detailed message for the detailed log.
 
         @type failuretype: str
@@ -161,9 +161,9 @@ class GuiLog:
             self.gui.expander.set_sensitive(True)
             # Stop the server
             if self.gui.server_listening:
-                self.gui.stop(True, False)
+                self.gui.stop_server(None, True, False)
 
-        self._write_gui_log(self.simplemessage, self.detailedmessage, _get_failure_icon(failuretype))
+        self._write_gui_log(self.simplemessage, self.detailedmessage, self._get_failure_icon(failuretype))
 
     def _get_failure_icon(self, failuretype):
         """
@@ -483,13 +483,15 @@ class Gui:
         self.preferencesLabelscale.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelscale.set_alignment(0, 0.50)
 
-        self.preferencesLabelactive = gtk.Label("Active window  ")
-        self.preferencesLabelactive.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelactive.set_alignment(0, 0.50)
+        if not self.itakaglobals.system == 'nt':
+            self.preferencesLabelactive = gtk.Label("Active window  ")
+            self.preferencesLabelactive.set_justify(gtk.JUSTIFY_LEFT)
+            self.preferencesLabelactive.set_alignment(0, 0.50)
 
-        self.preferencesLabelnotifications = gtk.Label("Notifications  ")
-        self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelnotifications.set_alignment(0, 0.50)
+        if self.itakaglobals.notifyavailable: 
+            self.preferencesLabelnotifications = gtk.Label("Notifications  ")
+            self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
+            self.preferencesLabelnotifications.set_alignment(0, 0.50)
 
         self.adjustmentport = gtk.Adjustment(float(self.configuration['server']['port']), 1024, 65535, 1, 0, 0)
         self.preferencesSpinport = gtk.SpinButton(self.adjustmentport)
@@ -513,17 +515,19 @@ class Gui:
             self.preferencesComboformat.set_active(1)
             self.preferencesHBox3.set_sensitive(False)
 
-        self.preferencesChecknotifications = gtk.CheckButton()
-        if self.configuration['server']['notify']:
-            self.preferencesChecknotifications.set_active(1)
-        else: 
-            self.preferencesChecknotifications.set_active(0)
+        if self.itakaglobals.notifyavailable: 
+            self.preferencesChecknotifications = gtk.CheckButton()
+            if self.configuration['server']['notify']:
+                self.preferencesChecknotifications.set_active(1)
+            else: 
+                self.preferencesChecknotifications.set_active(0)
 
-        self.preferencesCheckactive = gtk.CheckButton()
-        if self.configuration['screenshot']['currentwindow']:
-            self.preferencesCheckactive.set_active(1)
-        else: 
-            self.preferencesCheckactive.set_active(0)
+        if not self.itakaglobals.system == 'nt':
+            self.preferencesCheckactive = gtk.CheckButton()
+            if self.configuration['screenshot']['currentwindow']:
+                self.preferencesCheckactive.set_active(1)
+            else: 
+                self.preferencesCheckactive.set_active(0)
 
         self.preferencesButtonClose = gtk.Button("Close", gtk.STOCK_CLOSE)
         self.preferencesButtonClose.connect("clicked", lambda wid: self.contractpreferences())
@@ -532,31 +536,30 @@ class Gui:
         self.preferencesButtonAbout.connect("clicked", lambda wid: self.about())
 
         self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
-        self.preferencesHBox2.pack_start(self.preferencesLabelformat, False, False, 12)
-        self.preferencesHBox3.pack_start(self.preferencesLabelquality, False, False, 12)
-        self.preferencesHBox4.pack_start(self.preferencesLabelactive, False, False, 12)
-        self.preferencesHBox5.pack_start(self.preferencesLabelscale, False, False, 12)
-        self.preferencesHBox6.pack_start(self.preferencesLabelnotifications, False, False, 12)
-
         self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
+        self.preferencesHBox2.pack_start(self.preferencesLabelformat, False, False, 12)
         self.preferencesHBox2.pack_end(self.preferencesComboformat, False, False, 7)
+        self.preferencesHBox3.pack_start(self.preferencesLabelquality, False, False, 12)
         self.preferencesHBox3.pack_end(self.preferencesSpinquality, False, False, 7)
-        self.preferencesHBox4.pack_end(self.preferencesCheckactive, False, False, 7)
+        if not self.itakaglobals.system == 'nt':
+            self.preferencesHBox4.pack_start(self.preferencesLabelactive, False, False, 12)
+            self.preferencesHBox4.pack_end(self.preferencesCheckactive, False, False, 7)
+        self.preferencesHBox5.pack_start(self.preferencesLabelscale, False, False, 12)
         self.preferencesHBox5.pack_end(self.preferencesSpinscale, False, False, 7)
-        self.preferencesHBox6.pack_end(self.preferencesChecknotifications, False, False, 7)
+        if self.itakaglobals.notifyavailable: 
+            self.preferencesHBox6.pack_start(self.preferencesLabelnotifications, False, False, 12)
+            self.preferencesHBox6.pack_end(self.preferencesChecknotifications, False, False, 7)
         self.preferencesHBox7.pack_start(self.preferencesButtonAbout, False, False, 7)
         self.preferencesHBox7.pack_end(self.preferencesButtonClose, False, False, 7)
-
-        # Hbox4 contains notifications which is only available in some systems
-        if not self.itakaglobals.notifyavailable: 
-            self.preferencesHBox4.set_sensitive(False)
 
         self.preferencesVBoxitems.pack_start(self.preferencesHBox1, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox2, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox3, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
+        if not self.itakaglobals.system == 'nt':
+            self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox5, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox6, False, False, 0)
+        if self.itakaglobals.notifyavailable: 
+            self.preferencesVBoxitems.pack_start(self.preferencesHBox6, False, False, 0)
 
         self.preferencesFramesettings.add(self.preferencesVBoxitems)
         self.preferencesVBox.pack_start(self.preferencesFramesettings, False, False, 0)
@@ -599,12 +602,16 @@ class Gui:
             notifyvalue = False
             self.configuration['server']['notify'] = False
 
-        if self.preferencesCheckactive.get_active():
-            self.configuration['screenshot']['currentwindow'] = True
-            activevalue = True
+        if not self.itakaglobals.system == "nt":
+            if self.preferencesCheckactive.get_active():
+                self.configuration['screenshot']['currentwindow'] = True
+                activevalue = True
+            else:
+                self.configuration['screenshot']['currentwindow'] = False
+                activevalue = False
         else:
-            self.configuration['screenshot']['currentwindow'] = False
             activevalue = False
+            self.configuration['screenshot']['currentwindow'] = False
 
         scale = [self.preferencesSpinscale.get_value_as_int()]
         if scale[0] == 100:
@@ -624,7 +631,7 @@ class Gui:
                 {'html': '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>'},
 
             'screenshot': 
-                {'path': '/tmp', 
+                {'path': self.configuration['screenshot']['path'],
                 'format': formatvalue,
                 'quality': self.preferencesSpinquality.get_value_as_int(),
                 'currentwindow': activevalue,
