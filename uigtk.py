@@ -163,7 +163,7 @@ class GuiLog:
             if self.gui.server_listening:
                 self.gui.stop_server(None, True, False)
 
-        self._write_gui_log(self.simplemessage, self.detailedmessage, self._get_failure_icon(failuretype))
+        self._write_gui_log(self.simplemessage, self.detailedmessage, self._get_failure_icon(failuretype), True, True)
 
     def _get_failure_icon(self, failuretype):
         """
@@ -185,7 +185,7 @@ class GuiLog:
 
         return icon
 
-    def _write_gui_log(self, message, detailedmessage=None, icon=None, considerpaused=True):
+    def _write_gui_log(self, message, detailedmessage=None, icon=None, considerpaused=True, failure=False):
         """
         Private method to write to both Gui logs.
 
@@ -200,6 +200,9 @@ class GuiLog:
 
         @type considerpaused: bool
         @param considerpaused: Whether to write the message if the Gui logging is paused. (This unpauses it)
+
+        @type failure: bool
+        @param failure: Whether the message is a failure or not.
         """
 
         if detailedmessage is None:
@@ -208,13 +211,13 @@ class GuiLog:
         if self.gui.logpaused:
             if considerpaused:
                 self.gui.pauselogger(None, "unpause")
-                self._write_events_log(message, icon)
+                self._write_events_log(message, icon, failure)
                 self._write_detailed_log(detailedmessage)
         else:
-            self._write_events_log(message, icon)
+            self._write_events_log(message, icon, failure)
             self._write_detailed_log(detailedmessage)
 
-    def _write_events_log(self, message, icon=None):
+    def _write_events_log(self, message, icon=None, failure=False):
         """
         Private method to write to the events log Gui widget.
 
@@ -223,15 +226,18 @@ class GuiLog:
 
         @type icon: tuple
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+
+        @type failure: bool
+        @param failure: Whether the message is a failure or not.
         """
 
         if icon is not None:
             if icon[0] == "stock":
                 self.inserted_iter = self.gui.logeventsstore.append([self.gui.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), message])
-                # Select the item if its a failure
-                #if failure:
-                #self.selection = self.logeventstreeview.get_selection()
-                #    self.selection.select_iter(self.inserted_iter)
+                # Select the iter if it's a failure
+                if failure:
+                    self.selection = self.gui.logeventstreeview.get_selection()
+                    self.selection.select_iter(self.inserted_iter)
             else:
                 self.gui.logeventsstore.append([icon[1], message])
         else:
@@ -245,7 +251,7 @@ class GuiLog:
         @param message: Message to be inserted.
         """
 
-        self.gui.logdetailsbuffer.insert_at_cursor("\r" +message,len("\r" + message))
+        self.gui.logdetailsbuffer.insert_at_cursor('\r' +message,len('\r' + message))
         # Automatically scroll. Use wrap until fix.
         self.gui.logdetailstextview.scroll_mark_onscreen(self.gui.logdetailsbuffer.get_insert())
 
@@ -1118,10 +1124,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         gtk.main_quit()
 
-    def calcsince(self, dtime):
+    def literal_time_difference(self, dtime):
         """
         Calculates the time difference from the last server request to 
-        the current time. Express a datetime.timedelta using a
+        the current time. Expresses a datetime.timedelta using a
         string such as "1 hour, 20 minutes".
         
         @type dtime: datetime.datetime
@@ -1143,8 +1149,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.pieces.append(self.plural(self.hours, 'hour'))
         if self.minutes or len(self.pieces) == 0:
             self.pieces.append(self.plural(self.minutes, 'minute'))
-
-        # "Time: " + ", ".join(self.pieces[:-1]) + "and" + self.pieces[-1] + " ago" 
 
         self.labelTime.set_text("<b>When</b>: " + ", ".join(self.pieces) + " ago")
         self.labelTime.set_use_markup(True)
@@ -1212,7 +1216,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         # Call the update timer function, and add a timer to update the GUI of its
         # "Last screenshot taken" time
-        self.calcsince(time)
+        self.literal_time_difference(time)
         if hasattr(self, 'iagotimer'): 
             gobject.source_remove(self.iagotimer)
-        self.iagotimer = gobject.timeout_add(60000, self.calcsince, time)
+        self.iagotimer = gobject.timeout_add(60000, self.literal_time_difference, time)
