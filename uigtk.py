@@ -31,16 +31,14 @@ try:
     except Exception, e:
         print "[*] ERROR: Could not initiate GTK modules: %s" % (e)
         sys.exit(1)
-    from twisted.python import log
-    from twisted.web import server, static
     from twisted.internet import reactor
-    import twisted.internet.error
 except ImportError:
-    print "[*] Warning: Twisted Network Framework is missing, quitting"
+    print "[*] ERROR: Could not import Twisted Network Framework"
     sys.exit(1)
 
 try:
     import server as iserver
+    import error
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules"
     traceback.print_exc()
@@ -163,7 +161,7 @@ class GuiLog:
             self.gui.expander.set_expanded(True)
             self.gui.expander.set_sensitive(True)
             # Stop the server
-            if self.gui.server_listening:
+            if self.gui.server.listening():
                 self.gui.stop_server(None, True, False)
 
         self._write_gui_log(self.simplemessage, self.detailedmessage, self._get_failure_icon(failuretype), True, True)
@@ -275,9 +273,6 @@ class Gui:
         @param configuration: A tuple of configuration globals and an instance of L{ConfigParser}
         """
 
-        #: Server status
-        self.server_listening = False
-
         # Load our configuration and console instances and values
         self.console = consoleinstance
         self.itakaglobals = configuration[0]
@@ -287,6 +282,8 @@ class Gui:
 
         self.log = GuiLog(self, self.console, self.configuration)
         self.logpaused = False
+        
+        self.server = iserver.ScreenshotServer(self)
 
         # Start defining widgets
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
@@ -453,9 +450,6 @@ class Gui:
         self.expander = gtk.Expander(None)
         self.expander.set_label_widget(self.logboxLabel)
         self.expander.connect('notify::expanded', self.expandlogger)
-
-        # Log to the self.logger function, which sets the buffer for self.debubuffer
-        log.addObserver(self.log.twisted_observer)
 
         self.vbox.pack_start(self.statusBox, False, False, 4)
         self.vbox.pack_start(self.expander, False, False, 0)
@@ -1039,24 +1033,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         """
 
-        if self.server_listening: return
-        # NOTE: Twisted doesnt support hot-restarting as stopListening()/startListening(), just use the old one again
+        if self.server.listening(): return
 
-        # Set up the twisted site
-        # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
-        self.sinstance = iserver.ImageResource(self, self.console)
-        self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
-        self.root.putChild('screenshot', self.sinstance)
-        self.root.putChild('', self.root)
-        self.site = server.Site(self.root)
-
-        # Start the server. Make an instance to distinguish from self.sreactor().
         try:
-            self.ilistener = reactor.listenTCP(self.configuration['server']['port'], self.site)
-            self.server_listening = True
-        except twisted.internet.error.CannotListenError:
-            self.log.failure(('Gui', 'startstop'), 'Failed to start server, port %d is already in use' % (self.configuration['server']['port']), 'ERROR')
-            # NOTE: This actually calls startstop to stop the server again, acts as a click
+            self.server.start()
+        except error.ItakaServerErrorCannotListen, e:
+            self.log.failure(('Gui', 'start_server'), ('Failed to start server', 'Failed to start server: %s' % (e)), 'ERROR')
             self.buttonStartstop.set_active(False)
             return
 
@@ -1092,11 +1074,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param contractlog: Whether the log widget is contracted.
         """
 
-        if self.server_listening:
+        if self.server.listening():
             self.log.message('Server stopped', ['stock', 'STOCK_DISCONNECT'])
 
-            self.ilistener.stopListening()
-            self.server_listening = False
+            self.server.stop()
             # Stop the g_timeout
             if hasattr(self, 'iagotimer'):
                 gobject.source_remove(self.iagotimer)
@@ -1124,7 +1105,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Restarts the Twisted server.
         """
 
-        if self.server_listening:
+        if self.server.listening():
             self.log.message('Restarting the server to listen on port %d' % (self.configuration['server']['port']), ['stock', 'STOCK_REFRESH'])
             self.stop_server(None, True, False)
             self.start_server(None, True)
@@ -1134,7 +1115,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Main window destroy event.
         """
 
-        if self.server_listening:
+        if self.server.listening():
             self.console.message('Shutting down server')
             self.ilistener.stopListening()
             del self.console

@@ -22,35 +22,41 @@
 
 """ Itaka web server engine """
 
-from twisted.web.resource import Resource
 import datetime, os, traceback, sys
 
 try:
     import screenshot
     import error
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka screenshot module."
+    print "[*] ERROR: Failed to import Itaka screenshot module"
     traceback.print_exc()
     sys.exit(1)
-    
+
+try:
+    from twisted.python import log
+    from twisted.web import server, static
+    from twisted.internet import reactor
+    import twisted.internet.error
+    from twisted.web.resource import Resource
+except ImportError:
+    print "[*] ERROR: Could not import Twisted Network Framework"
+    sys.exit(1)
+
 class ImageResource(Resource):
     """ 
     Handle server requests and call for a screenshot.
     """
 
-    def __init__(self, guiinstance, consoleinstance):
+    def __init__(self, guiinstance):
         """ 
         Constructor.
 
         @type guiinstance: instance
         @param guiinstance: An instance of our L{Gui} class.
-
-        @type consoleinstance: instance
-        @param consoleinstance: An instance of our L{Console} class.
         """
 
         self.gui = guiinstance
-        self.console = consoleinstance
+        self.console = self.gui.console
         self.itakaglobals = self.gui.itakaglobals
         self.screenshot = screenshot.Screenshot(self.gui)
         
@@ -104,3 +110,64 @@ class ImageResource(Resource):
             self.gui.update_gui(self.counter, self.ip, self.time)
 
             return open(self.shotFile, 'rb').read()		
+
+class ScreenshotServer:
+    """
+    Screenshot server.
+    """
+    def __init__(self, guiinstance):
+        """
+        Constructor.
+
+        @type guiinstance: instance
+        @param guiinstance: An instance of our L{Gui} class.
+        """
+
+        self.gui = guiinstance
+        self.configuration = self.gui.configuration
+        self.console = self.gui.console
+
+        self.server_listening = False
+
+        # Set up the twisted site
+        self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
+        self.root.putChild('', self.root)
+        # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
+        self.root.putChild('screenshot', ImageResource(self.gui))
+        self.site = server.Site(self.root)
+
+    def start(self):
+        """
+        Start the server.
+        """
+
+        # Get a newer configuration
+        self.configuration = self.gui.configuration
+
+        try:
+            self.server = reactor.listenTCP(self.configuration['server']['port'], self.site)
+        except twisted.internet.error.CannotListenError, e:
+            raise error.ItakaServerErrorCannotListen, e
+
+        self.server_listening = True
+        # Log to the Gui Logger instance
+        log.addObserver(self.gui.log.twisted_observer)
+    
+    def stop(self):
+        """
+        Stop the server.
+        """
+
+        self.server.stopListening()
+        self.server_listening = False
+        log.removeObserver(self.gui.log.twisted_observer)
+
+    def listening(self):
+        """
+        Whether the server is listening or not.
+
+        @rtype: bool
+        @return: True if it's listening or False if it is not.
+        """
+
+        return self.server_listening

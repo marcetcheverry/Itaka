@@ -37,30 +37,48 @@ class ItakaError(Exception):
 
         self.message = message
 
+    def __str__(self):
+        """
+        String representation.
+
+        @rtype: str
+        @return: String representation of Exception message.
+        """
+
+        return repr(self.message)
+
+class ItakaServerError(ItakaError):
+    """
+    Exception raised by server methods.
+    """
+    pass
+
+class ItakaServerErrorCannotListen(ItakaServerError):
+    """
+    Exception raised by server methods.
+    """
+    pass
+
 class ItakaScreenshotError(ItakaError):
     """
     Exception raised by screenshooting methods.
     """
-
     pass
 
 class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods.
     """
-    
     pass
 
 class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods.
     """
-
     pass
     
 class ItakaSaveScreenshotError(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods.
     """
-
     pass
