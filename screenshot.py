@@ -25,7 +25,7 @@
 import gc, os, gtk, pygtk, error, traceback
 pygtk.require("2.0")
 
-class Screenshot():
+class Screenshot:
     """
     Takes screenshots of windows or screens.
     """
