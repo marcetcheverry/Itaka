@@ -131,7 +131,7 @@ class GuiLog:
         """
 
         self.console.message(detailedmessage)
-        self._write_gui_log(message, detailedmessage, icon, False)
+        self._write_gui_log(message, detailedmessage, icon, False, False)
 
     def failure(self, caller, message, failuretype='ERROR'):
         """
@@ -188,7 +188,7 @@ class GuiLog:
 
         return icon
 
-    def _write_gui_log(self, message, detailedmessage=None, icon=None, considerpaused=True, failure=False):
+    def _write_gui_log(self, message, detailedmessage=None, icon=None, unpauselogger=True, failure=False):
         """
         Private method to write to both Gui logs.
 
@@ -201,8 +201,8 @@ class GuiLog:
         @type icon: tuple
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
 
-        @type considerpaused: bool
-        @param considerpaused: Whether to write the message if the Gui logging is paused. (This unpauses it)
+        @type unpauselogger: bool
+        @param unpauselogger: Whether to unpause the GUI Logger.
 
         @type failure: bool
         @param failure: Whether the message is a failure or not.
@@ -211,9 +211,10 @@ class GuiLog:
         if detailedmessage is None:
             detailedmessage = message
 
-        if self.gui.logpaused:
-            if considerpaused:
-                self.gui.pauselogger(None, "unpause")
+        # Only write messages when the logging is unpaused. Unless we are told otherwise
+        if self.gui.log_paused():
+            if unpauselogger:
+                self.gui.unpause_log(True)
                 self._write_events_log(message, icon, failure)
                 self._write_detailed_log(detailedmessage)
         else:
@@ -285,6 +286,7 @@ class Gui:
         self.configuration = self.itakaglobals.values
 
         self.log = GuiLog(self, self.console, self.configuration)
+        self.logpaused = False
 
         # Start defining widgets
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
@@ -436,7 +438,7 @@ class Gui:
         self.logpausebuttonimage = gtk.Image()
         self.logpausebuttonimage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
         self.logpausebutton.set_image(self.logpausebuttonimage)
-        self.logpausebutton.connect("toggled", self.pauselogger)
+        self.logpausebutton.connect("toggled", self.button_pause_log)
 
         self.loghbox.pack_end(self.logclearbutton, False, False, 4)
         self.loghbox.pack_end(self.logpausebutton, False, False, 4)
@@ -911,49 +913,73 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.logeventsstore.clear()
         self.logdetailsbuffer.set_text("")
 
-    def pauselogger(self, widget, switch=None, data=None):
+    def button_pause_log(self, widget):
         """
-        Pause log output.
-
+        Interface to pause or unpause the Gui logger by checking the status of a gtk.ToggleButton
+        
         @type widget: instance
         @param widget: gtk.Widget.
-
-        @type switch: str
-        @param switch: Either 'pause' or 'unpause' to change the status.
-
-        @type data: unknown.
-        @param data: Unknown.
         """
 
-        if self.checkwidget(widget) or switch == "pause":
-            # It would be nice if we could set a center background image to our textview.
-            # However, GTK makes that very hard.
-            """
-            self.logprepausetext = self.logdetailsbuffer.get_text(self.logdetailsbuffer.get_start_iter(), self.logdetailsbuffer.get_end_iter())
-            self.logdetailsbuffer.set_text("")
-
-            self.logdetailsbuffer.create_tag ('center-image', justification = gtk.JUSTIFY_CENTER)
-            self.logdetailsimageiter = self.logdetailsbuffer.get_iter_at_offset(0)
-            self.logdetailsbuffer.insert_pixbuf(self.logdetailsimageiter, self.logdetailstextview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_DIALOG, detail=None))
-            self.logdetailsbuffer.apply_tag_by_name('center-image', self.logdetailsbuffer.get_iter_at_offset(0), self.logdetailsimageiter)
-
-            """
-            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), "Logging paused"])
-            
-            self.logeventstreeview.set_sensitive(False)
-            self.logdetailstextview.set_sensitive(False)
-
-            log.removeObserver(self.log.twisted_observer)
-            self.logpaused = True
+        if self.checkwidget(widget):
+            if not self.log_paused():
+                self.pause_log()
         else:
-            log.addObserver(self.log.twisted_observer)
-            self.logpaused = False
-            if (switch):
-                self.logpausebutton.set_active(False)
-            self.logdetailstextview.set_sensitive(True)
-            self.logeventstreeview.set_sensitive(True)
+            if self.log_paused():
+                self.unpause_log()
 
-            self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), "Logging resumed"])
+    def pause_log(self):
+        """
+        Pause Gui log output.
+        """
+
+        # It would be nice if we could set a center background image to our textview.
+        # However, GTK makes that very hard.
+        """
+        self.logprepausetext = self.logdetailsbuffer.get_text(self.logdetailsbuffer.get_start_iter(), self.logdetailsbuffer.get_end_iter())
+        self.logdetailsbuffer.set_text("")
+
+        self.logdetailsbuffer.create_tag ('center-image', justification = gtk.JUSTIFY_CENTER)
+        self.logdetailsimageiter = self.logdetailsbuffer.get_iter_at_offset(0)
+        self.logdetailsbuffer.insert_pixbuf(self.logdetailsimageiter, self.logdetailstextview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_DIALOG, detail=None))
+        self.logdetailsbuffer.apply_tag_by_name('center-image', self.logdetailsbuffer.get_iter_at_offset(0), self.logdetailsimageiter)
+
+        """
+        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), "Logging paused"])
+        
+        self.logeventstreeview.set_sensitive(False)
+        self.logdetailstextview.set_sensitive(False)
+
+        log.removeObserver(self.log.twisted_observer)
+        self.logpaused = True
+
+    def unpause_log(self, foreign=False):
+        """
+        Unpause Gui log output.
+
+        @type foreign: bool
+        @param foreign: Whether the caller of this method is not the Gui gtk.ToggleButton.
+        """
+
+        log.addObserver(self.log.twisted_observer)
+        if (foreign):
+            self.logpausebutton.set_active(False)
+        self.logdetailstextview.set_sensitive(True)
+        self.logeventstreeview.set_sensitive(True)
+
+        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), "Logging resumed"])
+
+        self.logpaused = False
+
+    def log_paused(self):
+        """
+        Whether the Gui log is paused.
+
+        @rtype: bool
+        @return: True if the Gui log is paused. False otherwise
+        """
+        
+        return self.logpaused
 
     def main(self):
         """
@@ -987,7 +1013,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if hasattr(widget, 'get_active') and callable(getattr(widget, 'get_active')):
             return widget.get_active()
         else:
-            return None
+            return False
 
     def button_start_server(self, widget):
         """
@@ -1028,7 +1054,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         try:
             self.ilistener = reactor.listenTCP(self.configuration['server']['port'], self.site)
             self.server_listening = True
-            self.logpaused = False
         except twisted.internet.error.CannotListenError:
             self.log.failure(('Gui', 'startstop'), 'Failed to start server, port %d is already in use' % (self.configuration['server']['port']), 'ERROR')
             # NOTE: This actually calls startstop to stop the server again, acts as a click
