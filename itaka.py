@@ -61,8 +61,6 @@ if __name__ == "__main__":
     try:
         gui = igui.Gui(console, (itakaglobals, configinstance))
         gui.main()
-    except:
-        console.failure(('Itaka', 'core'), "Could not initiate GUI", 'ERROR')
-        if itakaglobals.output['debug']:
-            traceback.print_exc()
+    except Exception, e:
+        console.failure(('Itaka', 'core'), "Could not initiate GUI: %s" % (e), 'ERROR')
         sys.exit(1)

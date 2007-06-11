@@ -6,8 +6,11 @@
  * Add options to report errors in the system tray (blinking true). #7
  
  * Completely rewrote the console output and Gui logging engines.
+ * Rewrote the UI log pausing code.
  * Better handling of Twisted errors in logging
  * Fixed the pausing/unpausing of the logger.
+
+ * Completely separated and encapsulated the Twisted Server code.
   
  * Improved the configuration engine to convert numbers and bools into int and
  bool rather than str. Also the Gui now saves on a per-key basis and not on 
