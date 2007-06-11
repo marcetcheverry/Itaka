@@ -1117,7 +1117,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if self.server.listening():
             self.console.message('Shutting down server')
-            self.ilistener.stopListening()
+            self.server.stop()
             del self.console
         else:
             # Console goodbye!
@@ -1209,7 +1209,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.ip = ip
         self.time = time
 
-        self.log.message('Screenshot number %d served to %s' % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+        self.log.message('Screenshot served to %s' % (self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
 
         self.labelServed.set_text('<b>Served</b>: %d' % (self.counter))
         self.labelServed.set_use_markup(True)
