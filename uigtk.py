@@ -26,8 +26,11 @@ import sys, os, datetime, traceback, copy
 
 try:
     from twisted.internet import gtk2reactor
-    gtk2reactor.install()
-
+    try:
+        gtk2reactor.install()
+    except Exception, e:
+        print "[*] ERROR: Could not initiate GTK modules: %s" % (e)
+        sys.exit(1)
     from twisted.python import log
     from twisted.web import server, static
     from twisted.internet import reactor

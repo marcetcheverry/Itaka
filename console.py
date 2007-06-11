@@ -22,7 +22,7 @@
 
 """ Itaka console output and logging engine """
 
-class BaseMessage():
+class BaseMessage:
     """
     Base class for console output.
     """
