@@ -1,0 +1,26 @@
+ INFO: nweb starting:8181:28085
+ INFO: request:GET / HTTP/1.1**Host: localhost:8181**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive****:1
+ INFO: SEND:index.html:1
+ INFO: request:GET /nigel.jpg HTTP/1.1**Host: localhost:8181**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive**Referer: http://localhost:8181/****:2
+ INFO: SEND:nigel.jpg:2
+ INFO: request:GET /favicon.ico HTTP/1.1**Host: localhost:8181**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive****:3
+SORRY: file extension type not supported:GET /favicon.ico
+ INFO: nweb starting:8181:28096
+ERROR: system call:bind Errno=48 exiting pid=28096
+ INFO: nweb starting:8182:28101
+ INFO: request:GET / HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive****:1
+ INFO: SEND:index.html:1
+ INFO: request:GET /nigel.jpg HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive**Referer: http://127.0.0.1:8182/****:2
+ INFO: SEND:nigel.jpg:2
+ INFO: request:GET /favicon.ico HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive****:3
+SORRY: file extension type not supported:GET /favicon.ico
+ INFO: request:GET /favicon.ico HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive****:4
+SORRY: file extension type not supported:GET /favicon.ico
+ INFO: request:GET / HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive**Cache-Control: max-age=0****:5
+ INFO: SEND:index.html:5
+ INFO: request:GET /nigel.jpg HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive**Referer: http://127.0.0.1:8182/**Cache-Control: max-age=0****:6
+ INFO: SEND:nigel.jpg:6
+ INFO: request:GET / HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive**Cache-Control: max-age=0****:7
+ INFO: SEND:index.html:7
+ INFO: request:GET /nigel.jpg HTTP/1.1**Host: 127.0.0.1:8182**User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-GB; rv:1.8.1.4) Gecko/20070515 Firefox/2.0.0.4**Accept: image/png,*/*;q=0.5**Accept-Language: en-gb,en;q=0.5**Accept-Encoding: gzip,deflate**Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7**Keep-Alive: 300**Connection: keep-alive**Referer: http://127.0.0.1:8182/**Cache-Control: max-age=0****:8
+ INFO: SEND:nigel.jpg:8

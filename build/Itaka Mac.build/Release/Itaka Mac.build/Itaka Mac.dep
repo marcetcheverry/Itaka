@@ -1,0 +1,32 @@
+000000004505e52300000000000070e2 bbf90d622e716386928787e260c6497e ffffffffffffffffffffffffffffffff 8956 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/i386/TCPServer.o
+000000004505e52300000000000070e2 0122665655d7124012b7428f0da7b663 ffffffffffffffffffffffffffffffff 11452 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/ppc/TCPServer.o
+0000000042973e680000000000002a75 849e725e0ff7a982093af2e56db0b05f ffffffffffffffffffffffffffffffff 16320 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/i386/HTTPServer.o
+0000000042973e680000000000002a75 97fe2ea2297c5e4d3d1b3a57ae230c8e ffffffffffffffffffffffffffffffff 20336 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/ppc/HTTPServer.o
+00000000454b6ff6000000000000138c da0d7c2c83dc0ed0450e955fe862e955 ffffffffffffffffffffffffffffffff 6112 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/i386/MyObject.o
+00000000454b6ff6000000000000138c 56bf9cb3ff529df761830d1ae38494d2 ffffffffffffffffffffffffffffffff 7736 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/ppc/MyObject.o
+00000000454f31900000000000000103 c93f0fab26465fb192aad2650d7bedb4 ffffffffffffffffffffffffffffffff 404 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/i386/main.o
+00000000454f31900000000000000103 ee116139b9d11808719de219fdf0b0d6 ffffffffffffffffffffffffffffffff 572 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/ppc/main.o
+e9e34328ac67fcc92c17d12e4df3104d 513bdccdf7cb9193b45acdeb5f5b8ecd ffffffffffffffffffffffffffffffff 102 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app
+b59bc7f982a04538a81b04249e8a071f 4efae658a2252fe85d371ac8c4017f1c ffffffffffffffffffffffffffffffff 71480 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/MacOS/Itaka
+2c550cbbc6fdb57a4c19323de94b9037 17c8676e4e3a55bf687bb8b4c84d9dcd ffffffffffffffffffffffffffffffff 34616 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/i386/Itaka
+2e72b57e78c9e7ed3fb297dbbcd4f322 a074195272ae4210b3cb19760358f9c7 ffffffffffffffffffffffffffffffff 30780 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/ppc/Itaka
+00000000000000000000000000000000 ba7ea15710fa20228507374cab6509e7 ffffffffffffffffffffffffffffffff 1272 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/process-stop.png
+00000000000000000000000000000000 f4c2d49ac42128f79162cf941bf705a4 ffffffffffffffffffffffffffffffff 512 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/preferences-desktop.png
+00000000000000000000000000000000 a762a599c805a724a35949ae14789bb1 ffffffffffffffffffffffffffffffff 961 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/media-playback-start.png
+00000000000000000000000000000000 0b6b3178ac4a5c643e03185fb0d24b32 ffffffffffffffffffffffffffffffff 76709 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/itaka512x512.png
+00000000000000000000000000000000 afb601ad87794371d4108bcc56a68490 ffffffffffffffffffffffffffffffff 5083 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/itaka64x64-take.png
+00000000000000000000000000000000 b2d22abf6a29d9323109b8a92c7da75a ffffffffffffffffffffffffffffffff 1590 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/itaka-logo.png
+00000000000000000000000000000000 0328f3505972f12468d2505083074749 ffffffffffffffffffffffffffffffff 847 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/Info.plist
+00000000000000000000000000000000 ed9c0c642a66bf51b3249c0b956aa4c6 ffffffffffffffffffffffffffffffff 202 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/English.lproj/InfoPlist.strings
+00000000000000000000000000000000 562afe18275f5bf8c79fa05b88565e94 ffffffffffffffffffffffffffffffff 170 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/English.lproj/MainMenu.nib
+0000000042973e680000000000000f34 74385f7f62b169362012abd6b0f7febb ffffffffffffffffffffffffffffffff 3892 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Frameworks/TCPServer.h
+0000000042973e680000000000001681 e46b4402daa29fd3ec09f696685f1a7d ffffffffffffffffffffffffffffffff 5761 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Frameworks/HTTPServer.h
+0000000042834b1000000000000000ac 651c232481f1ae8cbc5ac4c00e86cfa5 ffffffffffffffffffffffffffffffff 172 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Frameworks/CocoaHTTPServer_Prefix.pch
+00000000466c74d60000000000000140 887ab807736aa1c985ebfa81117fdcac ffffffffffffffffffffffffffffffff 320 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Frameworks/MyObject.h
+00000000455505d00000000000000110 28f829c58e5f29f45cde5a8f20f1c4d9 ffffffffffffffffffffffffffffffff 238 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Frameworks/iLifeControls.framework
+0000000046631e07000000000000034f 46700fea092784b3c63f1158d0288603 ffffffffffffffffffffffffffffffff 8 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/PkgInfo
+0000000046631e07000000000000034f 46700fea092784b3c63f1158d0288603 ffffffffffffffffffffffffffffffff 776 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Info.plist
+00000000000000000000000000000000 3ace4334c5eec02dc995f11d9f7a951c ffffffffffffffffffffffffffffffff 3595 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/itaka-take.png
+00000000000000000000000000000000 38ab33300155f7b5f2a89c94ed44bf69 ffffffffffffffffffffffffffffffff 170 /Users/nahuel/Desktop/Itaka/build/Release/Itaka.app/Contents/Resources/English.lproj/MainMenu2.nib
+000000004666d67100000000000015a8 a9601158b8cbd2a121b1d17f82277d92 ffffffffffffffffffffffffffffffff 0 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/i386/CocoaHTTPServer.o
+000000004666d67100000000000015a8 f371d7552a617056d9c4ee2b9d08d9a9 ffffffffffffffffffffffffffffffff 3992 /Users/nahuel/Desktop/Itaka/build/Itaka Mac.build/Release/Itaka Mac.build/Objects-normal/ppc/CocoaHTTPServer.o

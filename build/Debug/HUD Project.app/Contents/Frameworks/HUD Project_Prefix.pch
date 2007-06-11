@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'HUD Project' target in the 'HUD Project' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
