@@ -1,4 +1,7 @@
 #import "MyObject.h"
+#import "HTTPServer.h"
+
+HTTPServer *server2;
 
 @implementation MyObject
 
@@ -9,11 +12,13 @@
 	NSImage * image = [NSImage imageNamed:@"process-stop.png"];        
 	[sender setImage: image]; // didnt alloc dont need to realaese
 	[sender setTitle:@"Stop"];
+	[self runHttpd];
 	
 	} else {
 		NSImage * image = [NSImage imageNamed:@"media-playback-start.png"];        
 		[sender setImage: image]; // didnt alloc dont need to realaese
 		[sender setTitle:@"Start"];
+		[server2 stop]; //stops the server
 	}
 	
 }
@@ -25,5 +30,44 @@
 - (IBAction)takeScreenshot:(id)sender
 {
 }
+
+-runHttpd {
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	
+    HTTPServer *server = [[HTTPServer alloc] init];
+    [server setType:@"_http._tcp."];
+    [server setName:@"Itaka HTTP Server"];
+    [server setDocumentRoot:[NSURL fileURLWithPath:@"/Users/nahuel/screenshot"]];
+	
+	server2 = server; //copy the pointer of server to the variable server2 to be able to use it when topping the server
+	
+	[server setPort:8000]; // sets server port. Need to connect it with preferences
+	
+	[server setDelegate:self]; // sets an instant of  Myobject as the delegate of httpserver
+	
+	NSError *startError = nil;
+    if (![server start:&startError] ) {
+        NSLog(@"Error starting server: %@", startError);
+    } else {
+        NSLog(@"Starting server on port %d", [server port]);
+    }
+	
+	return 0;
+    [pool release];
+}    
+
+- (void)HTTPConnection:(HTTPConnection *)conn didSendResponse:(HTTPServerRequest *)mess {
+	NSLog (@"new response");
+	system("screencapture /Users/nahuel/screenshot/image.jpg");
+}
+
+
+// this is of course a delegate function from httpserver that is executed when a new connection arrives
+// need to write a method that makes sense of hte connection (so far dats is in HEX, since i shows position in memory
+// no use!)
+- (void)HTTPServer:(HTTPServer *)serv didMakeNewConnection:(HTTPConnection *)conn { 
+	NSLog(@"Got new connection from server %s, conection %s",serv, conn);
+}
+
 
 @end
