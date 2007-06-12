@@ -42,6 +42,147 @@ except ImportError:
     print "[*] ERROR: Could not import Twisted Network Framework"
     sys.exit(1)
 
+class BaseHTTPServer:
+    """
+    Base HTTP Server.
+    """
+
+    def __init__(self):
+        """
+        Constructor.
+        """
+
+        self.server_listening = False
+
+    def add_static_resource(self, name, data, type='text/html; charset=UTF-8'):
+        """
+        Create a static.Data Twisted resource.Resource.
+
+        @type name: str
+        @param name: Name of the resource.
+
+        @type data: str
+        @param data: Data in memory to add to the resource, typically HTML.
+
+        @type type: str
+        @param type: The type of data we are serving.
+
+        @rtype: resource.Resource
+        @return: The instance of the resource created.
+        """
+
+        setattr(self, name, static.Data(data, type))
+        return getattr(self, name)
+
+    def add_child_to_resource(self, name, path, resource):
+        """
+        Add a static child resource to a Twisted resource.Resource.
+
+        @type name: str
+        @param name: The name of the Twisted resource.Resource.  
+
+        @type path: str
+        @param path: The path name (i.e http://www.site.com/PATH) of the Resource. You almost certainly don't want '/' in your path. If you intended to have the root of a folder, e.g. /foo/, you want path to be ''.
+
+        @type resource: instance
+        @param resource: A Twisted Resource.
+        """
+
+        getattr(self, name).putChild(path, resource)
+
+    def create_site(self, resource):
+        """
+        Creates a Twisted.server.Site with a Twisted Resource.
+
+        @type resource: instance
+        @param resource: An instance of a Twisted resource created with L{add_static_resource}.
+        """
+
+        self.site = server.Site(resource)
+
+    def start_server(self, port):
+        """
+        Start the server.
+
+        @type port: int
+        @param port: Port number to listen on.
+        """
+
+        try:
+            self.server = reactor.listenTCP(port, self.site)
+        except twisted.internet.error.CannotListenError, e:
+            raise error.ItakaServerErrorCannotListen, e
+
+        self.server_listening = True
+    
+    def stop_server(self):
+        """
+        Stop the server.
+        """
+
+        self.server.stopListening()
+        self.server_listening = False
+
+    def listening(self):
+        """
+        Whether the server is listening or not.
+
+        @rtype: bool
+        @return: True if it's listening or False if it is not.
+        """
+
+        return self.server_listening
+
+    def add_log_observer(self, observer):
+        """
+        Add a twisted.log observer.
+        
+        @type observer: method
+        @param observer: A method to send the logs to.
+        """
+
+        self.log_observer = observer
+        log.addObserver(observer)
+
+    def remove_log_observer(self, observer=False):
+        """
+        Remove a twisted.log observer.
+        
+        @type observer: method
+        @param observer: The name of the method specified in add_log_observer. If False, the last known log observer added will be removed.
+        """
+
+        if observer:
+            log.removeObserver(observer)
+        else:
+            log.removeObserver(self.log_observer)
+
+class ScreenshotServer(BaseHTTPServer):
+    """
+    Screenshot server that builds upon BaseHTTPServer.
+    """
+
+    def __init__(self, guiinstance):
+        """
+        Constructor. Overrides BaseHTTPServer's __init__ to create our resources on-the-fly.
+
+        @type guiinstance: instance
+        @param guiinstance: An instance of our L{Gui} class.
+        """
+
+        self.gui = guiinstance
+        self.configuration = self.gui.configuration
+        self.console = self.gui.console
+
+        self.server_listening = False
+
+        # Set up the twisted site
+        self.rootresource = self.add_static_resource('root', self.configuration['html']['html'])
+        self.add_child_to_resource('root', '', self.rootresource)
+        # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
+        self.add_child_to_resource('root', 'screenshot', ImageResource(self.gui))
+        self.create_site(self.rootresource)
+
 class ImageResource(Resource):
     """ 
     Handle server requests and call for a screenshot.
@@ -106,68 +247,6 @@ class ImageResource(Resource):
                 n.attach_to_status_icon(self.gui.statusIcon)
                 n.show()
 
-            # Tell the GUI what changed
             self.gui.update_gui(self.counter, self.ip, self.time)
 
             return open(self.shotFile, 'rb').read()		
-
-class ScreenshotServer:
-    """
-    Screenshot server.
-    """
-    def __init__(self, guiinstance):
-        """
-        Constructor.
-
-        @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class.
-        """
-
-        self.gui = guiinstance
-        self.configuration = self.gui.configuration
-        self.console = self.gui.console
-
-        self.server_listening = False
-
-        # Set up the twisted site
-        self.root = static.Data(self.configuration['html']['html'], 'text/html; charset=UTF-8')
-        self.root.putChild('', self.root)
-        # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
-        self.root.putChild('screenshot', ImageResource(self.gui))
-        self.site = server.Site(self.root)
-
-    def start(self):
-        """
-        Start the server.
-        """
-
-        # Get a newer configuration
-        self.configuration = self.gui.configuration
-
-        try:
-            self.server = reactor.listenTCP(self.configuration['server']['port'], self.site)
-        except twisted.internet.error.CannotListenError, e:
-            raise error.ItakaServerErrorCannotListen, e
-
-        self.server_listening = True
-        # Log to the Gui Logger instance
-        log.addObserver(self.gui.log.twisted_observer)
-    
-    def stop(self):
-        """
-        Stop the server.
-        """
-
-        self.server.stopListening()
-        self.server_listening = False
-        log.removeObserver(self.gui.log.twisted_observer)
-
-    def listening(self):
-        """
-        Whether the server is listening or not.
-
-        @rtype: bool
-        @return: True if it's listening or False if it is not.
-        """
-
-        return self.server_listening

@@ -1036,11 +1036,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if self.server.listening(): return
 
         try:
-            self.server.start()
+            self.server.start_server(self.configuration['server']['port'])
         except error.ItakaServerErrorCannotListen, e:
             self.log.failure(('Gui', 'start_server'), ('Failed to start server', 'Failed to start server: %s' % (e)), 'ERROR')
             self.buttonStartstop.set_active(False)
             return
+
+        self.server.add_log_observer(self.log.twisted_observer)
 
         if self.configuration['screenshot']['format'] == "jpeg":
             self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %d%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', 'STOCK_CONNECT'])
@@ -1077,7 +1079,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if self.server.listening():
             self.log.message('Server stopped', ['stock', 'STOCK_DISCONNECT'])
 
-            self.server.stop()
+            self.server.stop_server()
+            self.server.remove_log_observer()
+
             # Stop the g_timeout
             if hasattr(self, 'iagotimer'):
                 gobject.source_remove(self.iagotimer)
@@ -1117,7 +1121,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if self.server.listening():
             self.console.message('Shutting down server')
-            self.server.stop()
+            self.server.stop_server()
             del self.console
         else:
             # Console goodbye!
