@@ -50,6 +50,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4DC52B6A0C1F3D2A007BB8F4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Users/nahuel/Desktop/Itaka3;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BBC518AA0AFECE6A00AF0E9C /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -75,12 +84,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Itaka Project_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Itaka Project_Prefix.pch"; sourceTree = "<group>"; };
-		4D5CE1100C171003006A8214 /* CocoaHTTPServer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CocoaHTTPServer_Prefix.pch; path = ../CocoaHTTPServer/CocoaHTTPServer_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		4D5CE1100C171003006A8214 /* CocoaHTTPServer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CocoaHTTPServer_Prefix.pch; sourceTree = "<group>"; };
 		4D5CE1110C171003006A8214 /* CocoaHTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CocoaHTTPServer.m; path = ../CocoaHTTPServer/CocoaHTTPServer.m; sourceTree = SOURCE_ROOT; };
-		4D5CE1120C171003006A8214 /* HTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HTTPServer.h; path = ../CocoaHTTPServer/HTTPServer.h; sourceTree = SOURCE_ROOT; };
-		4D5CE1130C171003006A8214 /* HTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = HTTPServer.m; path = ../CocoaHTTPServer/HTTPServer.m; sourceTree = SOURCE_ROOT; };
-		4D5CE1140C171003006A8214 /* TCPServer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TCPServer.h; path = ../CocoaHTTPServer/TCPServer.h; sourceTree = SOURCE_ROOT; };
-		4D5CE1150C171003006A8214 /* TCPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = TCPServer.m; path = ../CocoaHTTPServer/TCPServer.m; sourceTree = SOURCE_ROOT; };
+		4D5CE1120C171003006A8214 /* HTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HTTPServer.h; sourceTree = "<group>"; };
+		4D5CE1130C171003006A8214 /* HTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = HTTPServer.m; sourceTree = "<group>"; };
+		4D5CE1140C171003006A8214 /* TCPServer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TCPServer.h; sourceTree = "<group>"; };
+		4D5CE1150C171003006A8214 /* TCPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = TCPServer.m; sourceTree = "<group>"; };
 		4DC0FB3B0C1458BC00EA7544 /* Itaka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Itaka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DC1A6B20C1C70BB007BAEB2 /* itaka-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "itaka-logo.png"; path = "../icons/itaka-logo.png"; sourceTree = SOURCE_ROOT; };
 		4DC1A6B30C1C70BB007BAEB2 /* itaka64x64-take.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "itaka64x64-take.png"; path = "../icons/itaka64x64-take.png"; sourceTree = SOURCE_ROOT; };
@@ -199,6 +208,18 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		4DC52B710C1F3D53007BB8F4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			comments = "
+";
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		8D1107260486CEB800E47090 /* Itaka Mac */ = {
 			isa = PBXNativeTarget;
@@ -210,6 +231,8 @@
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				4DC0FB5C0C145ACB00EA7544 /* CopyFiles */,
 				4DC1A6EE0C1C8FE7007BAEB2 /* CopyFiles */,
+				4DC52B6A0C1F3D2A007BB8F4 /* CopyFiles */,
+				4DC52B710C1F3D53007BB8F4 /* Headers */,
 			);
 			buildRules = (
 			);
