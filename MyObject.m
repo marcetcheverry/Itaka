@@ -43,7 +43,7 @@ HTTPServer *server2;
 	
 	NSString *port = [[NSString alloc] init];
 	port = [portButton title];
-	
+	 
 	NSLog([port intValue]);
 	int port2 = [port intValue];
 
