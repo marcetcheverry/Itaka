@@ -85,7 +85,7 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Itaka Project_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Itaka Project_Prefix.pch"; sourceTree = "<group>"; };
 		4D5CE1100C171003006A8214 /* CocoaHTTPServer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CocoaHTTPServer_Prefix.pch; sourceTree = "<group>"; };
-		4D5CE1110C171003006A8214 /* CocoaHTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CocoaHTTPServer.m; path = ../CocoaHTTPServer/CocoaHTTPServer.m; sourceTree = SOURCE_ROOT; };
+		4D5CE1110C171003006A8214 /* CocoaHTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = CocoaHTTPServer.m; sourceTree = "<group>"; };
 		4D5CE1120C171003006A8214 /* HTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HTTPServer.h; sourceTree = "<group>"; };
 		4D5CE1130C171003006A8214 /* HTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = HTTPServer.m; sourceTree = "<group>"; };
 		4D5CE1140C171003006A8214 /* TCPServer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TCPServer.h; sourceTree = "<group>"; };

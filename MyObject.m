@@ -41,7 +41,18 @@ HTTPServer *server2;
 	
 	server2 = server; //copy the pointer of server to the variable server2 to be able to use it when topping the server
 	
-	[server setPort:8000]; // sets server port. Need to connect it with preferences
+	NSString *port = [[NSString alloc] init];
+	port = [portButton title];
+	
+	NSLog([port intValue]);
+	int port2 = [port intValue];
+
+	NSLog(port2);
+	
+	[server setPort:port2]; // sets server port. Need to connect it with preferences
+	
+	
+
 	
 	[server setDelegate:self]; // sets an instant of  Myobject as the delegate of httpserver
 	
