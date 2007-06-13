@@ -12,14 +12,14 @@ HTTPServer *server2;
 	NSImage * image = [NSImage imageNamed:@"process-stop.png"];        
 	[sender setImage: image]; // didnt alloc dont need to realaese
 	[sender setTitle:@"Stop"];
-	[self runHttpd];
+	[self runHttpd]; //should check that
 	
 	} else {
 		NSImage * image = [NSImage imageNamed:@"media-playback-start.png"];        
 		[sender setImage: image]; // didnt alloc dont need to realaese
 		[sender setTitle:@"Start"];
 		[server2 stop]; //stops the server
-		port2=0;
+		
 	}
 	
 }
