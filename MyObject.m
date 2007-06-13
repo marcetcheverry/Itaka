@@ -41,11 +41,8 @@ HTTPServer *server2;
 	
 	server2 = server; //copy the pointer of server to the variable server2 to be able to use it when topping the server
 	
-	NSString *port = [[NSString alloc] init];
-	port = [portButton title];
-	 
-	NSLog([port intValue]);
-	int port2 = [port intValue];
+	
+	int port2 = [[portButton title] intValue];
 
 	NSLog(port2);
 	
