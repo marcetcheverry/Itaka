@@ -204,7 +204,7 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>4DED329E0C1FFDC9005DEEF2</string>
+						<string>4DED32A20C1FFE83005DEEF2</string>
 						<key>history</key>
 						<array>
 							<string>4D9B100C0C1FFB1D001AF8D1</string>
@@ -356,7 +356,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>4DED329D0C1FFDC9005DEEF2</string>
+										<string>4DED32A10C1FFE83005DEEF2</string>
 										<key>history</key>
 										<array>
 											<string>4D5CE1290C171113006A8214</string>
@@ -586,8 +586,8 @@
 		<string>1CD10A99069EF8BA00B06720</string>
 		<string>4DED327B0C1FFB6E005DEEF2</string>
 		<string>4DC1A77F0C1CAC65007BAEB2</string>
-		<string>/Users/nahuel/Desktop/Itaka/Itaka Mac.xcodeproj</string>
 		<string>1C0AD2B3069F1EA900FABCE6</string>
+		<string>/Users/nahuel/Desktop/Itaka/Itaka Mac.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>2 60 1282 718 0 0 1280 778 </string>
