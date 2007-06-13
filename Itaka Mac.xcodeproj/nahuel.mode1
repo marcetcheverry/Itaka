@@ -204,7 +204,7 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>4D48931F0C20206B00C1C06B</string>
+						<string>4D4893240C2022B000C1C06B</string>
 						<key>history</key>
 						<array>
 							<string>4DED32BC0C200035005DEEF2</string>
@@ -356,7 +356,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>4D48931C0C20206B00C1C06B</string>
+										<string>4D4893230C2022B000C1C06B</string>
 										<key>history</key>
 										<array>
 											<string>4D5CE1290C171113006A8214</string>
@@ -581,6 +581,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>4D089BFC0C110B3700795202</string>
 		<string>4DC1A77F0C1CAC65007BAEB2</string>
 		<string>1C0AD2B3069F1EA900FABCE6</string>
 		<string>/Users/nahuel/Desktop/Itaka/Itaka Mac.xcodeproj</string>
@@ -663,7 +664,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>4D089BFC0C110B3700795202</string>
-				<string>4DED32850C1FFB8E005DEEF2</string>
+				<string>4D4893250C2022B000C1C06B</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

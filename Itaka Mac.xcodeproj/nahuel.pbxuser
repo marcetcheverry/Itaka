@@ -138,6 +138,8 @@
 			4D48931B0C20206B00C1C06B /* PBXTextBookmark */ = 4D48931B0C20206B00C1C06B /* PBXTextBookmark */;
 			4D48931C0C20206B00C1C06B /* PBXTextBookmark */ = 4D48931C0C20206B00C1C06B /* PBXTextBookmark */;
 			4D48931F0C20206B00C1C06B /* PBXTextBookmark */ = 4D48931F0C20206B00C1C06B /* PBXTextBookmark */;
+			4D4893230C2022B000C1C06B /* PBXTextBookmark */ = 4D4893230C2022B000C1C06B /* PBXTextBookmark */;
+			4D4893240C2022B000C1C06B /* PBXTextBookmark */ = 4D4893240C2022B000C1C06B /* PBXTextBookmark */;
 			4D5CE1290C171113006A8214 = 4D5CE1290C171113006A8214 /* PBXTextBookmark */;
 			4D667BE00C1DA2CD0098F57E = 4D667BE00C1DA2CD0098F57E /* PBXBookmark */;
 			4D667BE20C1DA2CD0098F57E = 4D667BE20C1DA2CD0098F57E /* PBXBookmark */;
@@ -270,7 +272,7 @@
 		fRef = BB0EA5890B04993A00A7414B /* MyObject.m */;
 		name = "MyObject.m: 48";
 		rLen = 0;
-		rLoc = 1300;
+		rLoc = 1347;
 		rType = 0;
 		vrLen = 678;
 		vrLoc = 44;
@@ -280,7 +282,7 @@
 		fRef = BB0EA5890B04993A00A7414B /* MyObject.m */;
 		name = "MyObject.m: 48";
 		rLen = 0;
-		rLoc = 1300;
+		rLoc = 1347;
 		rType = 0;
 		vrLen = 678;
 		vrLoc = 44;
@@ -306,6 +308,26 @@
 		vrLoc = 935;
 	};
 	4D48931F0C20206B00C1C06B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = BB0EA5880B04993A00A7414B /* MyObject.h */;
+		name = "MyObject.h: 19";
+		rLen = 0;
+		rLoc = 558;
+		rType = 0;
+		vrLen = 558;
+		vrLoc = 0;
+	};
+	4D4893230C2022B000C1C06B /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = BB0EA5890B04993A00A7414B /* MyObject.m */;
+		name = "MyObject.m: 48";
+		rLen = 0;
+		rLoc = 1346;
+		rType = 0;
+		vrLen = 1055;
+		vrLoc = 855;
+	};
+	4D4893240C2022B000C1C06B /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = BB0EA5880B04993A00A7414B /* MyObject.h */;
 		name = "MyObject.h: 19";
@@ -608,7 +630,7 @@
 		fRef = BB0EA5890B04993A00A7414B /* MyObject.m */;
 		name = "MyObject.m: 68";
 		rLen = 0;
-		rLoc = 1879;
+		rLoc = 1926;
 		rType = 0;
 		vrLen = 885;
 		vrLoc = 1384;
@@ -648,8 +670,8 @@
 	BB0EA5890B04993A00A7414B /* MyObject.m */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1033, 1134}}";
-			sepNavSelRange = "{636, 0}";
-			sepNavVisRect = "{{0, 560}, {1033, 400}}";
+			sepNavSelRange = "{1346, 0}";
+			sepNavVisRect = "{{0, 541}, {1033, 400}}";
 			sepNavWindowFrame = "{{38, 194}, {750, 558}}";
 		};
 	};
