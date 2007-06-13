@@ -352,7 +352,10 @@ class Gui:
         self.box = gtk.HBox(False, 0)
 
         self.itakaLogo = gtk.Image()
-        self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+        if self.configuration['server']['authentication']:
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png"))
+        else:
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
         self.itakaLogo.show()
 
         self.box.pack_start(self.itakaLogo, False, False, 35)
@@ -1066,9 +1069,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if self.checkwidget(widget):
             self.preferencesEntryuser.set_sensitive(True)
             self.preferencesEntrypass.set_sensitive(True)
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png"))
         else:
             self.preferencesEntryuser.set_sensitive(False)
             self.preferencesEntrypass.set_sensitive(False)
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
 
 
     def checkwidget(self, widget):
