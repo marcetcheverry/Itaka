@@ -45,7 +45,7 @@ HTTPServer *server2; //check this method of passing server pointer
 	
 	
 	[server setPort:[[portButton title] intValue]]; // sets server port. Gets title from prefernces port NSPopupBUtton and makes it into an integer.
-	NSLog(@"ScreenButtons Title is %s", [screenButton title]);
+	NSLog(@"ScreenButtons Title is %@", [screenButton title]);
 	
 	
 	[server setDelegate:self]; // sets an instant of  Myobject as the delegate of httpserver
