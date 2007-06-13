@@ -47,8 +47,6 @@ HTTPServer *server2;
 	[server setPort:[[portButton title] intValue]]; // sets server port. Gets title from prefernces port NSPopupBUtton and makes it into an integer.
 	
 	
-
-	
 	[server setDelegate:self]; // sets an instant of  Myobject as the delegate of httpserver
 	
 	NSError *startError = nil;
@@ -74,6 +72,5 @@ HTTPServer *server2;
 - (void)HTTPServer:(HTTPServer *)serv didMakeNewConnection:(HTTPConnection *)conn { 
 	NSLog(@"Got new connection from server %s, conection %s",serv, conn);
 }
-
 
 @end
