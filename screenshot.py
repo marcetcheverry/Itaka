@@ -105,9 +105,9 @@ class Screenshot:
             try:
                 self.currentwindow = self.find_current_active_window()
             except error.ItakaScreenshotErrorWmHints:
-                self.gui.log.failure(('Screenshot', 'take_screenshot'), 'Can not grab the current window. Window manager unsupported', 'WARNING')
+                self.gui.log.failure(('Screenshot', 'take_screenshot'), ('Can not grab the current window', 'Can not grab the curren window because your window manager does not support NET_WM_* hints'), 'WARNING')
             except error.ItakaScreenshotErrorActiveDesktop:
-                self.gui.log.failure(('Screenshot', 'take_screenshot'), 'Not grabing the desktop as the current window', 'WARNING')
+                self.gui.log.failure(('Screenshot', 'take_screenshot'), ('Not grabing the desktop as the current window', 'Your focus was on the destop when a client requested a screenshot, Itaka instead took a screenshot of the whole screen'), 'WARNING')
 
             if not self.currentwindowfailed:
                 # Make the window size also the screen size for scaling purposes

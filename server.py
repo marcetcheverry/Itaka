@@ -34,7 +34,7 @@ except ImportError:
 
 try:
     from twisted.python import log
-    from twisted.web import server, static
+    from twisted.web import server, static, http
     from twisted.internet import reactor
     import twisted.internet.error
     from twisted.web.resource import Resource
@@ -157,6 +157,17 @@ class BaseHTTPServer:
         else:
             log.removeObserver(self.log_observer)
 
+    def get_listening_information(self):
+        """
+        Returns the information of the current listening server.
+
+        @rtype: twisted.internet.interfaces.IAddress
+        @return: The current server's networking information.
+        """
+
+        if self.server_listening:
+            return self.server.getHost()
+
 class ScreenshotServer(BaseHTTPServer):
     """
     Screenshot server that builds upon BaseHTTPServer.
@@ -177,11 +188,99 @@ class ScreenshotServer(BaseHTTPServer):
         self.server_listening = False
 
         # Set up the twisted site
-        self.rootresource = self.add_static_resource('root', self.configuration['html']['html'])
-        self.add_child_to_resource('root', '', self.rootresource)
+        # Here we use our own static.Data child resource because we need Authentication handling.
+        # self.rootresource = self.add_static_resource('root', self.configuration['html']['html'])
+        self.root = RootResource(self.gui, self.configuration['html']['html'])
+        self.add_child_to_resource('root', '', self.root)
         # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
         self.add_child_to_resource('root', 'screenshot', ImageResource(self.gui))
-        self.create_site(self.rootresource)
+        self.create_site(self.root)
+
+class RootResource(static.Data):
+    """
+    Main resource with authentication support.
+
+    Please read RFC 2617 to understand the HTTP Authentication process.
+    """
+
+    def __init__(self, guiinstance, data, type='text/html; charset=UTF-8'):
+
+        """ 
+        Constructor that inherits code from resource.Resource->static.Data.
+
+        @type guiinstance: instance
+        @param guiinstance: An instance of our L{Gui} class.
+
+        @type html: string
+        @param html: The HTML to be displayed.
+
+        @type type: str
+        @param type: The type of data we are serving.
+        """
+
+        self.gui = guiinstance
+        self.console = self.gui.console
+        self.itakaglobals = self.gui.itakaglobals
+
+        # Inherited from the actual code of Twisted
+        self.children = {}
+        self.data = data
+        self.type = type
+        #: No authentication provided string
+        self.noauth = 'Sorry, but you cannot access this resource without authorization.'
+
+    def _promptAuth(self):
+        """
+        Prompt the authorization dialog on the browser.
+        """
+
+        self.request.setHeader('WWW-Authenticate', 'Basic realm="Itaka Screenshot Server"')
+        self.request.setResponseCode(http.UNAUTHORIZED)
+        self.request.setHeader('Content-Type', self.type)
+        self.request.setHeader('Connection', 'close')
+        self.request.setHeader('Content-Length', str(len(self.noauth)))
+
+    def render(self, request):
+        """
+        Override twisted.static.Data render method. Render our static HTML.
+
+        @type request: instance
+        @param request: twisted.web.server.Request instance.
+        """
+        
+        # Get up to date configuration values everytime there is a request
+        self.configuration = self.gui.configuration
+
+        self.request = request
+        self.ip = self.request.getClientIP()
+        self.time = datetime.datetime.now()
+
+        if self.configuration['server']['authentication']:
+            self._promptAuth()
+            self.username = self.request.getUser()
+            self.password = self.request.getPassword()
+           
+            if (self.username, self.password) == ('', ''):
+                self.gui.log.failure(('RootResource', 'render'), ('Client provided empty username and password', 'Client %s provided empty username and password' % (self.ip)), 'WARNING')
+                self._promptAuth()
+            else:
+                if self.username != self.configuration['server']['username'] or self.password != self.configuration['server']['password']:
+                    self.gui.log.failure(('RootResource', 'render'), ('Client provided incorrect username and password', 'Client %s provided incorrect username and password: %s:%s' % (self.ip, self.username, self.password)), 'WARNING')
+                    self._promptAuth()
+                elif self.username == self.configuration['server']['username'] and self.password == self.configuration['server']['password']:
+                    self.request.setResponseCode(http.OK)
+                    self.request.setHeader('Content-Type', self.type)
+                    self.request.setHeader('Connection', 'close')
+                    self.request.setHeader('Content-Length', str(len(self.data)))
+                    return self.data
+        else:
+            self.request.setHeader('Content-Type', self.type)
+            self.request.setHeader('Connection', 'close')
+            self.request.setHeader('Content-Length', str(len(self.data)))
+            return self.data
+
+        # No auth given, warn the user
+        return self.noauth
 
 class ImageResource(Resource):
     """ 
@@ -219,18 +318,18 @@ class ImageResource(Resource):
         self.configuration = self.gui.configuration
 
         self.request = request
+        self.ip = self.request.getClientIP()
+        self.time = datetime.datetime.now()
 
         if (self.request.uri == "/screenshot"):
-            self.request.setHeader("Content-type", "image/" + self.configuration['screenshot']['format'])
-            self.request.setHeader("Connection", "close")
-
-            self.ip = self.request.getClientIP()
-            self.time = datetime.datetime.now()
-
             try:
                 self.shotFile = self.screenshot.take_screenshot()
             except error.ItakaScreenshotError:
                 return
+            
+            self.request.setHeader('Content-Type', "image/" + self.configuration['screenshot']['format'])
+            self.request.setHeader('Content-Length', str(len(self.shotFile)))
+            self.request.setHeader('Connection', 'close')
 
             self.counter += 1
 
@@ -249,4 +348,4 @@ class ImageResource(Resource):
 
             self.gui.update_gui(self.counter, self.ip, self.time)
 
-            return open(self.shotFile, 'rb').read()		
+            return open(self.shotFile, 'rb').read()
