@@ -1,7 +1,6 @@
 #import "MyObject.h"
 #import "HTTPServer.h"
 
-int port2=0;
 HTTPServer *server2;
 
 @implementation MyObject
