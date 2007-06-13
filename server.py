@@ -260,7 +260,7 @@ class RootResource(static.Data):
             self.username = self.request.getUser()
             self.password = self.request.getPassword()
            
-            if (self.username, self.password) == ('', ''):
+            if not self.username and not self.password:
                 self.gui.log.failure(('RootResource', 'render'), ('Client provided empty username and password', 'Client %s provided empty username and password' % (self.ip)), 'WARNING')
                 self._promptAuth()
             else:
