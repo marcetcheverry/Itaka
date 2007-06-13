@@ -15,7 +15,7 @@
 # along with Itaka; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Copyright 2003-2007 Marc E. <santusmarc_at_gmail.com>.
+# Copyright 2003-2007 Marc E.
 # http://itaka.jardinpresente.com.ar
 #
 # $Id$
@@ -162,7 +162,7 @@ class GuiLog:
             self.gui.expander.set_sensitive(True)
             # Stop the server
             if self.gui.server.listening():
-                self.gui.stop_server(None, True, False)
+                self.gui.stop_server(None, True)
 
         self._write_gui_log(self.simplemessage, self.detailedmessage, self._get_failure_icon(failuretype), True, True)
 
@@ -276,14 +276,15 @@ class Gui:
         # Load our configuration and console instances and values
         self.console = consoleinstance
         self.itakaglobals = configuration[0]
+
         # The configuration instance has the user's preferences already loaded.
         self.configinstance = configuration[1]
         self.configuration = self.itakaglobals.values
 
+        # Instances of our Gui Logging class and Screenshot Server
+        self.server = iserver.ScreenshotServer(self)
         self.log = GuiLog(self, self.console, self.configuration)
         self.logpaused = False
-        
-        self.server = iserver.ScreenshotServer(self)
 
         # Start defining widgets
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
@@ -293,7 +294,7 @@ class Gui:
         self.window.set_title("Itaka")
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
-        self.window.set_default_size(400, 1)
+        self.window.set_default_size(370, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window_position = self.window.get_position()
 
@@ -345,16 +346,14 @@ class Gui:
         self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
         self.itakaLogo.show()
 
-        self.box.pack_start(self.itakaLogo, True, True, 4)
+        self.box.pack_start(self.itakaLogo, False, False, 35)
 
-        self.ibox = gtk.HBox(False, 0)
         self.buttonStartstop = gtk.ToggleButton("Start", gtk.STOCK_PREFERENCES)
         self.startstopimage = gtk.Image()
 
         self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
         self.buttonStartstop.set_image(self.startstopimage)
         self.buttonStartstop.connect("toggled", self.button_start_server)
-        self.ibox.pack_start(self.buttonStartstop, True, True, 8)
 
         self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
         self.preferencesButton.connect("clicked", self.expandpreferences)
@@ -366,9 +365,9 @@ class Gui:
         self.expandtimeout = None
         self.blinktimeout = None
 
-        self.ibox.pack_start(self.preferencesButton, True, True, 4)
+        self.box.pack_start(self.buttonStartstop, True, True, 5)
+        self.box.pack_start(self.preferencesButton, True, True, 8)
 
-        self.box.pack_start(self.ibox, True, True, 0)
         self.vbox.pack_start(self.box, False, False, 0)
 
         self.statusBox = gtk.HBox(False, 0)
@@ -1060,9 +1059,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.menuitemstart.set_sensitive(False)
         self.menuitemstop.set_sensitive(True)
 
-        self.expander.set_sensitive(True)
+        if not self.expander.get_property("sensitive"):
+            self.expander.set_sensitive(True)
 
-    def stop_server(self, widget=None, foreign=False, contractlog=True):
+    def stop_server(self, widget=None, foreign=False):
         """
         Stops the Twisted server.
 
@@ -1071,9 +1071,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         @type foreign: bool
         @param foreign: Whether the caller of this method is not self.buttonStartstop.
-
-        @type contractlog: bool
-        @param contractlog: Whether the log widget is contracted.
         """
 
         if self.server.listening():
@@ -1097,9 +1094,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.labelLastip.set_text('')
             self.labelTime.set_text('')
             self.labelServed.set_text('')
-            if contractlog:
-                self.expander.set_expanded(False)				
-                self.expander.set_sensitive(False)
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
             self.menuitemstart.set_sensitive(True)
             self.menuitemstop.set_sensitive(False)
@@ -1111,7 +1105,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if self.server.listening():
             self.log.message('Restarting the server to listen on port %d' % (self.configuration['server']['port']), ['stock', 'STOCK_REFRESH'])
-            self.stop_server(None, True, False)
+            self.stop_server(None, True)
             self.start_server(None, True)
 
     def destroy(self, *args):
