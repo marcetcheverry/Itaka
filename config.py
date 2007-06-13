@@ -187,7 +187,7 @@ class ConfigParser:
                     for keyset in configdict[section]:
                         key, val = keyset
                         if not values[section].has_key(key):
-                            if not output['quiet']: print "[*] WARNING: Detected old or broken configuration file. Updating."
+                            if not output['quiet'] and not brokenwarning: print "[*] WARNING: Detected old or broken configuration file. Fixing"
                             self.update(section, key, val)
                             values[section][key] = val
         return values
