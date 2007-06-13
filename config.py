@@ -169,10 +169,13 @@ class ConfigParser:
         # This is useful for updates, and corrupted files.
         # NOTE: The setting of values[section][key] here is purely pragmatical, so we
         # dont have to reload
+        brokenwarning = False
         for configdict in self.defaultoptions:
             for section in configdict:
                 if not values.has_key(section):
-                    if not output['quiet']: print "[*] WARNING: Detected old or broken configuration file. Updating."
+                    if not output['quiet'] and not brokenwarning: 
+                        print '[*] WARNING: Detected old or broken configuration file. Fixing'
+                        brokenwarning = True
                     config.add_section(section)
                     values[section] = {}
                     for keyset in configdict[section]:
