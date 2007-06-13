@@ -51,7 +51,7 @@ except ImportError:
     print "[*] WARNING: Pygtk module is missing"
     pass
 try:
-    import gtk, gobject
+    import gtk, gobject, pango
 except ImportError:
     print "[*] ERROR: GTK+ bindings are missing"
     sys.exit(1)
@@ -98,7 +98,7 @@ class GuiLog:
         else:
             self.msg = args['message'][0]
 
-        self._write_detailed_log(self.msg)
+        self._write_detailed_log(self.msg, False)
 
     def message(self, message, icon=None):
         """
@@ -245,15 +245,24 @@ class GuiLog:
         else:
             self.gui.logeventsstore.append([icon, message])
 
-    def _write_detailed_log(self, message):
+    def _write_detailed_log(self, message, bold=True):
         """
         Private method to write to the detailed log Gui widget.
 
         @type message: str
         @param message: Message to be inserted.
+
+        @type bold: bool
+        @param bold: Whether the text will be inserted as bold.
         """
 
-        self.gui.logdetailsbuffer.insert_at_cursor('\r' +message,len('\r' + message))
+        message = message + '\r'
+
+        if bold:
+            self.gui.logdetailsbuffer.insert_with_tags_by_name(self.gui.logdetailsbuffer.get_end_iter(), message, 'bold-text')
+        else:
+            self.gui.logdetailsbuffer.insert_at_cursor(message, len(message))
+
         # Automatically scroll. Use wrap until fix.
         self.gui.logdetailstextview.scroll_mark_onscreen(self.gui.logdetailsbuffer.get_insert())
 
@@ -418,6 +427,7 @@ class Gui:
         self.logdetailstextview.set_editable(False)
         self.logdetailstextview.set_size_request(-1, 160)
         self.logdetailsbuffer = self.logdetailstextview.get_buffer()
+        self.logdetailsbuffer.create_tag ('bold-text', weight = pango.WEIGHT_BOLD)
         self.logdetailsscroll.add(self.logdetailstextview)
 
         self.lognotebook.append_page(self.logeventsscroll, self.logeventslabel)
@@ -458,13 +468,10 @@ class Gui:
         self.preferencesVBox = gtk.VBox(False, 7)
         self.preferencesVBoxitems = gtk.VBox(False, 5)
         self.preferencesVBoxitems.set_border_width(2)
-        self.preferencesHBox1 = gtk.HBox(False, 0)
-        self.preferencesHBox2 = gtk.HBox(False, 0)
-        self.preferencesHBox3 = gtk.HBox(False, 0)
-        self.preferencesHBox4 = gtk.HBox(False, 0)
-        self.preferencesHBox5 = gtk.HBox(False, 0)
-        self.preferencesHBox6 = gtk.HBox(False, 0)
-        self.preferencesHBox7 = gtk.HBox(False, 0)
+        
+        # Create our Hboxes
+        for n in xrange(1, 10+1):
+            setattr(self, 'preferencesHBox%d' % (n), gtk.HBox(False, 0))
 
         self.preferencesFramesettings = gtk.Frame()
         self.preferencesSettingslabel = gtk.Label("<b>Preferences</b>")
@@ -474,6 +481,18 @@ class Gui:
         self.preferencesLabelport = gtk.Label("Port  ")
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelport.set_alignment(0, 0.60)
+
+        self.preferencesLabelauth = gtk.Label("Authentication   ")
+        self.preferencesLabelauth.set_justify(gtk.JUSTIFY_LEFT)
+        self.preferencesLabelauth.set_alignment(0, 0.60)
+
+        self.preferencesLabeluser = gtk.Label("Username ")
+        self.preferencesLabeluser.set_justify(gtk.JUSTIFY_LEFT)
+        self.preferencesLabeluser.set_alignment(0, 0.60)
+
+        self.preferencesLabelpass = gtk.Label("Password  ")
+        self.preferencesLabelpass.set_justify(gtk.JUSTIFY_LEFT)
+        self.preferencesLabelpass.set_alignment(0, 0.60)
 
         self.preferencesLabelformat = gtk.Label("Format  ")
         self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
@@ -501,16 +520,37 @@ class Gui:
         self.preferencesSpinport = gtk.SpinButton(self.adjustmentport)
         self.preferencesSpinport.set_numeric(True)
 
+        self.preferencesEntryuser = gtk.Entry()
+        self.preferencesEntryuser.set_width_chars(11)
+        self.preferencesEntryuser.set_text(self.configuration['server']['username'])
+
+        self.preferencesEntrypass = gtk.Entry()
+        self.preferencesEntrypass.set_width_chars(11)
+        self.preferencesEntrypass.set_invisible_char(u'\u25cf')
+        self.preferencesEntrypass.set_visibility(False)
+        self.preferencesEntrypass.set_text(self.configuration['server']['password'])
+
+        self.preferencesCheckauth = gtk.CheckButton()
+        self.preferencesCheckauth.connect('toggled', self._preferences_authentication_toggled)
+        if self.configuration['server']['authentication']:
+            self.preferencesCheckauth.set_active(1)
+        else: 
+            self.preferencesCheckauth.set_active(0)
+
+        if not self.configuration['server']['authentication']:
+            self.preferencesEntryuser.set_sensitive(False)
+            self.preferencesEntrypass.set_sensitive(False)
+
         self.adjustmentquality = gtk.Adjustment(float(self.configuration['screenshot']['quality']), 0, 100, 1, 0, 0)
         self.preferencesSpinquality = gtk.SpinButton(self.adjustmentquality)
         self.preferencesSpinquality.set_numeric(True)
 
-        self.adjustmentscale = gtk.Adjustment(float(self.configuration['screenshot']['scalepercent']), 0, 100, 1, 0, 0)
+        self.adjustmentscale = gtk.Adjustment(float(self.configuration['screenshot']['scalepercent']), 1, 100, 1, 0, 0)
         self.preferencesSpinscale = gtk.SpinButton(self.adjustmentscale)
         self.preferencesSpinscale.set_numeric(True)
 
         self.preferencesComboformat = gtk.combo_box_new_text()
-        self.preferencesComboformat.connect('changed', self.preferencesComboChanged)
+        self.preferencesComboformat.connect('changed', self._preferences_combo_changed)
         self.preferencesComboformat.append_text("JPG")
         self.preferencesComboformat.append_text("PNG")
         if (self.configuration['screenshot']['format'] == "jpeg"):
@@ -541,33 +581,41 @@ class Gui:
 
         self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
         self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
-        self.preferencesHBox2.pack_start(self.preferencesLabelformat, False, False, 12)
-        self.preferencesHBox2.pack_end(self.preferencesComboformat, False, False, 7)
-        self.preferencesHBox3.pack_start(self.preferencesLabelquality, False, False, 12)
-        self.preferencesHBox3.pack_end(self.preferencesSpinquality, False, False, 7)
+        self.preferencesHBox2.pack_start(self.preferencesLabelauth, False, False, 12)
+        self.preferencesHBox3.pack_start(self.preferencesLabeluser, False, False, 12)
+        self.preferencesHBox4.pack_end(self.preferencesEntrypass, False, False, 7)
+        self.preferencesHBox4.pack_start(self.preferencesLabelpass, False, False, 12)
+        self.preferencesHBox3.pack_end(self.preferencesEntryuser, False, False, 7)
+        self.preferencesHBox2.pack_end(self.preferencesCheckauth, False, False, 7)
+        self.preferencesHBox5.pack_start(self.preferencesLabelformat, False, False, 12)
+        self.preferencesHBox5.pack_end(self.preferencesComboformat, False, False, 7)
+        self.preferencesHBox6.pack_start(self.preferencesLabelquality, False, False, 12)
+        self.preferencesHBox6.pack_end(self.preferencesSpinquality, False, False, 7)
         if not self.itakaglobals.system == 'nt':
-            self.preferencesHBox4.pack_start(self.preferencesLabelactive, False, False, 12)
-            self.preferencesHBox4.pack_end(self.preferencesCheckactive, False, False, 7)
-        self.preferencesHBox5.pack_start(self.preferencesLabelscale, False, False, 12)
-        self.preferencesHBox5.pack_end(self.preferencesSpinscale, False, False, 7)
+            self.preferencesHBox7.pack_start(self.preferencesLabelactive, False, False, 12)
+            self.preferencesHBox7.pack_end(self.preferencesCheckactive, False, False, 7)
+        self.preferencesHBox8.pack_start(self.preferencesLabelscale, False, False, 12)
+        self.preferencesHBox8.pack_end(self.preferencesSpinscale, False, False, 7)
         if self.itakaglobals.notifyavailable: 
-            self.preferencesHBox6.pack_start(self.preferencesLabelnotifications, False, False, 12)
-            self.preferencesHBox6.pack_end(self.preferencesChecknotifications, False, False, 7)
-        self.preferencesHBox7.pack_start(self.preferencesButtonAbout, False, False, 7)
-        self.preferencesHBox7.pack_end(self.preferencesButtonClose, False, False, 7)
+            self.preferencesHBox9.pack_start(self.preferencesLabelnotifications, False, False, 12)
+            self.preferencesHBox9.pack_end(self.preferencesChecknotifications, False, False, 7)
+        self.preferencesHBox10.pack_start(self.preferencesButtonAbout, False, False, 7)
+        self.preferencesHBox10.pack_end(self.preferencesButtonClose, False, False, 7)
 
         self.preferencesVBoxitems.pack_start(self.preferencesHBox1, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox2, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox3, False, False, 0)
-        if not self.itakaglobals.system == 'nt':
-            self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox5, False, False, 0)
+        if not self.itakaglobals.system == 'nt':
+            self.preferencesVBoxitems.pack_start(self.preferencesHBox7, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox8, False, False, 0)
         if self.itakaglobals.notifyavailable: 
-            self.preferencesVBoxitems.pack_start(self.preferencesHBox6, False, False, 0)
+            self.preferencesVBoxitems.pack_start(self.preferencesHBox9, False, False, 0)
 
         self.preferencesFramesettings.add(self.preferencesVBoxitems)
         self.preferencesVBox.pack_start(self.preferencesFramesettings, False, False, 0)
-        self.preferencesVBox.pack_start(self.preferencesHBox7, False, False, 4)
+        self.preferencesVBox.pack_start(self.preferencesHBox10, False, False, 4)
 
         self.window.add(self.vbox)
         self.window.show_all()
@@ -643,8 +691,11 @@ class Gui:
                 'scalepercent': scale[0]},
 
             'server': 
-                {'port': self.preferencesSpinport.get_value_as_int(),
-                'notify': notifyvalue}
+                {'username': self.preferencesEntryuser.get_text(),
+                'authentication': self.preferencesCheckauth.get_active(),
+                'notify': notifyvalue,
+                'password': self.preferencesEntrypass.get_text(),
+                'port': self.preferencesSpinport.get_value_as_int()}
             }
 
         # Set them for local use now
@@ -654,6 +705,15 @@ class Gui:
         if self.configuration['server']['port'] !=  self.preferencesSpinport.get_value_as_int():
             self.configuration['server']['port'] =  self.preferencesSpinport.get_value_as_int()
             self.restart_server()
+
+        if self.configuration['server']['authentication'] is not self.preferencesCheckauth.get_active():
+            self.configuration['server']['authentication'] = self.preferencesCheckauth.get_active()
+
+        if self.configuration['server']['username'] != self.preferencesEntryuser.get_text():
+            self.configuration['server']['username'] = self.preferencesEntryuser.get_text()
+
+        if self.configuration['server']['password'] != self.preferencesEntrypass.get_text():
+            self.configuration['server']['password'] = self.preferencesEntrypass.get_text()
 
         # Check if the configuration changed
         if (self.configurationdict != self.currentconfiguration):
@@ -680,7 +740,7 @@ class Gui:
                 however, it has to be show()ned before. For our little hack, we show the preferencesVBox widgets
                 but not itself, which should yield a close enough calculation."""
                 self.preferencesFramesettings.show_all()
-                self.preferencesHBox7.show_all()
+                self.preferencesHBox10.show_all()
 
                 """If the logger is expanded, use that as the initial size. 
                 _expander_size is set by our GtkWindow resize callback
@@ -840,7 +900,7 @@ class Gui:
         @param widget: gtk.Widget.
         """
 
-        if self.menuitemnotifications.get_active():
+        if self.checkwidget(self.menuitemnotifications):
             self.configuration['server']['notify'] = True
         else:
             self.configuration['server']['notify'] = False
@@ -943,7 +1003,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.logeventstreeview.set_sensitive(False)
         self.logdetailstextview.set_sensitive(False)
 
-        log.removeObserver(self.log.twisted_observer)
+        self.server.remove_log_observer()
         self.logpaused = True
 
     def unpause_log(self, foreign=False):
@@ -954,7 +1014,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param foreign: Whether the caller of this method is not the Gui gtk.ToggleButton.
         """
 
-        log.addObserver(self.log.twisted_observer)
+        self.server.add_log_observer(self.log.twisted_observer)
         if (foreign):
             self.logpausebutton.set_active(False)
         self.logdetailstextview.set_sensitive(True)
@@ -982,9 +1042,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Server reactor (interacts with the Twisted reactor)	
         self.sreact = reactor.run()
 
-    def preferencesComboChanged(self, widget):
+    def _preferences_combo_changed(self, widget):
         """
-        Preferenes gtk.ComboBox changed callback.
+        Callback for preferenes gtk.ComboBox widget
 
         @type widget: instance
         @param widget: gtk.Widget.
@@ -994,6 +1054,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.preferencesHBox3.set_sensitive(False)
         else:
             self.preferencesHBox3.set_sensitive(True)
+
+    def _preferences_authentication_toggled(self, widget):
+        """
+        Callback for preferences gtk.CheckButton widget.
+
+        @type widget: instance
+        @param widget: gtk.Widget.
+        """
+
+        if self.checkwidget(widget):
+            self.preferencesEntryuser.set_sensitive(True)
+            self.preferencesEntrypass.set_sensitive(True)
+        else:
+            self.preferencesEntryuser.set_sensitive(False)
+            self.preferencesEntrypass.set_sensitive(False)
+
 
     def checkwidget(self, widget):
         """
@@ -1043,10 +1119,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         self.server.add_log_observer(self.log.twisted_observer)
 
-        if self.configuration['screenshot']['format'] == "jpeg":
-            self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images with %d%% quality.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', 'STOCK_CONNECT'])
+        if self.configuration['server']['authentication']:
+            serverstock = 'STOCK_DIALOG_AUTHENTICATION'
+            serverstring = 'Secure server'
         else:
-            self.log.detailed_message('Server started on port %d' % (self.configuration['server']['port']), 'Server started on port %s TCP. Serving %s images.' % (self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', 'STOCK_CONNECT'])
+            serverstock = 'STOCK_CONNECT'
+            serverstring = 'Server'
+
+        if self.configuration['screenshot']['format'] == "jpeg":
+            self.log.detailed_message('%s started on port %d' % (serverstring, self.configuration['server']['port']), '%s started on port %s TCP. Serving %s images with %d%% quality' % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', serverstock])
+        else:
+            self.log.detailed_message('%s started on port %d' % (serverstring, self.configuration['server']['port']), '%s started on port %s TCP. Serving %s images' % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', serverstock])
 
         # Change buttons
         if foreign:

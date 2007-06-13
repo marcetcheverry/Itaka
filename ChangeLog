@@ -1,6 +1,7 @@
 0.2 (I've been watching you...):
  * Rewrote the screenshot module completely to support active window
  screenshots and scaling. #3 #10 
+ * Added Basic HTTP Authentication.
  * Notifications now show up in reference to the status icon.
  * Added option (-debug) to show all console output #5
  * Add options to report errors in the system tray (blinking true). #7
@@ -26,6 +27,11 @@
  * Updated GUI on Windows not to show widgets for features that are not
  available (libnotify, screenshot active window)
 
+ * Detailed log non-twisted messages are now bold.
+
+ * Updated documentation and added new references.
+
+ * Fixed minor UI quirks.
  * Fixed a syntax bug in uigtk.py when GTK version is < 2.10
  * Fixed bug when saving preferences in the GUI reverted to /tmp by default
 
