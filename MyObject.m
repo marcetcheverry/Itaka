@@ -1,6 +1,7 @@
 #import "MyObject.h"
 #import "HTTPServer.h"
 
+int port2=0;
 HTTPServer *server2;
 
 @implementation MyObject
@@ -19,6 +20,7 @@ HTTPServer *server2;
 		[sender setImage: image]; // didnt alloc dont need to realaese
 		[sender setTitle:@"Start"];
 		[server2 stop]; //stops the server
+		port2=0;
 	}
 	
 }
@@ -42,11 +44,11 @@ HTTPServer *server2;
 	server2 = server; //copy the pointer of server to the variable server2 to be able to use it when topping the server
 	
 	
-	int port2 = [[portButton title] intValue];
+//	port2 = [[portButton title] intValue];
 
-	NSLog(port2);
+//	NSLog(port2);
 	
-	[server setPort:port2]; // sets server port. Need to connect it with preferences
+	[server setPort:[[portButton title] intValue]]; // sets server port. Need to connect it with preferences
 	
 	
 
