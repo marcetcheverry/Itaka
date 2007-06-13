@@ -1,7 +1,7 @@
 #import "MyObject.h"
 #import "HTTPServer.h"
 
-HTTPServer *server2;
+HTTPServer *server2; //check this method of passing server pointer
 
 @implementation MyObject
 
