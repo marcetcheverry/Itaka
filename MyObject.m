@@ -63,6 +63,9 @@ HTTPServer *server2; //check this method of passing server pointer
 - (void)HTTPConnection:(HTTPConnection *)conn didSendResponse:(HTTPServerRequest *)mess {
 	NSLog (@"new response");
 	system("screencapture /Users/nahuel/screenshot/image.jpg");
+	
+	// need to add screenshot image changing
+	//connect in IB
 }
 
 
