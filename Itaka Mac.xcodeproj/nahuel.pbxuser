@@ -170,6 +170,8 @@
 			4DED32A20C1FFE83005DEEF2 /* PBXTextBookmark */ = 4DED32A20C1FFE83005DEEF2 /* PBXTextBookmark */;
 			4DED32A50C1FFE9B005DEEF2 /* PBXTextBookmark */ = 4DED32A50C1FFE9B005DEEF2 /* PBXTextBookmark */;
 			4DED32A60C1FFE9B005DEEF2 /* PBXTextBookmark */ = 4DED32A60C1FFE9B005DEEF2 /* PBXTextBookmark */;
+			4DED32A90C1FFEBA005DEEF2 /* PBXTextBookmark */ = 4DED32A90C1FFEBA005DEEF2 /* PBXTextBookmark */;
+			4DED32AA0C1FFEBA005DEEF2 /* PBXTextBookmark */ = 4DED32AA0C1FFEBA005DEEF2 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 4D089BFE0C110B3700795202 /* Source Control */;
 		userBuildSettings = {
@@ -732,6 +734,26 @@
 		vrLen = 418;
 		vrLoc = 0;
 	};
+	4DED32A90C1FFEBA005DEEF2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = BB0EA5890B04993A00A7414B /* MyObject.m */;
+		name = "MyObject.m: 66";
+		rLen = 0;
+		rLoc = 1687;
+		rType = 0;
+		vrLen = 899;
+		vrLoc = 1078;
+	};
+	4DED32AA0C1FFEBA005DEEF2 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = BB0EA5880B04993A00A7414B /* MyObject.h */;
+		name = "MyObject.h: 18";
+		rLen = 0;
+		rLoc = 418;
+		rType = 0;
+		vrLen = 418;
+		vrLoc = 0;
+	};
 	8D1107260486CEB800E47090 /* Itaka Mac */ = {
 		activeExec = 0;
 		executables = (
@@ -757,8 +779,8 @@
 	BB0EA5890B04993A00A7414B /* MyObject.m */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1033, 1120}}";
-			sepNavSelRange = "{44, 0}";
-			sepNavVisRect = "{{0, 0}, {1033, 400}}";
+			sepNavSelRange = "{1687, 0}";
+			sepNavVisRect = "{{0, 603}, {1033, 400}}";
 			sepNavWindowFrame = "{{38, 194}, {750, 558}}";
 		};
 	};
