@@ -204,10 +204,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>4DED32BA0C1FFF7B005DEEF2</string>
+						<string>4D48931F0C20206B00C1C06B</string>
 						<key>history</key>
 						<array>
-							<string>4D9B100C0C1FFB1D001AF8D1</string>
+							<string>4DED32BC0C200035005DEEF2</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -356,7 +356,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>4DED32B90C1FFF7B005DEEF2</string>
+										<string>4D48931C0C20206B00C1C06B</string>
 										<key>history</key>
 										<array>
 											<string>4D5CE1290C171113006A8214</string>
@@ -369,8 +369,8 @@
 											<string>4DC52B970C1F3EFA007BB8F4</string>
 											<string>4DC52B980C1F3EFA007BB8F4</string>
 											<string>4DC52BEB0C1FF6C7007BB8F4</string>
-											<string>4D193BD20C1FF92100C8E8C2</string>
-											<string>4D9B100B0C1FFB1D001AF8D1</string>
+											<string>4D4893180C20206B00C1C06B</string>
+											<string>4D4893190C20206B00C1C06B</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -386,6 +386,8 @@
 											<string>4D667C1E0C1DA87A0098F57E</string>
 											<string>4D667C210C1DA87A0098F57E</string>
 											<string>4DC52BED0C1FF6C7007BB8F4</string>
+											<string>4D48931A0C20206B00C1C06B</string>
+											<string>4D48931B0C20206B00C1C06B</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -443,9 +445,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>4DED32820C1FFB8E005DEEF2</string>
+				<string>4D48931D0C20206B00C1C06B</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>4DED32830C1FFB8E005DEEF2</string>
+				<string>4D48931E0C20206B00C1C06B</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -579,12 +581,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>4DED32900C1FFCE4005DEEF2</string>
-		<string>4DED32910C1FFCE4005DEEF2</string>
-		<string>4DC1A7040C1C90FD007BAEB2</string>
-		<string>4D089BFC0C110B3700795202</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>4DED327B0C1FFB6E005DEEF2</string>
 		<string>4DC1A77F0C1CAC65007BAEB2</string>
 		<string>1C0AD2B3069F1EA900FABCE6</string>
 		<string>/Users/nahuel/Desktop/Itaka/Itaka Mac.xcodeproj</string>
@@ -1037,9 +1033,9 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C0AD2B3069F1EA900FABCE6</string>
-				<string>4DED327C0C1FFB6E005DEEF2</string>
+				<string>4D4893200C20206B00C1C06B</string>
 				<string>1CD0528B0623707200166675</string>
-				<string>4DED327D0C1FFB6E005DEEF2</string>
+				<string>4D4893210C20206B00C1C06B</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.run</string>

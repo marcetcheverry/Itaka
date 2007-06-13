@@ -7,7 +7,12 @@
             ACTIONS = {startServer = id; stopServer = id; }; 
             CLASS = MyObject; 
             LANGUAGE = ObjC; 
-            OUTLETS = {portButton = NFHUDPopUpButton; startButton = NSButton; window = NFIWindow; }; 
+            OUTLETS = {
+                portButton = NFHUDPopUpButton; 
+                screenButton = NFHUDPopUpButton; 
+                startButton = NSButton; 
+                window = NFIWindow; 
+            }; 
             SUPERCLASS = NSObject; 
         }, 
         {CLASS = NFHUDButton; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 

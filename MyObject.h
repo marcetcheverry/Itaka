@@ -6,7 +6,8 @@
 
 @interface MyObject : NSObject
 {
-    IBOutlet NFHUDPopUpButton *portButton;
+    IBOutlet NFHUDPopUpButton *portButton; //contains the port to be used in the preferences pane
+	IBOutlet NFHUDPopUpButton *screenButton; // preferences of full screen, window, etc
     IBOutlet NSButton *startButton;
     IBOutlet NSTextField *textField;
     IBOutlet NFIWindow *window;
