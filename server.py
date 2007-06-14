@@ -187,12 +187,10 @@ class ScreenshotServer(BaseHTTPServer):
 
         self.server_listening = False
 
-        # Set up the twisted site
-        # Here we use our own static.Data child resource because we need Authentication handling.
-        # self.rootresource = self.add_static_resource('root', self.configuration['html']['html'])
+        # Here we use our own static.Data special child resource because we need Authentication handling.
+        # Otherwise we would just use our own self.add_static_resource.
         self.root = RootResource(self.gui, self.configuration['html']['html'])
         self.add_child_to_resource('root', '', self.root)
-        # Pass a reference of GUI and Console instance to Screenshot module for its notification handling.
         self.add_child_to_resource('root', 'screenshot', ImageResource(self.gui))
         self.create_site(self.root)
 
@@ -222,11 +220,12 @@ class RootResource(static.Data):
         self.console = self.gui.console
         self.itakaglobals = self.gui.itakaglobals
 
-        # Inherited from the actual code of Twisted
+        # Inherited from the actual code of Twisted's static.Data
         self.children = {}
         self.data = data
         self.type = type
-        #: No authentication provided string
+
+        #: No authentication provided default string
         self.noauth = 'Sorry, but you cannot access this resource without authorization.'
 
     def _promptAuth(self):
@@ -279,7 +278,7 @@ class RootResource(static.Data):
             self.request.setHeader('Content-Length', str(len(self.data)))
             return self.data
 
-        # No auth given, warn the user
+        # No auth given
         return self.noauth
 
 class ImageResource(Resource):
@@ -335,7 +334,6 @@ class ImageResource(Resource):
 
             if self.configuration['server']['notify'] and self.itakaglobals.notifyavailable:
                 import pynotify
-
                 uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
                 n = pynotify.Notification("Screenshot taken", 
