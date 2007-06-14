@@ -28,18 +28,18 @@ try:
     import screenshot
     import error
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka screenshot module"
+    print "[*] ERROR: Failed to import Itaka modules"
     traceback.print_exc()
     sys.exit(1)
 
 try:
     from twisted.python import log
-    from twisted.web import server, static, http
-    from twisted.internet import reactor
+    from twisted.web import server, static, http, resource
+    from twisted.internet import reactor, error
     import twisted.internet.error
-    from twisted.web.resource import Resource
 except ImportError:
     print "[*] ERROR: Could not import Twisted Network Framework"
+    traceback.print_exc()
     sys.exit(1)
 
 class BaseHTTPServer:
@@ -191,7 +191,7 @@ class ScreenshotServer(BaseHTTPServer):
         # Otherwise we would just use our own self.add_static_resource.
         self.root = RootResource(self.gui, self.configuration['html']['html'])
         self.add_child_to_resource('root', '', self.root)
-        self.add_child_to_resource('root', 'screenshot', ImageResource(self.gui))
+        self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui))
         self.create_site(self.root)
 
 class RootResource(static.Data):
@@ -281,7 +281,7 @@ class RootResource(static.Data):
         # No auth given
         return self.noauth
 
-class ImageResource(Resource):
+class ScreenshotResource(resource.Resource):
     """ 
     Handle server requests and call for a screenshot.
     """
