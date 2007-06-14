@@ -42,11 +42,19 @@ HTTPServer *server2; //check this method of passing server pointer
 	
 	server2 = server; //copy the pointer of server to the variable server2 to be able to use it when topping the server
 	
-	
-	
-	[server setPort:[[portButton title] intValue]]; // sets server port. Gets title from prefernces port NSPopupBUtton and makes it into an integer.
 	NSLog(@"ScreenButtons Title is %@", [screenButton title]);
 	
+	NSLog(@"tag is%d", [[screenButton selectedItem] tag]);
+
+	if ([[screenButton selectedItem] tag] == 2) {
+		NSLog (@"IT IS FULL SCREEN");
+	}
+	
+	if([screenButton title] == @"Window") {
+		NSLog(@"window mode");
+	}
+	
+	[server setPort:[[portButton title] intValue]]; // sets server port. Gets title from prefernces port NSPopupBUtton and makes it into an integer.	
 	
 	[server setDelegate:self]; // sets an instant of  Myobject as the delegate of httpserver
 	
@@ -63,6 +71,8 @@ HTTPServer *server2; //check this method of passing server pointer
 
 - (void)HTTPConnection:(HTTPConnection *)conn didSendResponse:(HTTPServerRequest *)mess {
 	NSLog (@"new response");
+	
+	
 	system("screencapture /Users/nahuel/screenshot/image.jpg");
 	
 	// need to add screenshot image changing

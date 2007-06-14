@@ -204,10 +204,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>4DE60D020C205848002FC45A</string>
+						<string>4D6671FD0C220317004B1C4C</string>
 						<key>history</key>
 						<array>
-							<string>4D48933C0C2022F400C1C06B</string>
+							<string>4DE60D4D0C20A44C002FC45A</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -356,7 +356,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>4DE60D010C205848002FC45A</string>
+										<string>4D6671FC0C220317004B1C4C</string>
 										<key>history</key>
 										<array>
 											<string>4D5CE1290C171113006A8214</string>
@@ -371,7 +371,7 @@
 											<string>4DC52BEB0C1FF6C7007BB8F4</string>
 											<string>4D4893180C20206B00C1C06B</string>
 											<string>4D4893270C2022EB00C1C06B</string>
-											<string>4D48933B0C2022F400C1C06B</string>
+											<string>4DE60D4C0C20A44C002FC45A</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -445,9 +445,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>4DE60CF50C202318002FC45A</string>
+				<string>4D6671A70C21F8B7004B1C4C</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>4DE60CF60C202318002FC45A</string>
+				<string>4D6671A80C21F8B7004B1C4C</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -581,12 +581,15 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>4D089BFC0C110B3700795202</string>
+		<string>4D6671E00C21FA5A004B1C4C</string>
+		<string>4D6671E10C21FA5A004B1C4C</string>
+		<string>4DC1A7040C1C90FD007BAEB2</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>4DE60CF10C2022FD002FC45A</string>
+		<string>4D6671DC0C21FA59004B1C4C</string>
+		<string>4D089BFC0C110B3700795202</string>
 		<string>4DC1A77F0C1CAC65007BAEB2</string>
-		<string>/Users/nahuel/Desktop/Itaka/Itaka Mac.xcodeproj</string>
 		<string>1C0AD2B3069F1EA900FABCE6</string>
+		<string>/Users/nahuel/Desktop/Itaka/Itaka Mac.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>2 60 1282 718 0 0 1280 778 </string>
@@ -666,7 +669,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>4D089BFC0C110B3700795202</string>
-				<string>4DE60D030C205848002FC45A</string>
+				<string>4D6671D40C21FA3F004B1C4C</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -708,8 +711,8 @@
 										<string>yes</string>
 										<key>sizes</key>
 										<array>
-											<string>{{0, 0}, {308, 200}}</string>
-											<string>{{308, 0}, {386, 200}}</string>
+											<string>{{0, 0}, {306, 200}}</string>
+											<string>{{306, 0}, {388, 200}}</string>
 										</array>
 									</dict>
 									<key>VerticalSplitView</key>
@@ -749,7 +752,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {694, 381}}</string>
 								<key>RubberWindowFrame</key>
-								<string>31 322 694 422 0 0 1280 778 </string>
+								<string>32 321 694 422 0 0 1280 778 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugSessionModule</string>
@@ -772,19 +775,19 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>4DE60CEB0C2022FD002FC45A</string>
+				<string>4D6671D60C21FA59004B1C4C</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>4DE60CEC0C2022FD002FC45A</string>
-				<string>4DE60CED0C2022FD002FC45A</string>
-				<string>4DE60CEE0C2022FD002FC45A</string>
-				<string>4DE60CEF0C2022FD002FC45A</string>
-				<string>4DE60CF00C2022FD002FC45A</string>
-				<string>4DE60CF10C2022FD002FC45A</string>
+				<string>4D6671D70C21FA59004B1C4C</string>
+				<string>4D6671D80C21FA59004B1C4C</string>
+				<string>4D6671D90C21FA59004B1C4C</string>
+				<string>4D6671DA0C21FA59004B1C4C</string>
+				<string>4D6671DB0C21FA59004B1C4C</string>
+				<string>4D6671DC0C21FA59004B1C4C</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debug</string>
 			<key>WindowString</key>
-			<string>31 322 694 422 0 0 1280 778 </string>
+			<string>32 321 694 422 0 0 1280 778 </string>
 			<key>WindowToolGUID</key>
 			<string>1CD10A99069EF8BA00B06720</string>
 			<key>WindowToolIsVisible</key>
@@ -941,7 +944,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>4DC1A7040C1C90FD007BAEB2</string>
-				<string>4D4893370C2022F200C1C06B</string>
+				<string>4D6671DD0C21FA59004B1C4C</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>WindowString</key>
@@ -1036,9 +1039,9 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C0AD2B3069F1EA900FABCE6</string>
-				<string>4DE60CF20C2022FD002FC45A</string>
+				<string>4D6671AA0C21F8B7004B1C4C</string>
 				<string>1CD0528B0623707200166675</string>
-				<string>4DE60CF30C2022FD002FC45A</string>
+				<string>4D6671AB0C21F8B7004B1C4C</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.run</string>
