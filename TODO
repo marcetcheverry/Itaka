@@ -1,9 +1,6 @@
-Please see the roadmap at: http://www.jardinpresente.com.ar/trac/itaka/roadmap
+For long term goals, please see the roadmap at: http://www.jardinpresente.com.ar/trac/itaka/roadmap
 
-Milestone 0.2:
- * GUI:
-  * Update configuration keys on a per-key basis not on a all-or-nothing dict differential #9
-
- * Other:
-  * Make Windows binaries #6
+0.2 Release:
+    Fix minor UI quirks when preferences expands.
+    Add support for clicking event log and switching todetails.
 
