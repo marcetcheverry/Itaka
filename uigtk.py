@@ -532,7 +532,12 @@ class Gui:
 
         self.preferencesEntrypass = gtk.Entry()
         self.preferencesEntrypass.set_width_chars(11)
-        self.preferencesEntrypass.set_invisible_char(u'\u25cf')
+        if self.itakaglobals.system == 'nt':
+            char = '*'
+        else:
+            char = u'\u25cf'
+
+        self.preferencesEntrypass.set_invisible_char(char)
         self.preferencesEntrypass.set_visibility(False)
         self.preferencesEntrypass.set_text(self.configuration['server']['password'])
 
