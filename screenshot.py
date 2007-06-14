@@ -67,7 +67,7 @@ class Screenshot:
         @return: (int) window width, (int) window heigth, (int) window position x, (int) window position y.
         """
 
-        if self.self.rootscreen.supports_net_wm_hint("_NET_ACTIVE_WINDOW") and self.rootscreen.supports_net_wm_hint("_NET_WM_WINDOW_TYPE"):
+        if self.rootscreen.supports_net_wm_hint("_NET_ACTIVE_WINDOW") and self.rootscreen.supports_net_wm_hint("_NET_WM_WINDOW_TYPE"):
             self.activewindow = self.rootscreen.get_active_window()
 
             # Calculate the size of the window including window manager decorations

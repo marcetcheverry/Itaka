@@ -310,7 +310,10 @@ class Gui:
         # Create our tray icon
         self.statusIcon = gtk.StatusIcon()
         self.statusmenu = gtk.Menu()
-        self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
+        if self.configuration['server']['authentication']:
+            self.statusIcon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png")))
+        else:
+            self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
         self.statusIcon.set_tooltip("Itaka")
         self.statusIcon.set_visible(True)
         self.statusIcon.connect('activate', self.statusicon_activate)
@@ -1070,10 +1073,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.preferencesEntryuser.set_sensitive(True)
             self.preferencesEntrypass.set_sensitive(True)
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png"))
+            self.statusIcon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png")))
         else:
             self.preferencesEntryuser.set_sensitive(False)
             self.preferencesEntrypass.set_sensitive(False)
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+            self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
 
 
     def checkwidget(self, widget):
@@ -1182,7 +1187,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.labelLastip.set_text('')
             self.labelTime.set_text('')
             self.labelServed.set_text('')
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
             self.menuitemstart.set_sensitive(True)
             self.menuitemstop.set_sensitive(False)
 
