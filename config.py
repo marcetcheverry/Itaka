@@ -190,6 +190,7 @@ class ConfigParser:
                             if not output['quiet'] and not brokenwarning: print "[*] WARNING: Detected old or broken configuration file. Fixing"
                             self.update(section, key, val)
                             values[section][key] = val
+                            brokenwarning = True
         return values
 
     def save(self, valuesdict):
