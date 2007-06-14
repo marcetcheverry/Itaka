@@ -10,6 +10,7 @@
  * Rewrote the UI log pausing code.
  * Better handling of Twisted errors in logging
  * Fixed the pausing/unpausing of the logger.
+ * Automatically scroll to the last event.
 
  * Completely separated and encapsulated the Twisted Server code.
   

@@ -227,7 +227,7 @@ class GuiLog:
         @param message: Message to be inserted.
 
         @type icon: tuple
-        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix) if its stock, or a pixbuf.
 
         @type failure: bool
         @param failure: Whether the message is a failure or not.
@@ -241,9 +241,12 @@ class GuiLog:
                     self.selection = self.gui.logeventstreeview.get_selection()
                     self.selection.select_iter(self.inserted_iter)
             else:
-                self.gui.logeventsstore.append([icon[1], message])
+                self.inserted_iter = self.gui.logeventsstore.append([icon[1], message])
         else:
-            self.gui.logeventsstore.append([icon, message])
+            self.inserted_iter = self.gui.logeventsstore.append([icon, message])
+
+        # Scroll
+        self.gui.logeventstreeview.scroll_to_cell(self.gui.logeventstreeview.get_model().get_path(self.inserted_iter))
 
     def _write_detailed_log(self, message, bold=True):
         """
