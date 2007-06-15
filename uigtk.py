@@ -299,11 +299,11 @@ class Gui:
         self.logpaused = False
 
         # Start defining widgets
-        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka.png'))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.connect("destroy", self.destroy)
-        self.window.connect("size-allocate", self.windowsizechanged)
-        self.window.set_title("Itaka")
+        self.window.connect('destroy', self.destroy)
+        self.window.connect('size-allocate', self.windowsizechanged)
+        self.window.set_title('Itaka')
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
         self.window.set_default_size(370, 1)
@@ -314,10 +314,10 @@ class Gui:
         self.statusIcon = gtk.StatusIcon()
         self.statusmenu = gtk.Menu()
         if self.configuration['server']['authentication']:
-            self.statusIcon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png")))
+            self.statusIcon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure.png')))
         else:
             self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
-        self.statusIcon.set_tooltip("Itaka")
+        self.statusIcon.set_tooltip('Itaka')
         self.statusIcon.set_visible(True)
         self.statusIcon.connect('activate', self.statusicon_activate)
         self.statusIcon.connect('popup-menu', self.statusicon_menu, self.statusmenu)
@@ -327,16 +327,16 @@ class Gui:
 
         self.stopimage = gtk.Image()
         self.stopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
-        self.menuitemstart = gtk.ImageMenuItem("Start") 
+        self.menuitemstart = gtk.ImageMenuItem('Start') 
         self.menuitemstart.set_image(self.startimage)
         self.menuitemstart.connect('activate', self.start_server, True)
-        self.menuitemstop = gtk.ImageMenuItem("Stop") 
+        self.menuitemstop = gtk.ImageMenuItem('Stop') 
         self.menuitemstop.set_image(self.stopimage)
         self.menuitemstop.connect('activate', self.stop_server, True)
         self.menuitemstop.set_sensitive(False)
 
         if self.itakaglobals.notifyavailable: 
-            self.menuitemnotifications = gtk.CheckMenuItem("Show Notifications")
+            self.menuitemnotifications = gtk.CheckMenuItem('Show Notifications')
             if self.configuration['server']['notify']:
                 self.menuitemnotifications.set_active(True)
             self.menuitemnotifications.connect('toggled', self.statusicon_notify)
@@ -359,22 +359,22 @@ class Gui:
 
         self.itakaLogo = gtk.Image()
         if self.configuration['server']['authentication']:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png"))
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure.png'))
         else:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka.png'))
         self.itakaLogo.show()
 
         self.box.pack_start(self.itakaLogo, False, False, 35)
 
-        self.buttonStartstop = gtk.ToggleButton("Start", gtk.STOCK_PREFERENCES)
+        self.buttonStartstop = gtk.ToggleButton('Start', gtk.STOCK_PREFERENCES)
         self.startstopimage = gtk.Image()
 
         self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
         self.buttonStartstop.set_image(self.startstopimage)
-        self.buttonStartstop.connect("toggled", self.button_start_server)
+        self.buttonStartstop.connect('toggled', self.button_start_server)
 
-        self.preferencesButton = gtk.Button("Preferences", gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect("clicked", self.expandpreferences)
+        self.preferencesButton = gtk.Button('Preferences', gtk.STOCK_PREFERENCES)
+        self.preferencesButton.connect('clicked', self.expandpreferences)
 
         # Set up some variables for our timeouts/animations
         self.preferenceshidden = False
@@ -402,8 +402,8 @@ class Gui:
         self.lognotebook = gtk.Notebook()
         self.lognotebook.set_tab_pos(gtk.POS_BOTTOM)
 
-        self.logeventslabel = gtk.Label("Events")
-        self.logdetailslabel = gtk.Label("Details")
+        self.logeventslabel = gtk.Label('Events')
+        self.logdetailslabel = gtk.Label('Details')
 
         self.logeventsscroll = gtk.ScrolledWindow()
         self.logeventsscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -411,8 +411,8 @@ class Gui:
 
         self.logeventsstore = gtk.ListStore(gtk.gdk.Pixbuf, str)
         self.logeventstreeview = gtk.TreeView(self.logeventsstore)
-        self.logeventstreeview.set_property("headers-visible", False)
-        self.logeventstreeview.set_property("rules-hint", True)
+        self.logeventstreeview.set_property('headers-visible', False)
+        self.logeventstreeview.set_property('rules-hint', True)
 
         self.logeventscolumnicon = gtk.TreeViewColumn()
         self.logeventscolumntext = gtk.TreeViewColumn()
@@ -443,17 +443,17 @@ class Gui:
         self.lognotebook.append_page(self.logdetailsscroll, self.logdetailslabel)
 
         self.loghbox = gtk.HBox(False, 0)
-        self.logclearbutton = gtk.Button("Clear")
+        self.logclearbutton = gtk.Button('Clear')
         self.logclearbuttonimage = gtk.Image()
         self.logclearbuttonimage.set_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
         self.logclearbutton.set_image(self.logclearbuttonimage)
-        self.logclearbutton.connect("clicked", self.clearlogger)
+        self.logclearbutton.connect('clicked', self.clearlogger)
 
-        self.logpausebutton = gtk.ToggleButton("Pause")
+        self.logpausebutton = gtk.ToggleButton('Pause')
         self.logpausebuttonimage = gtk.Image()
         self.logpausebuttonimage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
         self.logpausebutton.set_image(self.logpausebuttonimage)
-        self.logpausebutton.connect("toggled", self.button_pause_log)
+        self.logpausebutton.connect('toggled', self.button_pause_log)
 
         self.loghbox.pack_end(self.logclearbutton, False, False, 4)
         self.loghbox.pack_end(self.logpausebutton, False, False, 4)
@@ -461,7 +461,7 @@ class Gui:
         self.logvbox.pack_start(self.lognotebook, False, False, 4)
         self.logvbox.pack_start(self.loghbox, False, False, 4)
 
-        self.logboxLabel = gtk.Label("<b>Server log</b>")
+        self.logboxLabel = gtk.Label('<b>Server log</b>')
         self.logboxLabel.set_use_markup(True)
 
         self.expander_size_finalized = False
@@ -483,45 +483,45 @@ class Gui:
             setattr(self, 'preferencesHBox%d' % (n), gtk.HBox(False, 0))
 
         self.preferencesFramesettings = gtk.Frame()
-        self.preferencesSettingslabel = gtk.Label("<b>Preferences</b>")
+        self.preferencesSettingslabel = gtk.Label('<b>Preferences</b>')
         self.preferencesSettingslabel.set_use_markup(True)
         self.preferencesFramesettings.set_label_widget(self.preferencesSettingslabel)
 
-        self.preferencesLabelport = gtk.Label("Port  ")
+        self.preferencesLabelport = gtk.Label('Port  ')
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelport.set_alignment(0, 0.60)
 
-        self.preferencesLabelauth = gtk.Label("Authentication   ")
+        self.preferencesLabelauth = gtk.Label('Authentication   ')
         self.preferencesLabelauth.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelauth.set_alignment(0, 0.60)
 
-        self.preferencesLabeluser = gtk.Label("Username ")
+        self.preferencesLabeluser = gtk.Label('Username ')
         self.preferencesLabeluser.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabeluser.set_alignment(0, 0.60)
 
-        self.preferencesLabelpass = gtk.Label("Password  ")
+        self.preferencesLabelpass = gtk.Label('Password  ')
         self.preferencesLabelpass.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelpass.set_alignment(0, 0.60)
 
-        self.preferencesLabelformat = gtk.Label("Format  ")
+        self.preferencesLabelformat = gtk.Label('Format  ')
         self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelformat.set_alignment(0, 0.50)
 
-        self.preferencesLabelquality = gtk.Label("Quality  ")
+        self.preferencesLabelquality = gtk.Label('Quality  ')
         self.preferencesLabelquality.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelquality.set_alignment(0, 0.50)
 
-        self.preferencesLabelscale = gtk.Label("Scale  ")
+        self.preferencesLabelscale = gtk.Label('Scale  ')
         self.preferencesLabelscale.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelscale.set_alignment(0, 0.50)
 
         if not self.itakaglobals.system == 'nt':
-            self.preferencesLabelactive = gtk.Label("Active window  ")
-            self.preferencesLabelactive.set_justify(gtk.JUSTIFY_LEFT)
-            self.preferencesLabelactive.set_alignment(0, 0.50)
+            self.preferencesLabelscreenshot = gtk.Label('Screenshot window  ')
+            self.preferencesLabelscreenshot.set_justify(gtk.JUSTIFY_LEFT)
+            self.preferencesLabelscreenshot.set_alignment(0, 0.50)
 
         if self.itakaglobals.notifyavailable: 
-            self.preferencesLabelnotifications = gtk.Label("Notifications  ")
+            self.preferencesLabelnotifications = gtk.Label('Notifications  ')
             self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
             self.preferencesLabelnotifications.set_alignment(0, 0.50)
 
@@ -565,9 +565,9 @@ class Gui:
 
         self.preferencesComboformat = gtk.combo_box_new_text()
         self.preferencesComboformat.connect('changed', self._preferences_combo_changed)
-        self.preferencesComboformat.append_text("JPG")
-        self.preferencesComboformat.append_text("PNG")
-        if (self.configuration['screenshot']['format'] == "jpeg"):
+        self.preferencesComboformat.append_text('JPG')
+        self.preferencesComboformat.append_text('PNG')
+        if self.configuration['screenshot']['format'] == 'jpeg':
             self.preferencesComboformat.set_active(0)
         else: 
             self.preferencesComboformat.set_active(1)
@@ -581,17 +581,19 @@ class Gui:
                 self.preferencesChecknotifications.set_active(0)
 
         if not self.itakaglobals.system == 'nt':
-            self.preferencesCheckactive = gtk.CheckButton()
+            self.preferencesComboscreenshot = gtk.combo_box_new_text()
+            self.preferencesComboscreenshot.append_text('Fullscreen')
+            self.preferencesComboscreenshot.append_text('Active window')
             if self.configuration['screenshot']['currentwindow']:
-                self.preferencesCheckactive.set_active(1)
+                self.preferencesComboscreenshot.set_active(1)
             else: 
-                self.preferencesCheckactive.set_active(0)
+                self.preferencesComboscreenshot.set_active(0)
 
-        self.preferencesButtonClose = gtk.Button("Close", gtk.STOCK_CLOSE)
-        self.preferencesButtonClose.connect("clicked", lambda wid: self.contractpreferences())
+        self.preferencesButtonClose = gtk.Button('Close', gtk.STOCK_CLOSE)
+        self.preferencesButtonClose.connect('clicked', lambda wid: self.contractpreferences())
         
-        self.preferencesButtonAbout = gtk.Button("About", gtk.STOCK_ABOUT)
-        self.preferencesButtonAbout.connect("clicked", lambda wid: self.about())
+        self.preferencesButtonAbout = gtk.Button('About', gtk.STOCK_ABOUT)
+        self.preferencesButtonAbout.connect('clicked', lambda wid: self.about())
 
         self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
         self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
@@ -606,8 +608,8 @@ class Gui:
         self.preferencesHBox6.pack_start(self.preferencesLabelquality, False, False, 12)
         self.preferencesHBox6.pack_end(self.preferencesSpinquality, False, False, 7)
         if not self.itakaglobals.system == 'nt':
-            self.preferencesHBox7.pack_start(self.preferencesLabelactive, False, False, 12)
-            self.preferencesHBox7.pack_end(self.preferencesCheckactive, False, False, 7)
+            self.preferencesHBox7.pack_start(self.preferencesLabelscreenshot, False, False, 12)
+            self.preferencesHBox7.pack_end(self.preferencesComboscreenshot, False, False, 7)
         self.preferencesHBox8.pack_start(self.preferencesLabelscale, False, False, 12)
         self.preferencesHBox8.pack_end(self.preferencesSpinscale, False, False, 7)
         if self.itakaglobals.notifyavailable: 
@@ -647,11 +649,11 @@ class Gui:
 
         # Switch to the proper values
         formatvalue = str(self.preferencesComboformat.get_active_text())
-        if formatvalue == "PNG":
-            formatvalue = "png"
+        if formatvalue == 'PNG':
+            formatvalue = 'png'
             self.configuration['screenshot']['format'] = 'png'
         else:
-            formatvalue = "jpeg"
+            formatvalue = 'jpeg'
             self.configuration['screenshot']['format'] = 'jpeg'
 
         if self.itakaglobals.notifyavailable:
@@ -668,15 +670,15 @@ class Gui:
             notifyvalue = False
             self.configuration['server']['notify'] = False
 
-        if not self.itakaglobals.system == "nt":
-            if self.preferencesCheckactive.get_active():
+        if not self.itakaglobals.system == 'nt':
+            if self.preferencesComboscreenshot.get_active_text() == 'Active window':
                 self.configuration['screenshot']['currentwindow'] = True
-                activevalue = True
+                screenshotvalue = True
             else:
                 self.configuration['screenshot']['currentwindow'] = False
-                activevalue = False
+                screenshotvalue = False
         else:
-            activevalue = False
+            screenshotvalue = False
             self.configuration['screenshot']['currentwindow'] = False
 
         scale = [self.preferencesSpinscale.get_value_as_int()]
@@ -700,7 +702,7 @@ class Gui:
                 {'path': self.configuration['screenshot']['path'],
                 'format': formatvalue,
                 'quality': self.preferencesSpinquality.get_value_as_int(),
-                'currentwindow': activevalue,
+                'currentwindow': screenshotvalue,
                 'scale': scale[1],
                 'scalepercent': scale[0]},
 
@@ -738,7 +740,7 @@ class Gui:
                 for section in self.configurationdict:
                     [self.configinstance.update(section, key, value) for key, value in self.configurationdict[section].iteritems() if key not in self.currentconfiguration[section] or self.currentconfiguration[section][key] != value]
             except:
-                self.log.failure(('Gui', 'save'), "Could not save preferences", 'ERROR')
+                self.log.failure(('Gui', 'save_preferences'), "Could not save preferences", 'ERROR')
 
     def expandpreferences(self, *args):
         """
