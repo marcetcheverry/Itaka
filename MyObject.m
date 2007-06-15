@@ -63,18 +63,20 @@ HTTPServer *server2; //check this method of passing server pointer
 	
 	NSLog(@"tag is%d", [[screenButton selectedItem] tag]);
 	
-	if ([[screenButton selectedItem] tag] == 1) 
+	if ([[screenButton selectedItem] tag] == 1) {
 		NSLog (@"WIndow mode selected");
+		system("screencapture -w /tmp/image.jpg");
+	}
 		
-	if ([[screenButton selectedItem] tag] == 2) 
+	if ([[screenButton selectedItem] tag] == 2) {
 		NSLog (@"Full screen mode");
+		system("screencapture /tmp/image.jpg");
+	}
 	
-	if ([[screenButton selectedItem] tag] == 3) 
+	if ([[screenButton selectedItem] tag] == 3) {
 		NSLog (@"Interactive mode");
-	
-	
-	system("screencapture /Users/nahuel/screenshot/image.jpg");
-	
+		system("screencapture -i /tmp/image.jpg");
+	}
 	// need to add screenshot image changing
 	//connect in IB
 }
