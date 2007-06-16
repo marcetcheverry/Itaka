@@ -14,8 +14,8 @@ HTTPServer *server2; //check this method of passing server pointer
 // notifications
 
 //need to define a test notification
-#define SERVICE_NAME @"ItakaNotify"
-
+#define SERVICE_NAME @"Itaka_Notify"
+ 
 -(NSDictionary *)registrationDictionaryForGrowl {
 	NSArray *arrayOfNotifys = [NSArray arrayWithObjects:SERVICE_NAME, nil];
 	
