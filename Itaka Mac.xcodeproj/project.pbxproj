@@ -15,6 +15,7 @@
 		4D5CE1190C171003006A8214 /* HTTPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D5CE1130C171003006A8214 /* HTTPServer.m */; };
 		4D5CE11A0C171003006A8214 /* TCPServer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4D5CE1140C171003006A8214 /* TCPServer.h */; };
 		4D5CE11B0C171003006A8214 /* TCPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D5CE1150C171003006A8214 /* TCPServer.m */; };
+		4D9AD27E0C23508B00ED76EA /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D9AD2760C23508B00ED76EA /* Growl.framework */; };
 		4DC1A6B80C1C70BB007BAEB2 /* itaka-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DC1A6B20C1C70BB007BAEB2 /* itaka-logo.png */; };
 		4DC1A6B90C1C70BB007BAEB2 /* itaka64x64-take.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DC1A6B30C1C70BB007BAEB2 /* itaka64x64-take.png */; };
 		4DC1A6BA0C1C70BB007BAEB2 /* itaka512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DC1A6B40C1C70BB007BAEB2 /* itaka512x512.png */; };
@@ -32,6 +33,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4D9AD42B0C24429100ED76EA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4DC0FB5C0C145ACB00EA7544 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -90,6 +100,7 @@
 		4D5CE1130C171003006A8214 /* HTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = HTTPServer.m; sourceTree = "<group>"; };
 		4D5CE1140C171003006A8214 /* TCPServer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TCPServer.h; sourceTree = "<group>"; };
 		4D5CE1150C171003006A8214 /* TCPServer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = TCPServer.m; sourceTree = "<group>"; };
+		4D9AD2760C23508B00ED76EA /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = ../Downloads/Frameworks/Growl.framework; sourceTree = SOURCE_ROOT; };
 		4DC0FB3B0C1458BC00EA7544 /* Itaka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Itaka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DC1A6B20C1C70BB007BAEB2 /* itaka-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "itaka-logo.png"; path = "../icons/itaka-logo.png"; sourceTree = SOURCE_ROOT; };
 		4DC1A6B30C1C70BB007BAEB2 /* itaka64x64-take.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "itaka64x64-take.png"; path = "../icons/itaka64x64-take.png"; sourceTree = SOURCE_ROOT; };
@@ -112,6 +123,7 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				4D089C590C1353B400795202 /* Foundation.framework in Frameworks */,
 				4D089C5A0C1353B500795202 /* AppKit.framework in Frameworks */,
+				4D9AD27E0C23508B00ED76EA /* Growl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +138,7 @@
 				4D5CE1100C171003006A8214 /* CocoaHTTPServer_Prefix.pch */,
 				4D5CE1110C171003006A8214 /* CocoaHTTPServer.m */,
 				4D5CE1120C171003006A8214 /* HTTPServer.h */,
+				4D9AD2760C23508B00ED76EA /* Growl.framework */,
 				4D5CE1130C171003006A8214 /* HTTPServer.m */,
 				4D5CE1140C171003006A8214 /* TCPServer.h */,
 				4D5CE1150C171003006A8214 /* TCPServer.m */,
@@ -233,6 +246,7 @@
 				4DC1A6EE0C1C8FE7007BAEB2 /* CopyFiles */,
 				4DC52B6A0C1F3D2A007BB8F4 /* CopyFiles */,
 				4DC52B710C1F3D53007BB8F4 /* Headers */,
+				4D9AD42B0C24429100ED76EA /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -320,9 +334,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/../../../../Applications/generictoolbar.1.0\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/../Downloads/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -346,9 +362,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/../../../../Applications/generictoolbar.1.0\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/../Downloads/Frameworks\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INFOPLIST_FILE = Info.plist;

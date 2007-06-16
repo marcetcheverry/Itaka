@@ -5,6 +5,25 @@ HTTPServer *server2; //check this method of passing server pointer
 
 @implementation MyObject
 
+
+-(void)awakeFromNib {
+	[GrowlApplicationBridge setGrowlDelegate:self];
+}
+
+//register the application with growl using this method. Returns a dictioanry with the possible
+// notifications
+
+//need to define a test notification
+#define SERVICE_NAME @"ItakaNotify"
+
+-(NSDictionary *)registrationDictionaryForGrowl {
+	NSArray *arrayOfNotifys = [NSArray arrayWithObjects:SERVICE_NAME, nil];
+	
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+		arrayOfNotifys, GROWL_NOTIFICATIONS_ALL,
+		arrayOfNotifys, GROWL_NOTIFICATIONS_DEFAULT, nil];
+}
+
 - (IBAction)startServer:(id)sender
 {
 	if ([sender title] != @"Stop") { 
@@ -13,6 +32,13 @@ HTTPServer *server2; //check this method of passing server pointer
 	[sender setImage: image]; // didnt alloc dont need to realaese
 	[sender setTitle:@"Stop"];
 	[self runHttpd]; //should check that
+	
+
+	
+	//[GrowlApplicationBridge description:@"Hi from growl" notificationName:@"HI"];
+		
+	
+	
 	
 	} else {
 		NSImage * image = [NSImage imageNamed:@"media-playback-start.png"];        
@@ -38,7 +64,7 @@ HTTPServer *server2; //check this method of passing server pointer
     HTTPServer *server = [[HTTPServer alloc] init];
     [server setType:@"_http._tcp."];
     [server setName:@"Itaka HTTP Server"];
-    [server setDocumentRoot:[NSURL fileURLWithPath:@"/Users/nahuel/screenshot"]];
+    [server setDocumentRoot:[NSURL fileURLWithPath:@"/tmp"]];
 	
 	server2 = server; //copy the pointer of server to the variable server2 to be able to use it when topping the server
 	
@@ -65,7 +91,7 @@ HTTPServer *server2; //check this method of passing server pointer
 	
 	if ([[screenButton selectedItem] tag] == 1) {
 		NSLog (@"WIndow mode selected");
-		system("screencapture -w /tmp/image.jpg");
+		system("screencapture -iW /tmp/image.jpg");
 	}
 		
 	if ([[screenButton selectedItem] tag] == 2) {
@@ -88,5 +114,7 @@ HTTPServer *server2; //check this method of passing server pointer
 - (void)HTTPServer:(HTTPServer *)serv didMakeNewConnection:(HTTPConnection *)conn { 
 	NSLog(@"Got new connection from server %s, conection %s",serv, conn);
 }
+
+
 
 @end
