@@ -20,7 +20,7 @@
 #
 # $Id$
 
-""" Itaka web server engine """
+""" Itaka server engine """
 
 import datetime, os, traceback, sys
 
