@@ -90,6 +90,23 @@ output = {'normal': False, 'debug': False, 'quiet': False}
 #: User's configuration values 
 values = {}
 
+#: Default HTML header.
+headhtml = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Itaka</title>
+</head>
+<body>
+<div id="main">
+'''
+
+#: Default HTML footer.
+footerhtml = '''
+</div>
+</body>
+</html>'''
+
 class ConfigParser:
     """
     Itaka configuration engine.
@@ -108,10 +125,11 @@ class ConfigParser:
             print "[*] Initializing in debug mode"
 
         #: Default configuration sections and values
-        self.defaultoptions = (
+        self.defaultoptions = ( 
                 {'server': (('port', 8000), ('authentication', True), ('username', 'user'), ('password', 'password'), ('notify', notifyavailable))},
                 {'screenshot': (('format', 'jpeg'), ('quality', 30), ('path', save_path), ('currentwindow', False), ('scale', False), ('scalepercent', 100))},
-                {'html': (('html', '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>'),)})
+                {'html': (('html', '<img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser.">'), ('authfailure', '<p><strong>Sorry, but you cannot access this resource without authorization.</strong></p>'))}
+                )
 
     def load(self):
         """

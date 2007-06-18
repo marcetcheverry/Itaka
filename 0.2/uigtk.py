@@ -697,8 +697,9 @@ class Gui:
         # save method. Redundant values must be included for the comparison
         self.configurationdict = {
             'html':
-                {'html': '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>'},
-
+                {'html': '<img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser.">',
+                'authfailure': '<p><strong>Sorry, but you cannot access this resource without authorization.</strong></p>'},
+                
             'screenshot': 
                 {'path': self.configuration['screenshot']['path'],
                 'format': formatvalue,
