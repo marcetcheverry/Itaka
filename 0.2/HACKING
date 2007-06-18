@@ -1,0 +1,72 @@
+Abstract:
+
+    Itaka was developed in a purely Object Oriented fashion. It is designed to
+    be completely modular and each component was made so that it is independent
+    of the other to a certain extent. First there is the core loader
+    'itaka.py', which in turn loads the Console and Configuration handlers
+    ('console.py' and 'configuration.py'). The configuration is read and
+    loaded, and the passed to the  new instance of our Console handler. 
+    
+    After that, the main GTK+ GUI 'uigtk.py' is loaded, it is totally
+    independent from any other modules, as are the Console and Configuration
+    handlers. The main GTK+ GUI only relies on the Twisted GUI reactor to
+    handle the multi threading for simultaneous running of a GTK loop and a
+    Twisted server reactor.
+
+    The GTK+ GUI then calls on the Itaka Twisted Web Server engine 'server.py'.
+    Although the base Twisted server is completely independent of any other
+    modules through its base class 'BaseHTTPServer', the classes used by the
+    GUI are not.
+    
+        This is because or ScreenshotServer needs instances of our Gui,
+        Configuration and Console engines.  This expandability is a prime
+        example of the Object Oriented nature of Itaka.  It was designed from
+        the ground up to be modular and easily expandable through inheritance.
+
+        Such modularity allows for users to develop different GUIs in other
+        toolkits such as PyObjC (Cocoa) or PyQT. In turn, those GUIs can adapt
+        BaseHTTPServer to their needs. 
+
+    The HTTP server creates a resource called '/screenshot' (URL Path), which
+    in turn takes the screenshot on request.  This URL path is referenced on
+    the HTML base code in the configuration as an <img>. The screenshot
+    resource has a special render_GET() method that initiates the screenshot
+    engine 'screenshot.py'.
+
+    The screenshot engine is done entirely on GTK+ and does depend on it. It
+    has not been yet modularized, but it would not take long to implement a
+    totally different GUI for Itaka.
+
+
+Technichal standards:
+    * Inter-class communication: it is done by passing instances of one class
+      to the child object that needs it. For example, the 
+      HTTP server needs an instance of the GUI for widget manipulation (Logging,
+      etc.), and instance of the configuration class and an instance of the
+      Console class. Since our main Itaka core 'itaka.py' passed the main
+      instance of those classes to the GTK+ GUI, the only thing needed to do is
+      to pass an instance of the GUI class to the child-objects that need it. 
+
+    * Exceptions: Itaka's exception definitions are stored in 'error.py'.
+      Inheritance should be used widely.
+
+    * Encapsulation: All of Twisted's exceptions and exceptions of
+      screenshooting code should be encapsulated with equivalent Itaka
+      exceptions.
+
+    * Documentation: Use Epytext Markup Language.
+
+    * Private methods: Methods that are _never_ going to be called outside the
+      class should be prefixed with an underscore (_).
+
+Generating Documentation:
+
+    Itaka is fully documented with Epydoc.
+
+    You can ownload epydoc from http://epydoc.sourceforge.net/
+
+    You can generate documentation using epydoc.
+
+    mkdir doc
+    epydoc --html -o doc -n Itaka -u "http://itaka.jardinpresente.com.ar" *.py
+

@@ -1,0 +1,107 @@
+Itaka
+Version 0.1
+
+http://itaka.jardinpresente.com.ar
+
+CONTENTS:
+---------
+1. ABOUT ITAKA
+2. REQUIRED LIBRARIES
+3. INSTALLATION
+4. DEBIAN PACKAGE
+5. DOCUMENTATION
+6. HACKING
+7. RELEASE NOTES
+8. PROGRAM CREDITS
+
+1. ABOUT ITAKA:
+
+Itaka is an on-demand screen capture server for Windows, Mac Os X and Linux. It is developed in Python, PyGTK and the Twisted Framework. It prominently features a polished easy to use interface, with a robust backend server.
+
+2. REQUIRED LIBRARIES:
+
+Itaka requires the following programs/libraries.
+
+- Python 2.3 or higher
+- PyGTK 2.10.0 or higher
+- Twisted 2.2.0 or higher
+
+- GTK 2.10 or higher
+
+3. INSTALLATION:
+
+Itaka needs to be installed as the root user.
+
+Unpack and install the Itaka tarball using these commands:
+
+   'tar -xjvf <packagename>.tar.bz2'
+
+Switch to the newly created directory and type 'make install' as root and the 
+Makefile will copy the files to the correct location in your system. You do not 
+need to configure or compile Itaka as it is written in interpreted Python code.
+
+To uninstall, once again as root type 'make uninstall'
+
+4. DEBIAN PACKAGE:
+
+To create the Debian package simply do:
+
+    cp Makefile Makefile.dist
+    cp Makefile.debian Makefile
+
+    # Make sure you have your gpg keys and debian development environment correctly setup
+    debuild
+
+5. DOCUMENTATION:
+
+Itaka uses Epytext Markup Language to comment its code. 
+
+You can ownload epydoc from http://epydoc.sourceforge.net/
+
+You can generate documentation using epydoc.
+
+mkdir doc
+epydoc --html -o doc -n Itaka -u "http://itaka.jardinpresente.com.ar" *.py
+
+6. HACKING
+
+If you intend to change Itaka source coude, please read the HACKING file.
+
+Any questions should be emailed to me directly.
+
+7. RELEASE NOTES:
+
+This is the second release of Itaka. 
+
+See ChangeLog for more detailed information.
+
+Donations for this software would be greatly appreciated. This software is 
+totally free, but sending a few dollars via PayPal would bring you good karma,
+and it'll also mean you'll get extra Developer Suck-Up and support.
+Plus, it will ensure that I have enough caffeine to develop new 
+versions.
+
+Please visit http://itaka.jardinpresente.com.ar to donate.
+
+This program was developed under Ubuntu GNU/Linux and is released under the GPL license.
+
+See COPYING file for further license information
+
+8. PROGRAM CREDITS:
+
+Special thanks to James Henstridge for the excellent Python-GTK bindings and 
+their equally excellent documentation.
+
+Thanks to the #pygtk and #gtk+ channels on irc.gimp.org and the #python and #twisted channels on 
+irc.freenode.net for their help.
+
+Thanks to Nahuel M. for his continuing support and inspiration.
+
+Itaka's icon is based upon the work of the Tango Project and is follows their licensing.
+
+This README file and the Makefile are based on the works of the BloGTK project (http://blogtk.sourceforge.net)
+
+Thanks to all Itaka users for bug reports, feature requests, and their support 
+of this application.
+
+See AUTHORS and COPYRIGHT files for further credit information.
