@@ -20,7 +20,7 @@
 #
 # $Id$
 
-""" Itaka web server engine """
+""" Itaka server engine """
 
 import datetime, os, traceback, sys
 
@@ -182,6 +182,7 @@ class ScreenshotServer(BaseHTTPServer):
         """
 
         self.gui = guiinstance
+        self.itakaglobals = self.gui.itakaglobals
         self.configuration = self.gui.configuration
         self.console = self.gui.console
 
@@ -189,7 +190,7 @@ class ScreenshotServer(BaseHTTPServer):
 
         # Here we use our own static.Data special child resource because we need Authentication handling.
         # Otherwise we would just use our own self.add_static_resource.
-        self.root = RootResource(self.gui, self.configuration['html']['html'])
+        self.root = RootResource(self.gui, self.itakaglobals.headhtml + self.configuration['html']['html'] + self.itakaglobals.footerhtml)
         self.add_child_to_resource('root', '', self.root)
         self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui))
         self.create_site(self.root)
@@ -219,14 +220,14 @@ class RootResource(static.Data):
         self.gui = guiinstance
         self.console = self.gui.console
         self.itakaglobals = self.gui.itakaglobals
+        self.configuration = self.gui.configuration
 
         # Inherited from the actual code of Twisted's static.Data
         self.children = {}
         self.data = data
         self.type = type
 
-        #: No authentication provided default string
-        self.noauth = 'Sorry, but you cannot access this resource without authorization.'
+        self.noauth = self.itakaglobals.headhtml + self.configuration['html']['authfailure'] + self.itakaglobals.footerhtml
 
     def _promptAuth(self):
         """

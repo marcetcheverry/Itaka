@@ -88,7 +88,7 @@ class GuiLog:
         A log observer for our Twisted server
 
         @type args: dict
-        @param args: dict {'key': [str(message)]]}
+        @param args: dict {'key': [str(message)]}
         """
 
         # Handle twisted errors
@@ -571,7 +571,7 @@ class Gui:
             self.preferencesComboformat.set_active(0)
         else: 
             self.preferencesComboformat.set_active(1)
-            self.preferencesHBox3.set_sensitive(False)
+            self.preferencesHBox6.set_sensitive(False)
 
         if self.itakaglobals.notifyavailable: 
             self.preferencesChecknotifications = gtk.CheckButton()
@@ -623,6 +623,7 @@ class Gui:
         self.preferencesVBoxitems.pack_start(self.preferencesHBox3, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox5, False, False, 0)
+        self.preferencesVBoxitems.pack_start(self.preferencesHBox6, False, False, 0)
         if not self.itakaglobals.system == 'nt':
             self.preferencesVBoxitems.pack_start(self.preferencesHBox7, False, False, 0)
         self.preferencesVBoxitems.pack_start(self.preferencesHBox8, False, False, 0)
@@ -696,8 +697,9 @@ class Gui:
         # save method. Redundant values must be included for the comparison
         self.configurationdict = {
             'html':
-                {'html': '<html><body><img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser." border="0"></a></body</html>'},
-
+                {'html': '<img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser.">',
+                'authfailure': '<p><strong>Sorry, but you cannot access this resource without authorization.</strong></p>'},
+                
             'screenshot': 
                 {'path': self.configuration['screenshot']['path'],
                 'format': formatvalue,
@@ -1067,9 +1069,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
         
         if self.preferencesComboformat.get_active_text() == "PNG":
-            self.preferencesHBox3.set_sensitive(False)
+            self.preferencesHBox6.set_sensitive(False)
         else:
-            self.preferencesHBox3.set_sensitive(True)
+            self.preferencesHBox6.set_sensitive(True)
 
     def _preferences_authentication_toggled(self, widget):
         """
