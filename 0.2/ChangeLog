@@ -2,15 +2,19 @@
  * Rewrote the screenshot module completely to support active window
  screenshots and scaling. #3 #10 
  * Added Basic HTTP Authentication.
- * Notifications now show up in reference to the status icon.
+ * Notifications now show up relative to the status icon.
  * Added option (-debug) to show all console output #5
- * Add options to report errors in the system tray (blinking true). #7
+ * Add options to report errors in the system tray (blinking). #7
  
- * Completely rewrote the console output and Gui logging engines.
- * Rewrote the UI log pausing code.
- * Better handling of Twisted errors in logging
- * Fixed the pausing/unpausing of the logger.
- * Automatically scroll to the last event.
+ * Updated GUI on Windows not to show widgets for features that are not
+ available (libnotify, screenshot active window)
+
+ * Completely rewrote the console output and Gui logging engines. Simplified
+ and fixed many isssues. Some parts of the Gui were also overhauled.
+ * Automatically scroll to the last event on both logs.
+
+ * Removed all useless type-checking and started relying on my own exceptions
+ and error handlers.
 
  * Completely separated and encapsulated the Twisted Server code.
   
@@ -23,18 +27,12 @@
  * Recommented the whole code according to Epytext Markup and also did major
  tweaks to naming. #8
  * Changed strings in text to be more literal and intuitive 
- * Removed all useless type-checking and started relying on my own exceptions.
-
- * Updated GUI on Windows not to show widgets for features that are not
- available (libnotify, screenshot active window)
-
- * Detailed log non-twisted messages are now bold.
 
  * Updated documentation and added new references.
 
  * Fixed minor UI quirks.
  * Fixed a syntax bug in uigtk.py when GTK version is < 2.10
- * Fixed bug when saving preferences in the GUI reverted to /tmp by default
+ * Fixed bug when saving preferences in the GUI reverted to /tmp by default.
 
 0.1.1:
  * Fix Debian Makefile
