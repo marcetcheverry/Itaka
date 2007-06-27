@@ -35,7 +35,7 @@ except ImportError:
 try:
     from twisted.python import log
     from twisted.web import server, static, http, resource
-    from twisted.internet import reactor, error
+    from twisted.internet import reactor
     import twisted.internet.error
 except ImportError:
     print "[*] ERROR: Could not import Twisted Network Framework"
