@@ -91,6 +91,7 @@ output = {'normal': False, 'debug': False, 'quiet': False}
 values = {}
 
 #: Default HTML header.
+# Putting <meta http-equiv="Refresh" content="5; url=http://localhost:8000"> is very useful for debugging
 headhtml = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
