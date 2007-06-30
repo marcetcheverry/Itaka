@@ -338,7 +338,7 @@ class ScreenshotResource(resource.Resource):
                 uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
                 n = pynotify.Notification("Screenshot taken", 
-                "%s requested screenshot number %d"
+                "%s requested screenshot"
                 % (self.ip, self.counter), uri)
 
                 n.set_timeout(1500)
