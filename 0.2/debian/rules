@@ -48,7 +48,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/itaka.
-	$(MAKE) DESTDIR=$(CURDIR)/debian/itaka install
+	$(MAKE) -f Makefile.Debian DESTDIR=$(CURDIR)/debian/itaka install
 	#$(MAKE) install
 
 	# And other miscellaneous tasks
