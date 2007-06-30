@@ -80,12 +80,12 @@ class Screenshot:
             self.windowpositionx, self.windowpositiony = self.activewindow.get_root_origin()
         else:
             self.currentwindowfailed = True
-            raise error.ItakaScreenshotErrorWmHints
+            raise error.ItakaScreenshotErrorWmHints, 'Window Manager does not support _NET_WM hints'
     
         # We do not want to grab the desktop window
         if self.activewindow.property_get("_NET_WM_WINDOW_TYPE")[-1][0] == '_NET_WM_WINDOW_TYPE_DESKTOP':
             self.currentwindowfailed = True
-            raise error.ItakaScreenshotErrorActiveDesktop
+            raise error.ItakaScreenshotErrorActiveDesktop, 'Active window is desktop'
 
         return (self.windowwidth, self.windowheight, self.windowpositionx, self.windowpositiony)
 
@@ -120,7 +120,7 @@ class Screenshot:
                         gtk.gdk.colormap_get_system(),
                         self.currentwindow[2], self.currentwindow[3], 0, 0, self.activewindowwidth, self.activewindowheight)
 
-        elif not self.configuration['screenshot']['currentwindow'] or self.currentwindowfailed or self.itakaglobals.system == 'nt': 
+        if self.currentwindowfailed or not self.configuration['screenshot']['currentwindow'] or self.itakaglobals.system == 'nt': 
             self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
                     gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screenwidth, self.screenheight),
                     self.rootwindow,
@@ -128,8 +128,10 @@ class Screenshot:
                     0, 0, 0, 0, self.screenwidth, self.screenheight)
 
         # GTK manages errors this way
-        if self.screenshot is None:
-            self.gui.log.failure(('Screenshot', 'take_screenshot'), 'Could not grab screenshot, GTK+ error', 'ERROR')
+        if not hasattr(self, 'screenshot') or self.screenshot is None:
+            # Reset the failure flag
+            self.currentwindowfailed = False
+            self.gui.log.failure(('Screenshot', 'take_screenshot'), ('Could not grab screenshot', 'GTK+ could not grab a screenshot of the screen.'), 'ERROR')
             raise error.ItakaScreenshotError, 'Could not grab screenshot, GTK+ error'
 
         if self.configuration['screenshot']['scale']:
@@ -159,5 +161,8 @@ class Screenshot:
         # http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp
         del self.screenshot
         gc.collect()
+
+        # Reset the failure flag
+        self.currentwindowfailed = False
 
         return self.shotFile
