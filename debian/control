@@ -17,5 +17,6 @@ Description: On-demand screenshooting server
  It features the following:
   * Supports PNG/JPEG (with quality adjustment) image types.
   * Basic HTTP authentication.
-  * Simple manipulation of the screenshot through scaling and quality adjustments. 
-  *Very polished GUI with notifications using Libnotify. 
+  * Simple manipulation of the screenshot through scaling and quality
+    adjustments. 
+  * Very polished GUI with notifications using Libnotify. 
