@@ -516,7 +516,7 @@ class Gui:
         self.preferencesLabelscale.set_alignment(0, 0.50)
 
         if not self.itakaglobals.system == 'nt':
-            self.preferencesLabelscreenshot = gtk.Label('Screenshot window  ')
+            self.preferencesLabelscreenshot = gtk.Label('Window  ')
             self.preferencesLabelscreenshot.set_justify(gtk.JUSTIFY_LEFT)
             self.preferencesLabelscreenshot.set_alignment(0, 0.50)
 

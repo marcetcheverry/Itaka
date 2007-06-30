@@ -339,7 +339,7 @@ class ScreenshotResource(resource.Resource):
 
                 n = pynotify.Notification("Screenshot taken", 
                 "%s requested screenshot"
-                % (self.ip, self.counter), uri)
+                % (self.ip), uri)
 
                 n.set_timeout(1500)
                 n.attach_to_status_icon(self.gui.statusIcon)
