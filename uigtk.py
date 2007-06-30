@@ -486,6 +486,7 @@ class Gui:
         self.preferencesSettingslabel = gtk.Label('<b>Preferences</b>')
         self.preferencesSettingslabel.set_use_markup(True)
         self.preferencesFramesettings.set_label_widget(self.preferencesSettingslabel)
+        self.preferencesFramesettings.set_label_align(0.5, 0.5)
 
         self.preferencesLabelport = gtk.Label('Port  ')
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
