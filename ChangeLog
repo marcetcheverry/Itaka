@@ -30,6 +30,7 @@
 
  * Updated documentation and added new references.
 
+ * Minor improvements to Debian build process.
  * Fixed minor UI quirks.
  * Fixed a syntax bug in uigtk.py when GTK version is < 2.10
  * Fixed bug when saving preferences in the GUI reverted to /tmp by default.
