@@ -127,7 +127,7 @@ class ConfigParser:
 
         #: Default configuration sections and values
         self.defaultoptions = ( 
-                {'server': (('port', 8000), ('authentication', True), ('username', 'user'), ('password', 'password'), ('notify', notifyavailable))},
+                {'server': (('port', 8000), ('authentication', False), ('username', 'user'), ('password', 'password'), ('notify', notifyavailable))},
                 {'screenshot': (('format', 'jpeg'), ('quality', 30), ('path', save_path), ('currentwindow', False), ('scale', False), ('scalepercent', 100))},
                 {'html': (('html', '<img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser.">'), ('authfailure', '<p><strong>Sorry, but you cannot access this resource without authorization.</strong></p>'))}
                 )
