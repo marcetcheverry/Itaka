@@ -327,16 +327,16 @@ class Gui:
 
         self.stopimage = gtk.Image()
         self.stopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
-        self.menuitemstart = gtk.ImageMenuItem('Start') 
+        self.menuitemstart = gtk.ImageMenuItem('St_art') 
         self.menuitemstart.set_image(self.startimage)
         self.menuitemstart.connect('activate', self.start_server, True)
-        self.menuitemstop = gtk.ImageMenuItem('Stop') 
+        self.menuitemstop = gtk.ImageMenuItem('St_op') 
         self.menuitemstop.set_image(self.stopimage)
         self.menuitemstop.connect('activate', self.stop_server, True)
         self.menuitemstop.set_sensitive(False)
 
         if self.itakaglobals.notifyavailable: 
-            self.menuitemnotifications = gtk.CheckMenuItem('Show Notifications')
+            self.menuitemnotifications = gtk.CheckMenuItem('Show _Notifications')
             if self.configuration['server']['notify']:
                 self.menuitemnotifications.set_active(True)
             self.menuitemnotifications.connect('toggled', self.statusicon_notify)
