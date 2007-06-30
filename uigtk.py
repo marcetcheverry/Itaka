@@ -62,12 +62,12 @@ if gtk.gtk_version[1] < 10:
 
 class GuiLog:
     """
-    GTK+ GUI logging handler.
+    GTK+ GUI logging handler
     """
 
     def __init__(self, guiinstance, console, configuration):
         """
-        Constructor.
+        Constructor
 
         @type guiinstance: instance
         @param guiinstance: Instance of L{Gui}
@@ -102,13 +102,13 @@ class GuiLog:
 
     def message(self, message, icon=None):
         """
-        Write normal message on Gui log widgets.
+        Write normal message on Gui log widgets
 
         @type message: str
-        @param message: Message to be inserted.
+        @param message: Message to be inserted
 
         @type icon: tuple
-        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
         """
         
         self.console.message(message)
@@ -116,16 +116,16 @@ class GuiLog:
 
     def detailed_message(self, message, detailedmessage, icon=None):
         """
-        Write detailed message on Gui log widgets.
+        Write detailed message on Gui log widgets
 
         @type message: str
-        @param message: Message to be inserted in the events log.
+        @param message: Message to be inserted in the events log
 
         @type detailedmessage: str
-        @param detailedmessage: Message to be inserted in the detailed log.
+        @param detailedmessage: Message to be inserted in the detailed log
 
         @type icon: tuple
-        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
         """
 
         self.console.message(detailedmessage)
@@ -133,13 +133,13 @@ class GuiLog:
 
     def failure(self, caller, message, failuretype='ERROR'):
         """
-        Write failure message on Gui log widgets.
+        Write failure message on Gui log widgets
 
         @type caller: tuple
-        @param caller: Specifies the class and method were the warning ocurred.
+        @param caller: Specifies the class and method were the warning ocurred
 
         @type message: tuple
-        @param message: A tuple containing first the simple message to the events log, and then the detailed message for the detailed log.
+        @param message: A tuple containing first the simple message to the events log, and then the detailed message for the detailed log
 
         @type failuretype: str
         @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
@@ -168,7 +168,7 @@ class GuiLog:
 
     def _get_failure_icon(self, failuretype):
         """
-        Return a default stock icon for a failure type.
+        Return a default stock icon for a failure type
 
         @type failuretype: str
         @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
@@ -188,22 +188,22 @@ class GuiLog:
 
     def _write_gui_log(self, message, detailedmessage=None, icon=None, unpauselogger=True, failure=False):
         """
-        Private method to write to both Gui logs.
+        Private method to write to both Gui logs
 
         @type message: str
-        @param message: Message to be inserted.
+        @param message: Message to be inserted
 
         @type detailedmessage: str
-        @param detailedmessage: Optional detailed message if the event log and detailed log messages differ.
+        @param detailedmessage: Optional detailed message if the event log and detailed log messages differ
 
         @type icon: tuple
-        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix).
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
 
         @type unpauselogger: bool
-        @param unpauselogger: Whether to unpause the GUI Logger.
+        @param unpauselogger: Whether to unpause the GUI Logger
 
         @type failure: bool
-        @param failure: Whether the message is a failure or not.
+        @param failure: Whether the message is a failure or not
         """
 
         if detailedmessage is None:
@@ -221,16 +221,16 @@ class GuiLog:
 
     def _write_events_log(self, message, icon=None, failure=False):
         """
-        Private method to write to the events log Gui widget.
+        Private method to write to the events log Gui widget
 
         @type message: str
-        @param message: Message to be inserted.
+        @param message: Message to be inserted
 
         @type icon: tuple
-        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix) if its stock, or a pixbuf.
+        @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix) if its stock, or a pixbuf
 
         @type failure: bool
-        @param failure: Whether the message is a failure or not.
+        @param failure: Whether the message is a failure or not
         """
 
         if icon is not None:
@@ -250,13 +250,13 @@ class GuiLog:
 
     def _write_detailed_log(self, message, bold=True):
         """
-        Private method to write to the detailed log Gui widget.
+        Private method to write to the detailed log Gui widget
 
         @type message: str
-        @param message: Message to be inserted.
+        @param message: Message to be inserted
 
         @type bold: bool
-        @param bold: Whether the text will be inserted as bold.
+        @param bold: Whether the text will be inserted as bold
         """
 
         message = message + '\r'
@@ -266,7 +266,7 @@ class GuiLog:
         else:
             self.gui.logdetailsbuffer.insert_at_cursor(message, len(message))
 
-        # Automatically scroll. Use wrap until fix.
+        # Automatically scroll. Use wrap until fix
         self.gui.logdetailstextview.scroll_mark_onscreen(self.gui.logdetailsbuffer.get_insert())
 
 class Gui:
@@ -276,10 +276,10 @@ class Gui:
 
     def __init__(self, consoleinstance, configuration):
         """
-        Constructor.
+        Constructor
 
         @type consoleinstance: instance
-        @param consoleinstance: An instance of the L{Console} class.
+        @param consoleinstance: An instance of the L{Console} class
 
         @type configuration: tuple
         @param configuration: A tuple of configuration globals and an instance of L{ConfigParser}
@@ -289,7 +289,7 @@ class Gui:
         self.console = consoleinstance
         self.itakaglobals = configuration[0]
 
-        # The configuration instance has the user's preferences already loaded.
+        # The configuration instance has the user's preferences already loaded
         self.configinstance = configuration[1]
         self.configuration = self.itakaglobals.values
 
@@ -643,7 +643,7 @@ class Gui:
 
     def save_preferences(self):
         """
-        Saves and hides the preferences dialog.
+        Saves and hides the preferences dialog
         """
         
         # So we can mess with the values in the running one and not mess up our comparison
@@ -737,7 +737,7 @@ class Gui:
         # Check if the configuration changed
         if (self.configurationdict != self.currentconfiguration):
 
-            # Update the needed keys.
+            # Update the needed keys
             try:
                 # self.configinstance.save(self.configurationdict)
                 for section in self.configurationdict:
@@ -747,7 +747,7 @@ class Gui:
 
     def expandpreferences(self, *args):
         """
-        Expands the window for preferences.
+        Expands the window for preferences
         """
 
         # We have a race condition here. If GTK cant resize fast enough, then it gets very sluggish
@@ -755,7 +755,7 @@ class Gui:
         # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
         if not self.preferencesexpanded:
             if self.expandtimeout is not None:
-                """NOTE: GTK+ GtkWidget.size_request() method can give you the amount of size a widget will take.
+                """NOTE: GTK+ GtkWidget.size_request() method can give you the amount of size a widget will take
                 however, it has to be show()ned before. For our little hack, we show the preferencesVBox widgets
                 but not itself, which should yield a close enough calculation."""
                 self.preferencesFramesettings.show_all()
@@ -802,13 +802,13 @@ class Gui:
 
     def contractpreferences(self, *args):
         """
-        Contracts the window of preferences.
+        Contracts the window of preferences
         """
 
         if self.contracttimeout is not None:
             # If you dont use the normal_size proxy to our window sizes,
             # it generates a nice effect of doing the animation when closing the expander also. 
-            # While sexy, it's inconsistent, and most definately a resource hungry bug.
+            # While sexy, it's inconsistent, and most definately a resource hungry bug
             if self.expander.get_expanded():
                 self.window.normal_size = self.expander_size
                 self.expander_size_finalized = True
@@ -838,13 +838,13 @@ class Gui:
 
     def windowsizechanged(self, widget=None, data=None):
         """
-        Report the window size on change.
+        Report the window size on change
         
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
 
         @type data: unknown
-        @param data: Unknown.
+        @param data: Unknown
         """
         
         self.window.current_size = self.window.get_size()
@@ -859,19 +859,19 @@ class Gui:
 
     def statusicon_menu(self, widget, button, time, menu):
         """
-        Display the menu on the status icon.
+        Display the menu on the status icon
         
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
 
         @type button: int
-        @param button: The button pressed..
+        @param button: The button pressed.
 
         @type time: unknown
-        @param time: Unknown.
+        @param time: Unknown
 
         @type menu: instance
-        @param menu: A gtk.Menu instance.
+        @param menu: A gtk.Menu instance
         """
 
         if button == 3:
@@ -882,7 +882,7 @@ class Gui:
 
     def statusicon_blinktimeout(self, time=3000):
         """
-        Sets the timeout in miliseconds to blink and stop blinking the status icon.
+        Sets the timeout in miliseconds to blink and stop blinking the status icon
         
         @type time: int
         @param time: Time in milliseconds to blink the status icon
@@ -898,10 +898,10 @@ class Gui:
  
     def statusicon_activate(self, widget):
         """
-        Toggle the window visibility from the status icon when clicked.
+        Toggle the window visibility from the status icon when clicked
         
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
         """
 
         if self.window.get_property("visible"):
@@ -913,10 +913,10 @@ class Gui:
 
     def statusicon_notify(self, widget):
         """
-        Disable or enable notifications on the fly from the status icon.
+        Disable or enable notifications on the fly from the status icon
         
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
         """
 
         if self.checkwidget(self.menuitemnotifications):
@@ -926,7 +926,7 @@ class Gui:
 
     def about(self, *args):
         """
-        Creates the About dialog.
+        Creates the About dialog
         """
 
         self.aboutdialog = gtk.AboutDialog()
@@ -958,13 +958,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def expandlogger(self, expander, params):
         """
-        Expand or contract the logger.
+        Expand or contract the logger
         
         @type expander: instance
         @param expander: gtk.Expander instance
 
         @type params: unknown
-        @param params: Unknown.
+        @param params: Unknown
         """
 
         if self.expander.get_expanded():
@@ -979,7 +979,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def clearlogger(self, *args):
         """
-        Clear the log.
+        Clear the log
         """
 
         self.logeventsstore.clear()
@@ -990,7 +990,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Interface to pause or unpause the Gui logger by checking the status of a gtk.ToggleButton
         
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
         """
 
         if self.checkwidget(widget):
@@ -1002,11 +1002,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def pause_log(self):
         """
-        Pause Gui log output.
+        Pause Gui log output
         """
 
-        # It would be nice if we could set a center background image to our textview.
-        # However, GTK makes that very hard.
+        # It would be nice if we could set a center background image to our textview
+        # However, GTK makes that very hard
         """
         self.logprepausetext = self.logdetailsbuffer.get_text(self.logdetailsbuffer.get_start_iter(), self.logdetailsbuffer.get_end_iter())
         self.logdetailsbuffer.set_text("")
@@ -1027,10 +1027,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def unpause_log(self, foreign=False):
         """
-        Unpause Gui log output.
+        Unpause Gui log output
 
         @type foreign: bool
-        @param foreign: Whether the caller of this method is not the Gui gtk.ToggleButton.
+        @param foreign: Whether the caller of this method is not the Gui gtk.ToggleButton
         """
 
         self.server.add_log_observer(self.log.twisted_observer)
@@ -1045,7 +1045,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def log_paused(self):
         """
-        Whether the Gui log is paused.
+        Whether the Gui log is paused
 
         @rtype: bool
         @return: True if the Gui log is paused. False otherwise
@@ -1055,7 +1055,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def main(self):
         """
-        Main initiation function. Starts the Twisted GUI reactors.
+        Main initiation function. Starts the Twisted GUI reactors
         """
 
         # Server reactor (interacts with the Twisted reactor)	
@@ -1066,7 +1066,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Callback for preferenes gtk.ComboBox widget
 
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
         """
         
         if self.preferencesComboformat.get_active_text() == "PNG":
@@ -1076,10 +1076,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def _preferences_authentication_toggled(self, widget):
         """
-        Callback for preferences gtk.CheckButton widget.
+        Callback for preferences gtk.CheckButton widget
 
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
         """
 
         if self.checkwidget(widget):
@@ -1096,10 +1096,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def checkwidget(self, widget):
         """
-        Checks if a gtk.Widget is active.
+        Checks if a gtk.Widget is active
 
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
         """
 
         if hasattr(widget, 'get_active') and callable(getattr(widget, 'get_active')):
@@ -1112,7 +1112,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Interface to start or stop the server by checking the status of a gtk.ToggleButton
         
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
         """
         if self.checkwidget(widget):
             self.start_server()
@@ -1121,13 +1121,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def start_server(self, widget=None, foreign=False):
         """
-        Starts the Twisted server.
+        Starts the Twisted server
 
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
 
         @type foreign: bool
-        @param foreign: Whether the caller of this method is not self.buttonStartstop.
+        @param foreign: Whether the caller of this method is not self.buttonStartstop
 
         """
 
@@ -1170,13 +1170,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def stop_server(self, widget=None, foreign=False):
         """
-        Stops the Twisted server.
+        Stops the Twisted server
 
         @type widget: instance
-        @param widget: gtk.Widget.
+        @param widget: gtk.Widget
 
         @type foreign: bool
-        @param foreign: Whether the caller of this method is not self.buttonStartstop.
+        @param foreign: Whether the caller of this method is not self.buttonStartstop
         """
 
         if self.server.listening():
@@ -1205,7 +1205,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def restart_server(self):
         """
-        Restarts the Twisted server.
+        Restarts the Twisted server
         """
 
         if self.server.listening():
@@ -1215,7 +1215,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def destroy(self, *args):
         """
-        Main window destroy event.
+        Main window destroy event
         """
 
         if self.server.listening():
@@ -1231,7 +1231,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if os.path.exists(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))): 
             os.remove(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format'])))
 
-        # Windows needs this...
+        # Windows fix
         del self.statusIcon
 
         gtk.main_quit()
@@ -1240,15 +1240,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
         Calculates the time difference from the last server request to 
         the current time. Expresses a datetime.timedelta using a
-        string such as "1 hour, 20 minutes".
+        string such as "1 hour, 20 minutes"
         
         @type dtime: datetime.datetime
-        @param dtime: A starting datetime.datetime object.
+        @param dtime: A starting datetime.datetime object
         """
 
         # Create a timedelta from the datetime.datetime and the current time
         # (you can create your own timedeltas with datetime.timedelta(5, (650 *
-        # 60) * 2, 12) for testing.
+        # 60) * 2, 12) for testing
         self.td = datetime.datetime.now() - dtime
 
         self.pieces = []
@@ -1265,27 +1265,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.labelTime.set_text("<b>When</b>: " + ", ".join(self.pieces) + " ago")
         self.labelTime.set_use_markup(True)
 
-        # Need this so it runs more than once.
+        # Need this so it runs more than once
         return True
 
     def plural(self, count, singular):
         """ 
-        Helper method to handle simple english plural translations.
+        Helper method to handle simple english plural translations
         
         @type count: int
-        @param count: Number.
+        @param count: Number
 
         @type singular: str
-        @param singular: Singular version of the word to pluralize.
+        @param singular: Singular version of the word to pluralize
         """
 
         # This is the simplest version; a more general version
-        # should handle -y -> -ies, child -> children, etc.
+        # should handle -y -> -ies, child -> children, etc
         return '%d %s%s' % (count, singular, ("", 's')[count != 1])
 
     def set_standard_images(self):
         """
-        Changes the logo on the main window.
+        Changes the logo on the main window
         """
         
         if self.configuration['server']['authentication']:
@@ -1299,16 +1299,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
     def update_gui(self, counter=False, ip=False, time=False):
         """ 
-        Updates the GUI on request from the server.
+        Updates the GUI on request from the server
         
         @type counter: int
-        @param counter: Total number of server hits.
+        @param counter: Total number of server hits
 
         @type ip: str
-        @param ip: IP address of the client.
+        @param ip: IP address of the client
 
         @type time: datetime.datetime
-        @param time: Time of the request.
+        @param time: Time of the request
         
         """
 

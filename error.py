@@ -24,61 +24,61 @@
 
 class ItakaError(Exception):
     """
-    Base class for all Itaka Errors.
+    Base class for all Itaka Errors
     """
 
     def __init__(self, message):
         """
-        Constructor.
+        Constructor
 
         @type message: str
-        @param message: exception message.
+        @param message: exception message
         """
 
         self.message = message
 
     def __str__(self):
         """
-        String representation.
+        String representation
 
         @rtype: str
-        @return: String representation of Exception message.
+        @return: String representation of Exception message
         """
 
         return repr(self.message)
 
 class ItakaServerError(ItakaError):
     """
-    Exception raised by server methods.
+    Exception raised by server methods
     """
     pass
 
 class ItakaServerErrorCannotListen(ItakaServerError):
     """
-    Exception raised by server methods.
+    Exception raised by server methods
     """
     pass
 
 class ItakaScreenshotError(ItakaError):
     """
-    Exception raised by screenshooting methods.
+    Exception raised by screenshooting methods
     """
     pass
 
 class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
     """
-    Exception raised by screenshooting methods.
+    Exception raised by screenshooting methods
     """
     pass
 
 class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
     """
-    Exception raised by screenshooting methods.
+    Exception raised by screenshooting methods
     """
     pass
     
 class ItakaSaveScreenshotError(ItakaScreenshotError):
     """
-    Exception raised by screenshooting methods.
+    Exception raised by screenshooting methods
     """
     pass

@@ -44,31 +44,31 @@ except ImportError:
 
 class BaseHTTPServer:
     """
-    Base HTTP Server.
+    Base HTTP Server
     """
 
     def __init__(self):
         """
-        Constructor.
+        Constructor
         """
 
         self.server_listening = False
 
     def add_static_resource(self, name, data, type='text/html; charset=UTF-8'):
         """
-        Create a static.Data Twisted resource.Resource.
+        Create a static.Data Twisted resource.Resource
 
         @type name: str
-        @param name: Name of the resource.
+        @param name: Name of the resource
 
         @type data: str
-        @param data: Data in memory to add to the resource, typically HTML.
+        @param data: Data in memory to add to the resource, typically HTML
 
         @type type: str
-        @param type: The type of data we are serving.
+        @param type: The type of data we are serving
 
         @rtype: resource.Resource
-        @return: The instance of the resource created.
+        @return: The instance of the resource created
         """
 
         setattr(self, name, static.Data(data, type))
@@ -76,36 +76,36 @@ class BaseHTTPServer:
 
     def add_child_to_resource(self, name, path, resource):
         """
-        Add a static child resource to a Twisted resource.Resource.
+        Add a static child resource to a Twisted resource.Resource
 
         @type name: str
         @param name: The name of the Twisted resource.Resource.  
 
         @type path: str
-        @param path: The path name (i.e http://www.site.com/PATH) of the Resource. You almost certainly don't want '/' in your path. If you intended to have the root of a folder, e.g. /foo/, you want path to be ''.
+        @param path: The path name (i.e http://www.site.com/PATH) of the Resource. You almost certainly don't want '/' in your path. If you intended to have the root of a folder, e.g. /foo/, you want path to be ''
 
         @type resource: instance
-        @param resource: A Twisted Resource.
+        @param resource: A Twisted Resource
         """
 
         getattr(self, name).putChild(path, resource)
 
     def create_site(self, resource):
         """
-        Creates a Twisted.server.Site with a Twisted Resource.
+        Creates a Twisted.server.Site with a Twisted Resource
 
         @type resource: instance
-        @param resource: An instance of a Twisted resource created with L{add_static_resource}.
+        @param resource: An instance of a Twisted resource created with L{add_static_resource}
         """
 
         self.site = server.Site(resource)
 
     def start_server(self, port):
         """
-        Start the server.
+        Start the server
 
         @type port: int
-        @param port: Port number to listen on.
+        @param port: Port number to listen on
         """
 
         try:
@@ -117,7 +117,7 @@ class BaseHTTPServer:
     
     def stop_server(self):
         """
-        Stop the server.
+        Stop the server
         """
 
         self.server.stopListening()
@@ -125,20 +125,20 @@ class BaseHTTPServer:
 
     def listening(self):
         """
-        Whether the server is listening or not.
+        Whether the server is listening or not
 
         @rtype: bool
-        @return: True if it's listening or False if it is not.
+        @return: True if it's listening or False if it is not
         """
 
         return self.server_listening
 
     def add_log_observer(self, observer):
         """
-        Add a twisted.log observer.
+        Add a twisted.log observer
         
         @type observer: method
-        @param observer: A method to send the logs to.
+        @param observer: A method to send the logs to
         """
 
         self.log_observer = observer
@@ -146,10 +146,10 @@ class BaseHTTPServer:
 
     def remove_log_observer(self, observer=False):
         """
-        Remove a twisted.log observer.
+        Remove a twisted.log observer
         
         @type observer: method
-        @param observer: The name of the method specified in add_log_observer. If False, the last known log observer added will be removed.
+        @param observer: The name of the method specified in add_log_observer. If False, the last known log observer added will be removed
         """
 
         if observer:
@@ -159,10 +159,10 @@ class BaseHTTPServer:
 
     def get_listening_information(self):
         """
-        Returns the information of the current listening server.
+        Returns the information of the current listening server
 
         @rtype: twisted.internet.interfaces.IAddress
-        @return: The current server's networking information.
+        @return: The current server's networking information
         """
 
         if self.server_listening:
@@ -170,15 +170,15 @@ class BaseHTTPServer:
 
 class ScreenshotServer(BaseHTTPServer):
     """
-    Screenshot server that builds upon BaseHTTPServer.
+    Screenshot server that builds upon BaseHTTPServer
     """
 
     def __init__(self, guiinstance):
         """
-        Constructor. Overrides BaseHTTPServer's __init__ to create our resources on-the-fly.
+        Constructor. Overrides BaseHTTPServer's __init__ to create our resources on-the-fly
 
         @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class.
+        @param guiinstance: An instance of our L{Gui} class
         """
 
         self.gui = guiinstance
@@ -188,8 +188,8 @@ class ScreenshotServer(BaseHTTPServer):
 
         self.server_listening = False
 
-        # Here we use our own static.Data special child resource because we need Authentication handling.
-        # Otherwise we would just use our own self.add_static_resource.
+        # Here we use our own static.Data special child resource because we need Authentication handling
+        # Otherwise we would just use our own self.add_static_resource
         self.root = RootResource(self.gui, self.itakaglobals.headhtml + self.configuration['html']['html'] + self.itakaglobals.footerhtml)
         self.add_child_to_resource('root', '', self.root)
         self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui))
@@ -197,24 +197,24 @@ class ScreenshotServer(BaseHTTPServer):
 
 class RootResource(static.Data):
     """
-    Main resource with authentication support.
+    Main resource with authentication support
 
-    Please read RFC 2617 to understand the HTTP Authentication process.
+    Please read RFC 2617 to understand the HTTP Authentication process
     """
 
     def __init__(self, guiinstance, data, type='text/html; charset=UTF-8'):
 
         """ 
-        Constructor that inherits code from resource.Resource->static.Data.
+        Constructor that inherits code from resource.Resource->static.Data
 
         @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class.
+        @param guiinstance: An instance of our L{Gui} class
 
         @type html: string
-        @param html: The HTML to be displayed.
+        @param html: The HTML to be displayed
 
         @type type: str
-        @param type: The type of data we are serving.
+        @param type: The type of data we are serving
         """
 
         self.gui = guiinstance
@@ -231,7 +231,7 @@ class RootResource(static.Data):
 
     def _promptAuth(self):
         """
-        Prompt the authorization dialog on the browser.
+        Prompt the authorization dialog on the browser
         """
 
         self.request.setHeader('WWW-Authenticate', 'Basic realm="Itaka Screenshot Server"')
@@ -242,10 +242,10 @@ class RootResource(static.Data):
 
     def render(self, request):
         """
-        Override twisted.static.Data render method. Render our static HTML.
+        Override twisted.static.Data render method. Render our static HTML
 
         @type request: instance
-        @param request: twisted.web.server.Request instance.
+        @param request: twisted.web.server.Request instance
         """
         
         # Get up to date configuration values everytime there is a request
@@ -284,15 +284,15 @@ class RootResource(static.Data):
 
 class ScreenshotResource(resource.Resource):
     """ 
-    Handle server requests and call for a screenshot.
+    Handle server requests and call for a screenshot
     """
 
     def __init__(self, guiinstance):
         """ 
-        Constructor.
+        Constructor
 
         @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class.
+        @param guiinstance: An instance of our L{Gui} class
         """
 
         self.gui = guiinstance
@@ -305,13 +305,13 @@ class ScreenshotResource(resource.Resource):
 
     def render_GET(self, request):
         """
-        Handle GET requests for screenshot.
+        Handle GET requests for screenshot
 
         @type request: instance
-        @param request: twisted.web.server.Request instance.
+        @param request: twisted.web.server.Request instance
 
         @rtype: str
-        @return: Screenshot image.
+        @return: Screenshot image
         """
 
         # Get up to date configuration values everytime there is a request

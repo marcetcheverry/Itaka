@@ -27,18 +27,18 @@ pygtk.require("2.0")
 
 class Screenshot:
     """
-    Takes screenshots of windows or screens.
+    Takes screenshots of windows or screens
     """
 
     def __init__(self, guiinstance, scalingmethod=gtk.gdk.INTERP_BILINEAR): 
         """
-        Constructor.
+        Constructor
 
         @type scalingmethod: gtk.gdk.INTERP_TYPE
         @param scalingmethod: A type of interpolation for screenshot scaling. U{http://pygtk.org/pygtk2reference/class-gdkpixbuf.html#method-gdkpixbuf--scale-simple}
 
         @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class.
+        @param guiinstance: An instance of our L{Gui} class
         """
 
         self.gui = guiinstance
@@ -61,10 +61,10 @@ class Screenshot:
 
     def find_current_active_window(self):
         """ 
-        Find the current active window through the _NET_ACTIVE_WINDOW hint.
+        Find the current active window through the _NET_ACTIVE_WINDOW hint
 
         @rtype: tuple
-        @return: (int) window width, (int) window heigth, (int) window position x, (int) window position y.
+        @return: (int) window width, (int) window heigth, (int) window position x, (int) window position y
         """
 
         if self.rootscreen.supports_net_wm_hint("_NET_ACTIVE_WINDOW") and self.rootscreen.supports_net_wm_hint("_NET_WM_WINDOW_TYPE"):
@@ -75,8 +75,8 @@ class Screenshot:
             self.windowwidth = self.winw + (self.relativex*2)
             self.windowheight = self.winh + (self.relativey+self.relativex)
 
-            # Calculate the position of where the window manager decorations start.
-            # get_position() will return the position of the window relative to the WM.
+            # Calculate the position of where the window manager decorations start
+            # get_position() will return the position of the window relative to the WM
             self.windowpositionx, self.windowpositiony = self.activewindow.get_root_origin()
         else:
             self.currentwindowfailed = True
@@ -91,7 +91,7 @@ class Screenshot:
 
     def take_screenshot(self):
         """
-        Take a screenshot of the whole screen or a window.
+        Take a screenshot of the whole screen or a window
 
         @rtype: str
         @return: Path to the screenshot (L{self.shotFile})
@@ -157,7 +157,7 @@ class Screenshot:
             self.gui.log.failure(('Screenshot','take_screenshot'), ('Could not save screenshot', 'Could not save screenshot %s' % (traceback.format_exc())), 'ERROR')
             raise error.ItakaSaveScreenshotError, "Could not save screenshot"
 
-        # Important workaround to avoid a memory leak.
+        # Important workaround to avoid a memory leak
         # http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp
         del self.screenshot
         gc.collect()

@@ -32,7 +32,7 @@ class BaseMessage:
         Constructor.
 
         @type message: str
-        @param message: The message to print on the Console.
+        @param message: The message to print on the Console
         """
 
         self.message = message
@@ -45,19 +45,19 @@ class BaseFailureMessage(BaseMessage):
 
     def __init__(self, debug, caller, message, type):
         """
-        Constructor.
+        Constructor
 
         @type debug: bool
-        @param debug: Whether the L{caller} arguments will be printed.
+        @param debug: Whether the L{caller} arguments will be printed
 
         @type caller: tuple
-        @param caller: Specifies the class and method were the failure ocurred.
+        @param caller: Specifies the class and method were the failure ocurred
 
         @type message: str
-        @param message: The message to print.
+        @param message: The message to print
 
         @type type: str
-        @param type: The type of failure: 'WARNING', 'ERROR', 'DEBUG'.
+        @param type: The type of failure: 'WARNING', 'ERROR', 'DEBUG'
         """
 
         self.caller = '.'.join(caller)
@@ -73,16 +73,15 @@ class BaseFailureMessage(BaseMessage):
 
 class Console:
     """
-    Console I/O handler organized by message type. Also handle GUI logging when passed an instance.
+    Console I/O handler organized by message type. Also handle GUI logging when passed an instance
     """
 
     def __init__(self, itakaglobals):
-        """ailuretype == 'ERROR':
-
-        Constructor for console output handler.
+        """
+        Constructor for console output handler
         
         @type itakaglobals: module
-        @param itakaglobals: Configuration module.
+        @param itakaglobals: Configuration module
         """
 
         self.itakaglobals = itakaglobals
@@ -91,7 +90,7 @@ class Console:
             
     def __del__(self):
         """
-        Destructor.
+        Destructor
         """
         
         if self.itakaglobals.output['normal']: 
@@ -99,10 +98,10 @@ class Console:
 
     def message(self, message):
         """
-        Message handler.
+        Message handler
         
         @type message: str
-        @param message: Message to print to the console. 
+        @param message: Message to print to the console
         """
         
         if self.itakaglobals.output['normal']:
@@ -110,13 +109,13 @@ class Console:
 
     def failure(self, caller, message, failuretype='ERROR'):
         """
-        Failure handler abstract.
+        Failure handler abstract
 
         @type caller: tuple
-        @param caller: Specifies the class and method were the warning ocurred.
+        @param caller: Specifies the class and method were the warning ocurred
 
         @type message: str
-        @param message: Message to print to the console.
+        @param message: Message to print to the console
 
         @type failuretype: str
         @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
