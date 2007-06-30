@@ -1,4 +1,5 @@
-NOTE: This guide is a rough reference, and will always mostly be incomplete.
+NOTE: This guide is a rough reference, please take the time to read the code
+line by line, as it is not that long.
 
 Abstract:
 
@@ -6,7 +7,7 @@ Abstract:
     be completely modular and each component was made so that it is independent
     of the other to a certain extent. First there is the core loader
     'itaka.py', which in turn loads the Console and Configuration handlers
-    ('console.py' and 'configuration.py'). The configuration is read and
+    ('console.py' and 'config.py'). The configuration is read and
     loaded, and the passed to the  new instance of our Console handler. 
     
     After that, the main GTK+ GUI 'uigtk.py' is loaded, it is totally
@@ -40,7 +41,7 @@ Abstract:
     totally different GUI for Itaka.
 
 
-Technichal standards:
+Technical standards:
     * Inter-class communication: it is done by passing instances of one class
       to the child object that needs it. For example, the 
       HTTP server needs an instance of the GUI for widget manipulation (Logging,
@@ -65,10 +66,10 @@ Generating Documentation:
 
     Itaka is fully documented with Epydoc.
 
-    You can ownload epydoc from http://epydoc.sourceforge.net/
+    You can download epydoc from http://epydoc.sourceforge.net/
 
     You can generate documentation using epydoc.
 
-    mkdir doc
-    epydoc --html -o doc -n Itaka -u "http://itaka.jardinpresente.com.ar" *.py
+        mkdir doc
+        epydoc --html -o doc -n Itaka -u "http://itaka.jardinpresente.com.ar" *.py
 
