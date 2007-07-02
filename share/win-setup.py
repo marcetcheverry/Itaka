@@ -1,25 +1,33 @@
-# NOTICE: This script is not finished and does not work correctly.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from distutils.core import setup
+import glob
 import py2exe
 
-# Copiar etc, share, lib de GTK a la cosa. No funciona con un all-in-one
-# Tampoco copia imagenes.
-# zipfile = None
+opts = {
+    "py2exe": {
+        "includes": "pygtk,pango,gobject,twisted, cairo, pangocairo, atk",
+        "optimize": 2,
+		"dist_dir": "dist",
+    }
+}
 
-setup (
-	console=['itaka.py'],
-	name = 'Itaka',
-    	description = 'On-demand screenshooting server',
-    	version = '1.1',
-    	author='Marc E.',
-    	author_email='santusmarc@gmail.com',
-    	url='http://itaka.jardinpresente.com.ar',
-	
-	options = {
-        	'py2exe': {
-                      'packages':'encodings',
-                      'includes': 'cairo, pango, pangocairo, atk, gobject',
-                  }
-        }
+setup(
+    name = "Itaka",
+    version = "1.0",
+    description = 'On-demand screen capture server',
+    author = 'Marc E.',
+    author_email = 'santusmarc@gmail.com',
+    url = 'http://itaka.jardinpresente.com.ar',
+    license = 'GPL',
+    windows = [
+        {
+            "script": "itaka.py",
+            "icon_resources": [(1, "share\images\itaka.ico")]
+        }],
+		options = opts,
+		data_files=[
+		("images",
+		glob.glob("share\images\\*.png"))]
 )
