@@ -53,8 +53,7 @@ try:
     import uigtk as igui
 except ImportError:
     print "[*] ERROR: Failed to import Itaka modules"
-    if itakaglobals.output['debug']:
-        traceback.print_exc()
+    traceback.print_exc()
     sys.exit(1)
 
 if __name__ == "__main__":
