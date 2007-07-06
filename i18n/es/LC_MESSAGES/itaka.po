@@ -1,367 +1,365 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# Itaka
+# Copyright (C) 2003-2007
+# This file is distributed under the same license as the Itaka package.
+# Marc E. <santusmarc@users.sourceforge.net>, 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-07-06 00:06-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2007-07-06 12:13+GMT-8\n"
+"Last-Translator: Marc E. <santusmarc@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../config.py:58
 #, python-format
 msgid "Could not find images directory %s"
-msgstr ""
+msgstr "No se pudo encontrar el directorio de imagenes %s"
 
 #: ../config.py:78
 msgid "Pynotify module is failing, disabling notifications"
-msgstr ""
+msgstr "El módulo Pynotify ha fallado, deshabilitando notificaciones."
 
 #: ../config.py:81
 msgid "Pynotify module is missing, disabling notifications"
-msgstr ""
+msgstr "El módulo Pynotify no existe, deshabilitando notificaciones"
 
 #: ../config.py:126
 msgid "Initializing in debug mode"
-msgstr ""
+msgstr "Iniciando en modo debug"
 
 #: ../config.py:165
 #, python-format
 msgid "Read configuration (%s)"
-msgstr ""
+msgstr "Configuracion cargada (%s)"
 
 #: ../config.py:168
 #, python-format
 msgid "Could not read configuration file (%s)"
-msgstr ""
+msgstr "No se pudo leer el archivo de configuracion (%s)"
 
 #: ../config.py:196 ../config.py:210
 msgid "Detected old or broken configuration file. Fixing"
-msgstr ""
+msgstr "Archivo de configuración viejo o roto detectado. Arreglandolo."
 
 #: ../config.py:232
 msgid "Saving configuration"
-msgstr ""
+msgstr "Guardando configuración"
 
 #: ../config.py:234 ../config.py:255 ../config.py:284
 #, python-format
 msgid "Could not write configuration file %s"
-msgstr ""
+msgstr "No se pudo grabar el archivo de configuración %s"
 
 #: ../config.py:253
 #, python-format
 msgid "Updating configuration key %s to %s"
-msgstr ""
+msgstr "Actualizando llave %s a %s"
 
 #: ../config.py:266
 msgid "Creating default configuration"
-msgstr ""
+msgstr "Creando configuración predeterminada"
 
 #: ../console.py:137
 #, python-format
 msgid "Itaka %s starting"
-msgstr ""
+msgstr "Itaka %s iniciando"
 
 #: ../console.py:145
 msgid "Itaka shutting down"
-msgstr ""
+msgstr "Itaka terminando"
 
 #: ../itaka.py:37
 #, python-format
 msgid "Usage: %s (-debug|-help)"
-msgstr ""
+msgstr "Uso: %s (-debug|-help)"
 
 #: ../itaka.py:54
 msgid "Could not initiate Console engine"
-msgstr ""
+msgstr "No se pudo iniciar el motor de Consola"
 
 #: ../itaka.py:60 ../server.py:31
 msgid "Failed to import Itaka modules"
-msgstr ""
+msgstr "Error al importar los modulos de Itaka"
 
 #: ../itaka.py:69
 #, python-format
 msgid "Could not initiate GUI: %s"
-msgstr ""
+msgstr "No se pudo iniciar la interface: %s"
 
 #: ../screenshot.py:83
 msgid "Window Manager does not support _NET_WM hints"
-msgstr ""
+msgstr "El manejador de ventanas no soporta _NET_WM"
 
 #: ../screenshot.py:88
 msgid "Active window is desktop"
-msgstr ""
+msgstr "La ventana activa es el escritorio"
 
 #: ../screenshot.py:108
 msgid "Can not grab the current window"
-msgstr ""
+msgstr "No se pudo capturar la ventana activa"
 
 #: ../screenshot.py:108
 msgid ""
 "Can not grab the current window because your window manager does not support "
 "NET_WM_* hints"
-msgstr ""
+msgstr "No se puede capturar la ventana activa porque su manejador de ventanas no soporta _NET_WM"
 
 #: ../screenshot.py:110
 msgid "Not grabing the desktop as the current window"
-msgstr ""
+msgstr "No se capturo el escritorio como la ventana activa"
 
 #: ../screenshot.py:110
 msgid ""
 "Your focus was on the destop when a client requested a screenshot, Itaka "
 "instead took a screenshot of the whole screen"
-msgstr ""
+msgstr "Su foco estaba en el escritorio cuando el cliente pidió una captura, Itaka tomó una captura "
+"de la pantalla entera"
 
 #: ../screenshot.py:134
 msgid "Could not grab screenshot"
-msgstr ""
+msgstr "No se pudo capturar la pantalla"
 
 #: ../screenshot.py:134
 msgid "GTK+ could not grab a screenshot of the screen"
-msgstr ""
+msgstr "GTK+ no pudo capturar la pantalla"
 
 #: ../screenshot.py:135
 msgid "Could not grab screenshot, GTK+ error"
-msgstr ""
+msgstr "No se pudo capturar la pantalla, error de GTK+"
 
 #: ../screenshot.py:157 ../screenshot.py:158
 msgid "Could not save screenshot"
-msgstr ""
+msgstr "No se pudo grabar la captura de pantalla"
 
 #: ../screenshot.py:157
 #, python-format
 msgid "Could not save screenshot %s"
-msgstr ""
+msgstr "No se pudo grabar la captura %s"
 
 #: ../server.py:41
 msgid "Could not import Twisted Network Framework"
-msgstr ""
+msgstr "No se pudo importar el Twisted Network Framework"
 
 #: ../server.py:264
 msgid "Client provided empty username and password"
-msgstr ""
+msgstr "El cliente insertó un nombre de usuario y contraseña vacios"
 
 #: ../server.py:264
 #, python-format
 msgid "Client %s provided empty username and password"
-msgstr ""
+msgstr "El cliente %s insertó un nombre de usuario y contraseña vacios"
 
 #: ../server.py:268
 msgid "Client provided incorrect username and password"
-msgstr ""
+msgstr "El cliente insertó un nombre de usuario y contraseña incorrecto"
 
 #: ../server.py:268
 #, python-format
 msgid "Client %s provided incorrect username and password: %s:%s"
-msgstr ""
+msgstr "El cliente %s insertó un nombre de usuario y contraseña incorrecto: %s:%s"
 
 #: ../server.py:340
 msgid "Screenshot taken"
-msgstr ""
+msgstr "Captura tomada"
 
 #: ../server.py:340
 #, python-format
 msgid "%s requested screenshot"
-msgstr ""
+msgstr "%s pidió una captura"
 
 #: ../uigtk.py:32
 #, python-format
-msgid "[*] ERROR: Could not initiate GTK modules: %s"
-msgstr ""
+msgid "Could not initiate GTK modules: %s"
+msgstr "No se pudo iniciar los modulos GTK: %s"
 
 #: ../uigtk.py:36
-msgid "[*] ERROR: Could not import Twisted Network Framework"
-msgstr ""
+msgid "Could not import Twisted Network Framework"
+msgstr "No se pudo importar el Twisted Network Framework"
 
 #: ../uigtk.py:43
-msgid "[*] ERROR: Failed to import Itaka modules"
-msgstr ""
+msgid "Failed to import Itaka modules"
+msgstr "Error al importar los modulos de Itaka"
 
 #: ../uigtk.py:51
-msgid "[*] WARNING: Pygtk module is missing"
-msgstr ""
+msgid "Pygtk module is missing"
+msgstr "No se pudo encontrar el modulo Pygtk"
 
 #: ../uigtk.py:56
-msgid "[*] ERROR: GTK+ bindings are missing"
-msgstr ""
+msgid "GTK+ bindings are missing"
+msgstr "No se pudo encontrar los modulos GTK+"
 
 #: ../uigtk.py:60
 #, python-format
-msgid "[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed"
-msgstr ""
+msgid "Itaka requires GTK+ 2.10, you have %s installed"
+msgstr "Itaka requiere GTK+ 2.10, usted tiene %s instalado"
 
 #: ../uigtk.py:330
 msgid "St_art"
-msgstr ""
+msgstr "Ini_ciar"
 
 #: ../uigtk.py:333
 msgid "St_op"
-msgstr ""
+msgstr "_Detener"
 
 #: ../uigtk.py:339
 msgid "Show _Notifications"
-msgstr ""
+msgstr "Mostrar _Notificaciones"
 
 #: ../uigtk.py:369 ../uigtk.py:1199
 msgid "Start"
-msgstr ""
+msgstr "Iniciar"
 
 #: ../uigtk.py:405
 msgid "Events"
-msgstr ""
+msgstr "Eventos"
 
 #: ../uigtk.py:406
 msgid "Details"
-msgstr ""
+msgstr "Detalles"
 
 #: ../uigtk.py:446
 msgid "Clear"
-msgstr ""
+msgstr "Limpiar"
 
 #: ../uigtk.py:452
 msgid "Pause"
-msgstr ""
+msgstr "Pausar"
 
 #: ../uigtk.py:464
 msgid "<b>Server log</b>"
-msgstr ""
+msgstr "<b>Registro del servidor</b>"
 
 #: ../uigtk.py:486
 msgid "<b>Preferences</b>"
-msgstr ""
+msgstr "<b>Preferencias</b>"
 
 #: ../uigtk.py:491
 msgid "Port"
-msgstr ""
+msgstr "Puerto"
 
 #: ../uigtk.py:495
 msgid "Authentication"
-msgstr ""
+msgstr "Autentificación"
 
 #: ../uigtk.py:499
 msgid "Username"
-msgstr ""
+msgstr "Usuario"
 
 #: ../uigtk.py:503
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
 #: ../uigtk.py:507
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: ../uigtk.py:511
 msgid "Quality"
-msgstr ""
+msgstr "Calidad"
 
 #: ../uigtk.py:515
 msgid "Scale"
-msgstr ""
+msgstr "Escala"
 
 #: ../uigtk.py:520
 msgid "Window"
-msgstr ""
+msgstr "Ventana"
 
 #: ../uigtk.py:525
 msgid "Notifications"
-msgstr ""
+msgstr "Notificaciones"
 
 #: ../uigtk.py:586
 msgid "Fullscreen"
-msgstr ""
+msgstr "Pantalla completa"
 
 #: ../uigtk.py:587 ../uigtk.py:676
 msgid "Active window"
-msgstr ""
+msgstr "Ventana activa"
 
 #: ../uigtk.py:746
 msgid "Could not save preferences"
-msgstr ""
+msgstr "No se pudo grabar las preferencias"
 
 #: ../uigtk.py:1020
 msgid "Logging paused"
-msgstr ""
+msgstr "Registro detuvido"
 
 #: ../uigtk.py:1042
 msgid "Logging resumed"
-msgstr ""
+msgstr "Registro resumido"
 
 #: ../uigtk.py:1139
 msgid "Failed to start server"
-msgstr ""
+msgstr "No se pudo iniciar el servidor"
 
 #: ../uigtk.py:1139
 #, python-format
 msgid "Failed to start server: %s"
-msgstr ""
+msgstr "No se pudo iniciar el servidor: %s"
 
 #: ../uigtk.py:1147
 msgid "Secure server"
-msgstr ""
+msgstr "Servidor seguro"
 
 #: ../uigtk.py:1150
 msgid "Server"
-msgstr ""
+msgstr "Servidor"
 
 #: ../uigtk.py:1153 ../uigtk.py:1155
 #, python-format
 msgid "%s started on port %d"
-msgstr ""
+msgstr "%s iniciado en el puerto %d"
 
 #: ../uigtk.py:1153
 #, python-format
 msgid "%s started on port %s TCP. Serving %s images with %d%% quality"
-msgstr ""
+msgstr "%s iniciado en el puerto %s TCP. Sirviendo imágenes %s con %d%% de calidad"
 
 #: ../uigtk.py:1155
 #, python-format
 msgid "%s started on port %s TCP. Serving %s images"
-msgstr ""
+msgstr "%s iniciado en el puerto %s TCP. Sirviendo imágenes %s"
 
 #: ../uigtk.py:1160
 msgid "Stop"
-msgstr ""
+msgstr "Detener"
 
 #: ../uigtk.py:1164
 msgid "Itaka - Server running"
-msgstr ""
+msgstr "Itaka - Servidor funcionando"
 
 #: ../uigtk.py:1183
 msgid "Server stopped"
-msgstr ""
+msgstr "Servidor detenido"
 
 #: ../uigtk.py:1212
 #, python-format
 msgid "Restarting the server to listen on port %d"
-msgstr ""
+msgstr "Reiniciando el servidor para escuchar en el puerto %d"
 
 #: ../uigtk.py:1222
 msgid "Shutting down server"
-msgstr ""
+msgstr "Deteniendo el servidor"
 
 #: ../uigtk.py:1256
 msgid "day"
-msgstr ""
+msgstr "día"
 
 #: ../uigtk.py:1261
 msgid "hour"
-msgstr ""
+msgstr "hora"
 
 #: ../uigtk.py:1263
 msgid "minute"
-msgstr ""
+msgstr "minuto"
 
 #: ../uigtk.py:1265
 msgid "<b>When</b>: "
-msgstr ""
+msgstr "<b>Cuando</b>"
 
 #: ../uigtk.py:1265
 msgid " ago"
@@ -370,28 +368,28 @@ msgstr ""
 #: ../uigtk.py:1319
 #, python-format
 msgid "Screenshot served to %s"
-msgstr ""
+msgstr "Captura servida a %s"
 
 #: ../uigtk.py:1319
 #, python-format
 msgid "Screenshot number %d served to %s"
-msgstr ""
+msgstr "Captura número %d servida a %s"
 
 #: ../uigtk.py:1321
 #, python-format
 msgid "<b>Served</b>: %d"
-msgstr ""
+msgstr "<b>Servidas</b>: %d"
 
 #: ../uigtk.py:1323
 #, python-format
 msgid "<b>Client</b>: %s"
-msgstr ""
+msgstr "<b>Cliente</b>: %s"
 
 #: ../uigtk.py:1325
 #, python-format
 msgid "Itaka - %s served"
-msgstr ""
+msgstr "Itaka ' %s servidas"
 
 #: ../uigtk.py:1325
 msgid "screenshot"
-msgstr ""
+msgstr "captura"
