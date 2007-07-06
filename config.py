@@ -55,7 +55,7 @@ if os.path.exists(prefix):
 
 # See if our images are there before starting
 if not os.path.exists(image_dir):
-    print '[*] ERROR: Could not find images directory %s' % (image_dir)
+    print_error(_('Could not find images directory %s' % (image_dir)))
     sys.exit(1)
 
 #: Save path for screenshots (system-specific specified later on)
@@ -75,10 +75,10 @@ if system == 'posix' and platform != 'darwin':
         notifyavailable = True
 
         if not pynotify.init('Itaka'):
-            print '[*] WARNING: Pynotify module is failing, disabling notifications'
+            print_warning(_('Pynotify module is failing, disabling notifications'))
             notifyavailable = False
     except ImportError:
-        print '[*] WARNING: Pynotify module is missing, disabling notifications'
+        print_warning(_('Pynotify module is missing, disabling notifications'))
         notifyavailable = False
 
 #: Console output setting
@@ -123,7 +123,7 @@ class ConfigParser:
         if arguments is not None and len(arguments) > 1 and arguments[-1] == '-debug':
             global output
             output = {'normal': True, 'debug': True, 'quiet': False}
-            print '[*] Initializing in debug mode'
+            print_m(_('Initializing in debug mode'))
 
         #: Default configuration sections and values
         self.defaultoptions = ( 
@@ -162,10 +162,10 @@ class ConfigParser:
         # Read and assign values from the configuration file 
         try:
             config.read(self.configfile)
-            if output['normal']: print '[*] Read configuration (%s)' % (self.configfile)
+            if output['normal']: print_m(_('Read configuration (%s)' % (self.configfile)))
 
         except:
-            if output['normal']: print '[*] ERROR: Could not read configuration file (%s)' % (self.configfile)
+            if output['normal']: print_error(_('Could not read configuration file (%s)' % (self.configfile)))
             if output['debug']: traceback.print_exc()
 
         """ Retrieve values and return them as a dict """
@@ -193,7 +193,7 @@ class ConfigParser:
             for section in configdict:
                 if not values.has_key(section):
                     if not output['quiet'] and not brokenwarning: 
-                        print '[*] WARNING: Detected old or broken configuration file. Fixing'
+                        print_warning(_('Detected old or broken configuration file. Fixing'))
                         brokenwarning = True
                     config.add_section(section)
                     values[section] = {}
@@ -206,7 +206,8 @@ class ConfigParser:
                     for keyset in configdict[section]:
                         key, val = keyset
                         if not values[section].has_key(key):
-                            if not output['quiet'] and not brokenwarning: print '[*] WARNING: Detected old or broken configuration file. Fixing'
+                            if not output['quiet'] and not brokenwarning:
+                                print_warning(_('Detected old or broken configuration file. Fixing'))
                             self.update(section, key, val)
                             values[section][key] = val
                             brokenwarning = True
@@ -228,9 +229,9 @@ class ConfigParser:
         # Save
         try:
             config.write(open(self.configfile, 'w'))
-            if output['normal']: print '[*] Saving configuration'	
+            if output['normal']: print_m(_('Saving configuration'))	
         except:		
-            if not output['quiet']: print '[*] ERROR: Could not write configuration file %s' % (self.configfile)
+            if not output['quiet']: print_error(_('Could not write configuration file %s' % (self.configfile)))
             if output['debug']: traceback.print_exc()
 
     def update(self, section, key, value):
@@ -249,9 +250,9 @@ class ConfigParser:
         
         try:
             config.write(open(self.configfile, 'w'))
-            if output['debug']: print '[*] Updating configuration key %s to %s' % (key, value)	
+            if output['debug']: print_m(_('Updating configuration key %s to %s' % (key, value)))	
         except:
-            if not output['quiet']: print '[*] ERROR: Could not write configuration file %s' % (self.configfile)
+            if not output['quiet']: print_error(_('Could not write configuration file %s' % (self.configfile)))
             if output['debug']: traceback.print_exc()
 
     def create(self, path):
@@ -262,7 +263,7 @@ class ConfigParser:
         @param path: Path to the configuration file
         """
         
-        if output['normal']: print '[*] Creating default configuration'
+        if output['normal']: print_m(_('Creating default configuration'))
 
         # Set default sections and options
         for configdict in self.defaultoptions:
@@ -280,7 +281,7 @@ class ConfigParser:
         try:
             config.write(open(path, 'w'))
         except:
-            if not output['quiet']: print '[*] ERROR: Could not write configuration file %s' % (path)
+            if not output['quiet']: print_error(_('Could not write configuration file %s' % (path)))
             if output['debug']: traceback.print_exc()
 
         self.configfile = path		

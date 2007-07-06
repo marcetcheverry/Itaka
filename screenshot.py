@@ -80,12 +80,12 @@ class Screenshot:
             self.windowpositionx, self.windowpositiony = self.activewindow.get_root_origin()
         else:
             self.currentwindowfailed = True
-            raise error.ItakaScreenshotErrorWmHints, 'Window Manager does not support _NET_WM hints'
+            raise error.ItakaScreenshotErrorWmHints, _('Window Manager does not support _NET_WM hints')
     
         # We do not want to grab the desktop window
         if self.activewindow.property_get("_NET_WM_WINDOW_TYPE")[-1][0] == '_NET_WM_WINDOW_TYPE_DESKTOP':
             self.currentwindowfailed = True
-            raise error.ItakaScreenshotErrorActiveDesktop, 'Active window is desktop'
+            raise error.ItakaScreenshotErrorActiveDesktop, _('Active window is desktop')
 
         return (self.windowwidth, self.windowheight, self.windowpositionx, self.windowpositiony)
 
@@ -105,9 +105,9 @@ class Screenshot:
             try:
                 self.currentwindow = self.find_current_active_window()
             except error.ItakaScreenshotErrorWmHints:
-                self.gui.log.failure(('Screenshot', 'take_screenshot'), ('Can not grab the current window', 'Can not grab the curren window because your window manager does not support NET_WM_* hints'), 'WARNING')
+                self.gui.log.failure(('Screenshot', 'take_screenshot'), (_('Can not grab the current window'), _('Can not grab the current window because your window manager does not support NET_WM_* hints')), 'WARNING')
             except error.ItakaScreenshotErrorActiveDesktop:
-                self.gui.log.failure(('Screenshot', 'take_screenshot'), ('Not grabing the desktop as the current window', 'Your focus was on the destop when a client requested a screenshot, Itaka instead took a screenshot of the whole screen'), 'WARNING')
+                self.gui.log.failure(('Screenshot', 'take_screenshot'), (_('Not grabing the desktop as the current window'), _('Your focus was on the destop when a client requested a screenshot, Itaka instead took a screenshot of the whole screen')), 'WARNING')
 
             if not self.currentwindowfailed:
                 # Make the window size also the screen size for scaling purposes
@@ -131,8 +131,8 @@ class Screenshot:
         if not hasattr(self, 'screenshot') or self.screenshot is None:
             # Reset the failure flag
             self.currentwindowfailed = False
-            self.gui.log.failure(('Screenshot', 'take_screenshot'), ('Could not grab screenshot', 'GTK+ could not grab a screenshot of the screen.'), 'ERROR')
-            raise error.ItakaScreenshotError, 'Could not grab screenshot, GTK+ error'
+            self.gui.log.failure(('Screenshot', 'take_screenshot'), (_('Could not grab screenshot'), _('GTK+ could not grab a screenshot of the screen')), 'ERROR')
+            raise error.ItakaScreenshotError, _('Could not grab screenshot, GTK+ error')
 
         if self.configuration['screenshot']['scale']:
             # Make it just work, dont bother warning about very rare cases
@@ -154,8 +154,8 @@ class Screenshot:
             else:
                 self.screenshot.save(self.shotFile, self.configuration['screenshot']['format'].lower())
         except:
-            self.gui.log.failure(('Screenshot','take_screenshot'), ('Could not save screenshot', 'Could not save screenshot %s' % (traceback.format_exc())), 'ERROR')
-            raise error.ItakaSaveScreenshotError, "Could not save screenshot"
+            self.gui.log.failure(('Screenshot','take_screenshot'), (_('Could not save screenshot'), _('Could not save screenshot %s') % (traceback.format_exc())), 'ERROR')
+            raise error.ItakaSaveScreenshotError, _('Could not save screenshot')
 
         # Important workaround to avoid a memory leak
         # http://www.async.com.br/faq/pygtk/index.py?req=show&file=faq08.004.htp

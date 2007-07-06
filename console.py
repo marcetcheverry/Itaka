@@ -22,6 +22,54 @@
 
 """ Itaka console output and logging engine """
 
+import __builtin__
+
+# Global output functions
+def print_m(string):
+    """
+    Print wrapper.
+
+    @type str: str
+    @param str: Message
+    """
+    
+    print '[*] %s' % (str(string))
+
+def print_warning(string):
+    """
+    Print wrapper.
+
+    @type str: str
+    @param str: Message
+    """
+
+    print_m('WARNING: %s' % (string))
+
+def print_error(string):
+    """
+    Print wrapper.
+
+    @type str: str
+    @param str: Message
+    """
+
+    print_m('ERROR: %s' % (string))
+
+def print_debug(string):
+    """
+    Print wrapper.
+
+    @type str: str
+    @param str: Message
+    """
+
+    print_m('DEBUG: %s' % (string))
+
+# Register them for global use
+__builtin__.print_m = print_m
+__builtin__.print_error = print_error
+__builtin__.print_warning = print_warning
+
 class BaseMessage:
     """
     Base class for console output.
@@ -36,7 +84,7 @@ class BaseMessage:
         """
 
         self.message = message
-        print '[*] %s' % (str(self.message))
+        print_m(self.message)
 
 class BaseFailureMessage(BaseMessage):
     """
@@ -86,7 +134,7 @@ class Console:
 
         self.itakaglobals = itakaglobals
         if self.itakaglobals.output['normal']: 
-            BaseMessage('Itaka %s starting' % (itakaglobals.version))
+            BaseMessage(_('Itaka %s starting') % (itakaglobals.version))
             
     def __del__(self):
         """
@@ -94,7 +142,7 @@ class Console:
         """
         
         if self.itakaglobals.output['normal']: 
-            BaseMessage('Itaka shutting down')
+            BaseMessage(_('Itaka shutting down'))
 
     def message(self, message):
         """

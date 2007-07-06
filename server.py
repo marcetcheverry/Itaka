@@ -28,7 +28,7 @@ try:
     import screenshot
     import error
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka modules"
+    print_error(_('Failed to import Itaka modules'))
     traceback.print_exc()
     sys.exit(1)
 
@@ -38,7 +38,7 @@ try:
     from twisted.internet import reactor
     import twisted.internet.error
 except ImportError:
-    print "[*] ERROR: Could not import Twisted Network Framework"
+    print_error(_('Could not import Twisted Network Framework'))
     traceback.print_exc()
     sys.exit(1)
 
@@ -261,11 +261,11 @@ class RootResource(static.Data):
             self.password = self.request.getPassword()
            
             if not self.username and not self.password:
-                self.gui.log.failure(('RootResource', 'render'), ('Client provided empty username and password', 'Client %s provided empty username and password' % (self.ip)), 'WARNING')
+                self.gui.log.failure(('RootResource', 'render'), (_('Client provided empty username and password'), _('Client %s provided empty username and password') % (self.ip)), 'WARNING')
                 self._promptAuth()
             else:
                 if self.username != self.configuration['server']['username'] or self.password != self.configuration['server']['password']:
-                    self.gui.log.failure(('RootResource', 'render'), ('Client provided incorrect username and password', 'Client %s provided incorrect username and password: %s:%s' % (self.ip, self.username, self.password)), 'WARNING')
+                    self.gui.log.failure(('RootResource', 'render'), (_('Client provided incorrect username and password'), _('Client %s provided incorrect username and password: %s:%s') % (self.ip, self.username, self.password)), 'WARNING')
                     self._promptAuth()
                 elif self.username == self.configuration['server']['username'] and self.password == self.configuration['server']['password']:
                     self.request.setResponseCode(http.OK)
@@ -337,14 +337,11 @@ class ScreenshotResource(resource.Resource):
                 import pynotify
                 uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
 
-                n = pynotify.Notification("Screenshot taken", 
-                "%s requested screenshot"
-                % (self.ip), uri)
+                n = pynotify.Notification(_('Screenshot taken'), _('%s requested screenshot' % (self.ip)), uri)
 
                 n.set_timeout(1500)
                 n.attach_to_status_icon(self.gui.statusIcon)
                 n.show()
-
             self.gui.update_gui(self.counter, self.ip, self.time)
 
             return open(self.shotFile, 'rb').read()

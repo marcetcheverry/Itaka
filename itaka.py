@@ -22,14 +22,19 @@
 
 """ Itaka core """
 
-import sys, traceback
+import sys, traceback, gettext, locale, __builtin__
+locale.setlocale(locale.LC_ALL, '')
+gettext.bindtextdomain('Itaka', 'i18n/')
+gettext.textdomain('Itaka')
+
+__builtin__._ = gettext.gettext
 
 validarguments = ('-help', '-debug')
 arguments = sys.argv
 
 # Only one option at a time
 if len(arguments) > 2 or (len(arguments) == 2 and arguments[-1] not in validarguments or arguments[-1] == validarguments[0]):
-    print "Usage: %s (-debug|-help)" % (arguments[0])
+    print _('Usage: %s (-debug|-help)') % (arguments[0])
     sys.exit(1)
 elif len(arguments) == 1:
     arguments = None
@@ -46,13 +51,13 @@ try:
         # Initiate console with a reference to our global configuration values
         console = console.Console(itakaglobals)
     except:
-        print "[*] ERROR: Could not initiate Console engine"
+        print_error(_('Could not initiate Console engine'))
         traceback.print_exc()
         sys.exit(1)
 
     import uigtk as igui
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka modules"
+    print_error(_('Failed to import Itaka modules'))
     traceback.print_exc()
     sys.exit(1)
 
@@ -61,7 +66,7 @@ if __name__ == "__main__":
         gui = igui.Gui(console, (itakaglobals, configinstance))
         gui.main()
     except Exception, e:
-        console.failure(('Itaka', 'core'), "Could not initiate GUI: %s" % (e), 'ERROR')
+        console.failure(('Itaka', 'core'), _('Could not initiate GUI: %s') % (e), 'ERROR')
         if itakaglobals.output['debug']:
             traceback.print_exc()
         sys.exit(1)

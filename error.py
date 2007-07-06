@@ -32,7 +32,7 @@ class ItakaError(Exception):
         Constructor
 
         @type message: str
-        @param message: exception message
+        @param message: Exception message
         """
 
         self.message = message

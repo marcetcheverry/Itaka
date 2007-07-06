@@ -29,18 +29,18 @@ try:
     try:
         gtk2reactor.install()
     except Exception, e:
-        print "[*] ERROR: Could not initiate GTK modules: %s" % (e)
+        print _("[*] ERROR: Could not initiate GTK modules: %s") % (e)
         sys.exit(1)
     from twisted.internet import reactor
 except ImportError:
-    print "[*] ERROR: Could not import Twisted Network Framework"
+    print _("[*] ERROR: Could not import Twisted Network Framework")
     sys.exit(1)
 
 try:
     import server as iserver
     import error
 except ImportError:
-    print "[*] ERROR: Failed to import Itaka modules"
+    print _("[*] ERROR: Failed to import Itaka modules")
     traceback.print_exc()
     sys.exit(1)
 
@@ -48,16 +48,16 @@ try:
     import pygtk
     pygtk.require("2.0")
 except ImportError:
-    print "[*] WARNING: Pygtk module is missing"
+    print _("[*] WARNING: Pygtk module is missing")
     pass
 try:
     import gtk, gobject, pango
 except ImportError:
-    print "[*] ERROR: GTK+ bindings are missing"
+    print _("[*] ERROR: GTK+ bindings are missing")
     sys.exit(1)
 
 if gtk.gtk_version[1] < 10:
-    print "[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed" % (".".join(str(x) for x in gtk.gtk_version))
+    print _("[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed") % (".".join(str(x) for x in gtk.gtk_version))
     sys.exit(1)
 
 class GuiLog:
@@ -327,16 +327,16 @@ class Gui:
 
         self.stopimage = gtk.Image()
         self.stopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
-        self.menuitemstart = gtk.ImageMenuItem('St_art') 
+        self.menuitemstart = gtk.ImageMenuItem(_('St_art')) 
         self.menuitemstart.set_image(self.startimage)
         self.menuitemstart.connect('activate', self.start_server, True)
-        self.menuitemstop = gtk.ImageMenuItem('St_op') 
+        self.menuitemstop = gtk.ImageMenuItem(_('St_op')) 
         self.menuitemstop.set_image(self.stopimage)
         self.menuitemstop.connect('activate', self.stop_server, True)
         self.menuitemstop.set_sensitive(False)
 
         if self.itakaglobals.notifyavailable: 
-            self.menuitemnotifications = gtk.CheckMenuItem('Show _Notifications')
+            self.menuitemnotifications = gtk.CheckMenuItem(_('Show _Notifications'))
             if self.configuration['server']['notify']:
                 self.menuitemnotifications.set_active(True)
             self.menuitemnotifications.connect('toggled', self.statusicon_notify)
@@ -366,7 +366,7 @@ class Gui:
 
         self.box.pack_start(self.itakaLogo, False, False, 35)
 
-        self.buttonStartstop = gtk.ToggleButton('Start', gtk.STOCK_PREFERENCES)
+        self.buttonStartstop = gtk.ToggleButton(_('Start'), gtk.STOCK_PREFERENCES)
         self.startstopimage = gtk.Image()
 
         self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
@@ -402,8 +402,8 @@ class Gui:
         self.lognotebook = gtk.Notebook()
         self.lognotebook.set_tab_pos(gtk.POS_BOTTOM)
 
-        self.logeventslabel = gtk.Label('Events')
-        self.logdetailslabel = gtk.Label('Details')
+        self.logeventslabel = gtk.Label(_('Events'))
+        self.logdetailslabel = gtk.Label(_('Details'))
 
         self.logeventsscroll = gtk.ScrolledWindow()
         self.logeventsscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -443,13 +443,13 @@ class Gui:
         self.lognotebook.append_page(self.logdetailsscroll, self.logdetailslabel)
 
         self.loghbox = gtk.HBox(False, 0)
-        self.logclearbutton = gtk.Button('Clear')
+        self.logclearbutton = gtk.Button(_('Clear'))
         self.logclearbuttonimage = gtk.Image()
         self.logclearbuttonimage.set_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
         self.logclearbutton.set_image(self.logclearbuttonimage)
         self.logclearbutton.connect('clicked', self.clearlogger)
 
-        self.logpausebutton = gtk.ToggleButton('Pause')
+        self.logpausebutton = gtk.ToggleButton(_('Pause'))
         self.logpausebuttonimage = gtk.Image()
         self.logpausebuttonimage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
         self.logpausebutton.set_image(self.logpausebuttonimage)
@@ -461,7 +461,7 @@ class Gui:
         self.logvbox.pack_start(self.lognotebook, False, False, 4)
         self.logvbox.pack_start(self.loghbox, False, False, 4)
 
-        self.logboxLabel = gtk.Label('<b>Server log</b>')
+        self.logboxLabel = gtk.Label(_('<b>Server log</b>'))
         self.logboxLabel.set_use_markup(True)
 
         self.expander_size_finalized = False
@@ -483,46 +483,46 @@ class Gui:
             setattr(self, 'preferencesHBox%d' % (n), gtk.HBox(False, 0))
 
         self.preferencesFramesettings = gtk.Frame()
-        self.preferencesSettingslabel = gtk.Label('<b>Preferences</b>')
+        self.preferencesSettingslabel = gtk.Label(_('<b>Preferences</b>'))
         self.preferencesSettingslabel.set_use_markup(True)
         self.preferencesFramesettings.set_label_widget(self.preferencesSettingslabel)
         self.preferencesFramesettings.set_label_align(0.5, 0.5)
 
-        self.preferencesLabelport = gtk.Label('Port  ')
+        self.preferencesLabelport = gtk.Label(_('Port'))
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelport.set_alignment(0, 0.60)
 
-        self.preferencesLabelauth = gtk.Label('Authentication   ')
+        self.preferencesLabelauth = gtk.Label(_('Authentication'))
         self.preferencesLabelauth.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelauth.set_alignment(0, 0.60)
 
-        self.preferencesLabeluser = gtk.Label('Username ')
+        self.preferencesLabeluser = gtk.Label(_('Username'))
         self.preferencesLabeluser.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabeluser.set_alignment(0, 0.60)
 
-        self.preferencesLabelpass = gtk.Label('Password  ')
+        self.preferencesLabelpass = gtk.Label(_('Password'))
         self.preferencesLabelpass.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelpass.set_alignment(0, 0.60)
 
-        self.preferencesLabelformat = gtk.Label('Format  ')
+        self.preferencesLabelformat = gtk.Label(_('Format'))
         self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelformat.set_alignment(0, 0.50)
 
-        self.preferencesLabelquality = gtk.Label('Quality  ')
+        self.preferencesLabelquality = gtk.Label(_('Quality'))
         self.preferencesLabelquality.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelquality.set_alignment(0, 0.50)
 
-        self.preferencesLabelscale = gtk.Label('Scale  ')
+        self.preferencesLabelscale = gtk.Label(_('Scale'))
         self.preferencesLabelscale.set_justify(gtk.JUSTIFY_LEFT)
         self.preferencesLabelscale.set_alignment(0, 0.50)
 
         if not self.itakaglobals.system == 'nt':
-            self.preferencesLabelscreenshot = gtk.Label('Window  ')
+            self.preferencesLabelscreenshot = gtk.Label(_('Window'))
             self.preferencesLabelscreenshot.set_justify(gtk.JUSTIFY_LEFT)
             self.preferencesLabelscreenshot.set_alignment(0, 0.50)
 
         if self.itakaglobals.notifyavailable: 
-            self.preferencesLabelnotifications = gtk.Label('Notifications  ')
+            self.preferencesLabelnotifications = gtk.Label(_('Notifications'))
             self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
             self.preferencesLabelnotifications.set_alignment(0, 0.50)
 
@@ -583,8 +583,8 @@ class Gui:
 
         if not self.itakaglobals.system == 'nt':
             self.preferencesComboscreenshot = gtk.combo_box_new_text()
-            self.preferencesComboscreenshot.append_text('Fullscreen')
-            self.preferencesComboscreenshot.append_text('Active window')
+            self.preferencesComboscreenshot.append_text(_('Fullscreen'))
+            self.preferencesComboscreenshot.append_text(_('Active window'))
             if self.configuration['screenshot']['currentwindow']:
                 self.preferencesComboscreenshot.set_active(1)
             else: 
@@ -673,7 +673,7 @@ class Gui:
             self.configuration['server']['notify'] = False
 
         if not self.itakaglobals.system == 'nt':
-            if self.preferencesComboscreenshot.get_active_text() == 'Active window':
+            if self.preferencesComboscreenshot.get_active_text() == _('Active window'):
                 self.configuration['screenshot']['currentwindow'] = True
                 screenshotvalue = True
             else:
@@ -743,7 +743,7 @@ class Gui:
                 for section in self.configurationdict:
                     [self.configinstance.update(section, key, value) for key, value in self.configurationdict[section].iteritems() if key not in self.currentconfiguration[section] or self.currentconfiguration[section][key] != value]
             except:
-                self.log.failure(('Gui', 'save_preferences'), "Could not save preferences", 'ERROR')
+                self.log.failure(('Gui', 'save_preferences'), _('Could not save preferences'), 'ERROR')
 
     def expandpreferences(self, *args):
         """
@@ -1017,7 +1017,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.logdetailsbuffer.apply_tag_by_name('center-image', self.logdetailsbuffer.get_iter_at_offset(0), self.logdetailsimageiter)
 
         """
-        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), "Logging paused"])
+        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging paused')])
         
         self.logeventstreeview.set_sensitive(False)
         self.logdetailstextview.set_sensitive(False)
@@ -1039,7 +1039,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.logdetailstextview.set_sensitive(True)
         self.logeventstreeview.set_sensitive(True)
 
-        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), "Logging resumed"])
+        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging resumed')])
 
         self.logpaused = False
 
@@ -1069,7 +1069,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param widget: gtk.Widget
         """
         
-        if self.preferencesComboformat.get_active_text() == "PNG":
+        if self.preferencesComboformat.get_active_text() == 'PNG':
             self.preferencesHBox6.set_sensitive(False)
         else:
             self.preferencesHBox6.set_sensitive(True)
@@ -1136,7 +1136,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         try:
             self.server.start_server(self.configuration['server']['port'])
         except error.ItakaServerErrorCannotListen, e:
-            self.log.failure(('Gui', 'start_server'), ('Failed to start server', 'Failed to start server: %s' % (e)), 'ERROR')
+            self.log.failure(('Gui', 'start_server'), (_('Failed to start server'), _('Failed to start server: %s') % (e)), 'ERROR')
             self.buttonStartstop.set_active(False)
             return
 
@@ -1144,24 +1144,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if self.configuration['server']['authentication']:
             serverstock = 'STOCK_DIALOG_AUTHENTICATION'
-            serverstring = 'Secure server'
+            serverstring = _('Secure server')
         else:
             serverstock = 'STOCK_CONNECT'
-            serverstring = 'Server'
+            serverstring = _('Server')
 
         if self.configuration['screenshot']['format'] == "jpeg":
-            self.log.detailed_message('%s started on port %d' % (serverstring, self.configuration['server']['port']), '%s started on port %s TCP. Serving %s images with %d%% quality' % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', serverstock])
+            self.log.detailed_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images with %d%% quality') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', serverstock])
         else:
-            self.log.detailed_message('%s started on port %d' % (serverstring, self.configuration['server']['port']), '%s started on port %s TCP. Serving %s images' % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', serverstock])
+            self.log.detailed_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', serverstock])
 
         # Change buttons
         if foreign:
             self.buttonStartstop.set_active(True)
-        self.buttonStartstop.set_label('Stop')
+        self.buttonStartstop.set_label(_('Stop'))
         self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
         self.buttonStartstop.set_image(self.startstopimage)
 
-        self.statusIcon.set_tooltip('Itaka - Server running')
+        self.statusIcon.set_tooltip(_('Itaka - Server running'))
         self.menuitemstart.set_sensitive(False)
         self.menuitemstop.set_sensitive(True)
 
@@ -1180,7 +1180,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.server.listening():
-            self.log.message('Server stopped', ['stock', 'STOCK_DISCONNECT'])
+            self.log.message(_('Server stopped'), ['stock', 'STOCK_DISCONNECT'])
 
             self.server.stop_server()
             self.server.remove_log_observer()
@@ -1193,10 +1193,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             if (foreign):
                 self.buttonStartstop.set_active(False)
 
-            self.statusIcon.set_tooltip("Itaka")
+            self.statusIcon.set_tooltip('Itaka')
             self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
             self.buttonStartstop.set_image(self.startstopimage)
-            self.buttonStartstop.set_label("Start")
+            self.buttonStartstop.set_label(_('Start'))
             self.labelLastip.set_text('')
             self.labelTime.set_text('')
             self.labelServed.set_text('')
@@ -1209,7 +1209,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.server.listening():
-            self.log.message('Restarting the server to listen on port %d' % (self.configuration['server']['port']), ['stock', 'STOCK_REFRESH'])
+            self.log.message(_('Restarting the server to listen on port %d') % (self.configuration['server']['port']), ['stock', 'STOCK_REFRESH'])
             self.stop_server(None, True)
             self.start_server(None, True)
 
@@ -1219,7 +1219,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.server.listening():
-            self.console.message('Shutting down server')
+            self.console.message(_('Shutting down server'))
             self.server.stop_server()
             del self.console
         else:
@@ -1253,16 +1253,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         self.pieces = []
         if self.td.days:
-                self.pieces.append(self.plural(self.td.days, 'day'))
+                self.pieces.append(self.plural(self.td.days, _('day')))
 
         self.minutes, self.seconds = divmod(self.td.seconds, 60)
         self.hours, self.minutes = divmod(self.minutes, 60)
         if self.hours:
-            self.pieces.append(self.plural(self.hours, 'hour'))
+            self.pieces.append(self.plural(self.hours, _('hour')))
         if self.minutes or len(self.pieces) == 0:
-            self.pieces.append(self.plural(self.minutes, 'minute'))
+            self.pieces.append(self.plural(self.minutes, _('minute')))
 
-        self.labelTime.set_text("<b>When</b>: " + ", ".join(self.pieces) + " ago")
+        self.labelTime.set_text(_('<b>When</b>: ') + ', '.join(self.pieces) + _(' ago'))
         self.labelTime.set_use_markup(True)
 
         # Need this so it runs more than once
@@ -1316,13 +1316,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.ip = ip
         self.time = time
 
-        self.log.detailed_message('Screenshot served to %s' % (self.ip), 'Screenshot number %d served to %s' % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+        self.log.detailed_message(_('Screenshot served to %s') % (self.ip), _('Screenshot number %d served to %s') % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
 
-        self.labelServed.set_text('<b>Served</b>: %d' % (self.counter))
+        self.labelServed.set_text(_('<b>Served</b>: %d') % (self.counter))
         self.labelServed.set_use_markup(True)
-        self.labelLastip.set_text('<b>Client</b>: %s' % (self.ip))
+        self.labelLastip.set_text(_('<b>Client</b>: %s') % (self.ip))
         self.labelLastip.set_use_markup(True)
-        self.statusIcon.set_tooltip('Itaka - %s served' % (self.plural(self.counter, 'screenshot')))
+        self.statusIcon.set_tooltip(_('Itaka - %s served') % (self.plural(self.counter, _('screenshot'))))
 
         # Show the camera image on tray and interface for 1.5 seconds
         if self.configuration['server']['authentication']:
