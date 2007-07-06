@@ -1,3 +1,6 @@
+trunk:
+ * Added RPM packages
+
 0.2 (I've been watching you...):
  * Rewrote the screenshot module completely to support active window
  screenshots and scaling. #3 #10 
