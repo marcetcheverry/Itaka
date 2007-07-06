@@ -1,5 +1,6 @@
-trunk:
+1.0:
  * Added RPM packages
+ * Added interface translations.
 
 0.2 (I've been watching you...):
  * Rewrote the screenshot module completely to support active window

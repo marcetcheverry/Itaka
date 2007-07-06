@@ -1,6 +1,6 @@
 Summary: On-demand screenshooting server
 Name: itaka
-Version: 0.2
+Version: 1.0
 Release: 1
 License: GPL
 Group: Applications/Communications
@@ -42,6 +42,7 @@ cd $RPM_BUILD_ROOT%{_prefix}/bin
 ln -s ../lib/itaka/itaka.py ./itaka
 
 %clean
+# Might want to add a make clean, since I've added it.
 rm -rf $RPM_BUILD_ROOT
 
 %files

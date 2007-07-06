@@ -35,7 +35,7 @@ clean:
 	rm -f build-stamp configure-stamp
 
 	# Add here commands to clean up after the build process.
-	#-$(MAKE) clean
+	-$(MAKE) clean
 
 	-rm -f debian/files
 
@@ -48,8 +48,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/itaka.
-	$(MAKE) -f Makefile.Debian DESTDIR=$(CURDIR)/debian/itaka install
-	#$(MAKE) install
+	$(MAKE) DESTDIR=$(CURDIR)/debian/itaka/usr install
 
 	# And other miscellaneous tasks
 	/usr/bin/convert share/images/itaka32x32.png debian/itaka/usr/share/pixmaps/itaka.xpm

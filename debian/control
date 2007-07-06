@@ -2,7 +2,7 @@ Source: itaka
 Section: web
 Priority: extra
 Maintainer: Marc E. <santusmarc@gmail.com>
-Build-Depends: imagemagick, docbook-to-man, python, debhelper (>= 5.0.37.2)
+Build-Depends: imagemagick, docbook-to-man, python, intltool, gettext, debhelper (>= 5.0.37.2)
 Standards-Version: 3.7.2
 
 Package: itaka
