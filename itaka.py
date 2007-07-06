@@ -24,8 +24,8 @@
 
 import sys, traceback, gettext, locale, __builtin__
 locale.setlocale(locale.LC_ALL, '')
-gettext.bindtextdomain('Itaka', 'i18n/')
-gettext.textdomain('Itaka')
+gettext.bindtextdomain('itaka', 'i18n/')
+gettext.textdomain('itaka')
 
 __builtin__._ = gettext.gettext
 

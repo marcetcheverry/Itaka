@@ -162,7 +162,8 @@ class ConfigParser:
         # Read and assign values from the configuration file 
         try:
             config.read(self.configfile)
-            if output['normal']: print_m(_('Read configuration (%s)' % (self.configfile)))
+            if output['normal']: 
+                print_m(_('Loaded configuration %s' % (self.configfile)))
 
         except:
             if output['normal']: print_error(_('Could not read configuration file (%s)' % (self.configfile)))

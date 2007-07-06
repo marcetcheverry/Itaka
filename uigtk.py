@@ -29,18 +29,18 @@ try:
     try:
         gtk2reactor.install()
     except Exception, e:
-        print _("[*] ERROR: Could not initiate GTK modules: %s") % (e)
+        print_error(_('Could not initiate GTK modules: %s' % (e)))
         sys.exit(1)
     from twisted.internet import reactor
 except ImportError:
-    print _("[*] ERROR: Could not import Twisted Network Framework")
+    print_error(_('Could not import Twisted Network Framework'))
     sys.exit(1)
 
 try:
     import server as iserver
     import error
 except ImportError:
-    print _("[*] ERROR: Failed to import Itaka modules")
+    print_error(_('Failed to import Itaka modules'))
     traceback.print_exc()
     sys.exit(1)
 
@@ -48,16 +48,16 @@ try:
     import pygtk
     pygtk.require("2.0")
 except ImportError:
-    print _("[*] WARNING: Pygtk module is missing")
+    print_warning(_('Pygtk module is missing'))
     pass
 try:
     import gtk, gobject, pango
 except ImportError:
-    print _("[*] ERROR: GTK+ bindings are missing")
+    print_error(_('GTK+ bindings are missing'))
     sys.exit(1)
 
 if gtk.gtk_version[1] < 10:
-    print _("[*] ERROR: Itaka requires GTK+ 2.10, you have %s installed") % (".".join(str(x) for x in gtk.gtk_version))
+    print_error(_('Itaka requires GTK+ 2.10, you have %s installed' % (".".join(str(x) for x in gtk.gtk_version))))
     sys.exit(1)
 
 class GuiLog:

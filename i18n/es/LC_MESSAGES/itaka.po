@@ -30,10 +30,10 @@ msgstr "El módulo Pynotify no existe, deshabilitando notificaciones"
 msgid "Initializing in debug mode"
 msgstr "Iniciando en modo debug"
 
-#: ../config.py:165
+#: ../config.py:166
 #, python-format
-msgid "Read configuration (%s)"
-msgstr "Configuracion cargada (%s)"
+msgid "Loaded configuration %s"
+msgstr "Configuracion cargada %s"
 
 #: ../config.py:168
 #, python-format
@@ -80,7 +80,7 @@ msgstr "Uso: %s (-debug|-help)"
 msgid "Could not initiate Console engine"
 msgstr "No se pudo iniciar el motor de Consola"
 
-#: ../itaka.py:60 ../server.py:31
+#: ../itaka.py:60 ../server.py:31 ../uigtk.py:43
 msgid "Failed to import Itaka modules"
 msgstr "Error al importar los modulos de Itaka"
 
@@ -105,7 +105,9 @@ msgstr "No se pudo capturar la ventana activa"
 msgid ""
 "Can not grab the current window because your window manager does not support "
 "NET_WM_* hints"
-msgstr "No se puede capturar la ventana activa porque su manejador de ventanas no soporta _NET_WM"
+msgstr ""
+"No se puede capturar la ventana activa porque su manejador de ventanas no "
+"soporta _NET_WM"
 
 #: ../screenshot.py:110
 msgid "Not grabing the desktop as the current window"
@@ -115,8 +117,9 @@ msgstr "No se capturo el escritorio como la ventana activa"
 msgid ""
 "Your focus was on the destop when a client requested a screenshot, Itaka "
 "instead took a screenshot of the whole screen"
-msgstr "Su foco estaba en el escritorio cuando el cliente pidió una captura, Itaka tomó una captura "
-"de la pantalla entera"
+msgstr ""
+"Su foco estaba en el escritorio cuando el cliente pidió una captura, Itaka "
+"tomó una captura de la pantalla entera"
 
 #: ../screenshot.py:134
 msgid "Could not grab screenshot"
@@ -139,7 +142,7 @@ msgstr "No se pudo grabar la captura de pantalla"
 msgid "Could not save screenshot %s"
 msgstr "No se pudo grabar la captura %s"
 
-#: ../server.py:41
+#: ../server.py:41 ../uigtk.py:36
 msgid "Could not import Twisted Network Framework"
 msgstr "No se pudo importar el Twisted Network Framework"
 
@@ -159,7 +162,8 @@ msgstr "El cliente insertó un nombre de usuario y contraseña incorrecto"
 #: ../server.py:268
 #, python-format
 msgid "Client %s provided incorrect username and password: %s:%s"
-msgstr "El cliente %s insertó un nombre de usuario y contraseña incorrecto: %s:%s"
+msgstr ""
+"El cliente %s insertó un nombre de usuario y contraseña incorrecto: %s:%s"
 
 #: ../server.py:340
 msgid "Screenshot taken"
@@ -174,14 +178,6 @@ msgstr "%s pidió una captura"
 #, python-format
 msgid "Could not initiate GTK modules: %s"
 msgstr "No se pudo iniciar los modulos GTK: %s"
-
-#: ../uigtk.py:36
-msgid "Could not import Twisted Network Framework"
-msgstr "No se pudo importar el Twisted Network Framework"
-
-#: ../uigtk.py:43
-msgid "Failed to import Itaka modules"
-msgstr "Error al importar los modulos de Itaka"
 
 #: ../uigtk.py:51
 msgid "Pygtk module is missing"
@@ -317,7 +313,8 @@ msgstr "%s iniciado en el puerto %d"
 #: ../uigtk.py:1153
 #, python-format
 msgid "%s started on port %s TCP. Serving %s images with %d%% quality"
-msgstr "%s iniciado en el puerto %s TCP. Sirviendo imágenes %s con %d%% de calidad"
+msgstr ""
+"%s iniciado en el puerto %s TCP. Sirviendo imágenes %s con %d%% de calidad"
 
 #: ../uigtk.py:1155
 #, python-format
@@ -359,11 +356,11 @@ msgstr "minuto"
 
 #: ../uigtk.py:1265
 msgid "<b>When</b>: "
-msgstr "<b>Cuando</b>"
+msgstr "<b>Cuando</b>: "
 
 #: ../uigtk.py:1265
 msgid " ago"
-msgstr ""
+msgstr " "
 
 #: ../uigtk.py:1319
 #, python-format
@@ -388,7 +385,7 @@ msgstr "<b>Cliente</b>: %s"
 #: ../uigtk.py:1325
 #, python-format
 msgid "Itaka - %s served"
-msgstr "Itaka ' %s servidas"
+msgstr "Itaka - %s servidas"
 
 #: ../uigtk.py:1325
 msgid "screenshot"

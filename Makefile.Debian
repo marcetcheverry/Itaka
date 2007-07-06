@@ -39,5 +39,6 @@ install:
 	chmod +x $(BINDIR)/itaka
 	mv config.py.old config.py
 	rm share/itaka.1.gz
+	for lang in i18n/*; do for pofile in $lang/LC_MESSAGES/*.po; do msgfmt $pofile -o $lang/LC_MESSAGES/itaka.mo; done; done
 uninstall:
 	rm -r $(BINDIR)/itaka $(DATADIR) $(LIBDIR) $(ICONDIR)/itaka.png $(APPLICATIONSDIR)/itaka.desktop $(MANDIR)/itaka.1.gz
