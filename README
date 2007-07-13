@@ -55,6 +55,10 @@ You can generate documentation using epydoc.
     mkdir doc
     epydoc --html -o doc -n Itaka -u "http://itaka.jardinpresente.com.ar" *.py
 
+You can also use Doxygen by doing:
+    mkdir doc
+    doxygen Doxyfile
+
 5. HACKING
 
 If you intend to change Itaka source code, please read the HACKING file.

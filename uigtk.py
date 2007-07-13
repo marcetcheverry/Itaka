@@ -1005,18 +1005,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Pause Gui log output
         """
 
-        # It would be nice if we could set a center background image to our textview
-        # However, GTK makes that very hard
-        """
-        self.logprepausetext = self.logdetailsbuffer.get_text(self.logdetailsbuffer.get_start_iter(), self.logdetailsbuffer.get_end_iter())
-        self.logdetailsbuffer.set_text("")
-
-        self.logdetailsbuffer.create_tag ('center-image', justification = gtk.JUSTIFY_CENTER)
-        self.logdetailsimageiter = self.logdetailsbuffer.get_iter_at_offset(0)
-        self.logdetailsbuffer.insert_pixbuf(self.logdetailsimageiter, self.logdetailstextview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_DIALOG, detail=None))
-        self.logdetailsbuffer.apply_tag_by_name('center-image', self.logdetailsbuffer.get_iter_at_offset(0), self.logdetailsimageiter)
-
-        """
         self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging paused')])
         
         self.logeventstreeview.set_sensitive(False)
