@@ -22,12 +22,36 @@
 
 """ Itaka core """
 
-import sys, traceback, gettext, locale, __builtin__
+import sys, os, traceback, gettext, locale, __builtin__
 locale.setlocale(locale.LC_ALL, '')
-gettext.bindtextdomain('itaka', 'i18n/')
-gettext.textdomain('itaka')
-
 __builtin__._ = gettext.gettext
+
+# Itaka core modules
+try:
+    import console
+    import config as itakaglobals
+    import uigtk as igui
+except ImportError:
+    print '[*] ERROR: Failed to import Itaka modules'
+    traceback.print_exc()
+    sys.exit(1)
+
+
+#: Locales directory
+locale_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'locale/')
+
+#: To be changed on install to specify where the installed files actually are
+locale_prefix = "/usr/share/locale/"
+
+if os.path.exists(locale_prefix):
+    locale_dir = locale_prefix
+
+# See if our locales are there before starting
+if not os.path.exists(locale_dir):
+    print_warning(_('Could not find locale directory %s, not using locales.' % (locale_dir)))
+else: 
+    gettext.bindtextdomain('itaka', locale_dir)
+    gettext.textdomain('itaka')
 
 validarguments = ('-help', '-debug')
 arguments = sys.argv
@@ -39,11 +63,8 @@ if len(arguments) > 2 or (len(arguments) == 2 and arguments[-1] not in validargu
 elif len(arguments) == 1:
     arguments = None
 
-# Itaka core modules
 try:
     # Initiate our Console and Configuration engines
-    import console
-    import config as itakaglobals
     configinstance = itakaglobals.ConfigParser(arguments)
     configinstance.load()
 
@@ -54,10 +75,8 @@ try:
         print_error(_('Could not initiate Console engine'))
         traceback.print_exc()
         sys.exit(1)
-
-    import uigtk as igui
-except ImportError:
-    print_error(_('Failed to import Itaka modules'))
+except:
+    print_error(_('Could not initiate Configuration engine'))
     traceback.print_exc()
     sys.exit(1)
 

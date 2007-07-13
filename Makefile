@@ -7,6 +7,7 @@ XGETTEXT ?= xgettext
 FIND ?= find
 
 PREFIX = /usr
+# When debian builds it, it passes its own DESTDIR
 DESTDIR = $(PREFIX)
 
 LIBDIR = $(DESTDIR)/lib/itaka
@@ -18,11 +19,17 @@ APPLICATIONSDIR = $(DESTDIR)/share/applications
 ICONDIR = $(DESTDIR)/share/pixmaps
 MANDIR = $(DESTDIR)/share/man/man1
 
+# For debian compatibility, these are hardcoded
+REPLACEIMAGESDIR = $(PREFIX)/share/itaka/images/
+REPLACELOCALEDIR = $(PREFIX)/locale/
+
 PYFILES := $(shell $(FIND) . -name "*.py" -print)
 
 install: 
 	mv config.py config.py.old
-	sed -e "s|/usr/share/itaka/images/|$(IMAGESDIR)|g" config.py.old > config.py
+	mv itaka.py itaka.py.old
+	sed -e "s|/usr/share/itaka/images/|$(REPLACEIMAGESDIR)|g" config.py.old > config.py
+	sed -e "s|/usr/share/locale/|$(REPLACELOCALEDIR)|g" itaka.py.old > itaka.py
 	$(INSTALL) -m 755 -d $(BINDIR) $(DATADIR) $(LIBDIR) $(IMAGESDIR) $(APPLICATIONSDIR) $(ICONDIR) $(MANDIR)
 	$(INSTALL) -m 755 *.py $(LIBDIR)
 	$(INSTALL) -m 644 share/images/* $(IMAGESDIR)
@@ -35,6 +42,7 @@ install:
 	echo $( ls $(BINDIR)/itaka )
 	chmod +x $(BINDIR)/itaka
 	mv config.py.old config.py
+	mv itaka.py.old itaka.py
 	
 	for lang in locale/*; do 
 	    if [[ -e $lang/LC_MESSAGES/itaka.po ]]; then 

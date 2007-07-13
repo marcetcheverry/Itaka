@@ -1,6 +1,7 @@
 1.0:
  * Added RPM packages
- * Added interface translations.
+ * Added interface translations #4
+ * Simplified and improved Makefile
  * Switch to GPLv3.
 
 0.2 (I've been watching you...):
