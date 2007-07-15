@@ -118,7 +118,7 @@ class GuiLog:
         self.console.message(message)
         self._write_gui_log(message, None, icon, False)
 
-    def detailed_message(self, message, detailed_message, icon=None):
+    def verbose_message(self, message, detailed_message, icon=None):
         """
         Write detailed message on Gui log widgets
 
@@ -1143,9 +1143,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             serverstring = _('Server')
 
         if self.configuration['screenshot']['format'] == "jpeg":
-            self.log.detailed_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images with %d%% quality') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', serverstock])
+            self.log.verbose_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images with %d%% quality') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', serverstock])
         else:
-            self.log.detailed_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', serverstock])
+            self.log.verbose_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', serverstock])
 
         # Change buttons
         if foreign:
@@ -1290,7 +1290,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Only run this event once
         return False
 
-    def update_gui(self, counter=False, ip=False, time=False):
+    def update_gui(self, counter, ip, time):
         """ 
         Updates the GUI on request from the server
         
@@ -1309,7 +1309,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.ip = ip
         self.time = time
 
-        self.log.detailed_message(_('Screenshot served to %s') % (self.ip), _('Screenshot number %d served to %s') % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka16x16-take.png"))])
+        self.log.verbose_message(_('Screenshot served to %s') % self.ip, _('Screenshot number %d served to %s') % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka16x16-take.png"))])
 
         self.label_served.set_text(_('<b>Served</b>: %d') % (self.counter))
         self.label_served.set_use_markup(True)
