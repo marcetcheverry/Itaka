@@ -22,20 +22,25 @@
 
 """ Itaka core """
 
-import sys, os, traceback, gettext, locale, __builtin__
+import sys
+import os
+import traceback
+import gettext
+import locale
+import __builtin__
+
 locale.setlocale(locale.LC_ALL, '')
 __builtin__._ = gettext.gettext
 
-# Itaka core modules
+# Itaka modules
 try:
     import console
-    import config as itakaglobals
+    import config as itaka_globals
     import uigtk as igui
 except ImportError:
     print '[*] ERROR: Failed to import Itaka modules'
     traceback.print_exc()
     sys.exit(1)
-
 
 #: Locales directory
 locale_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'locale/')
@@ -53,11 +58,12 @@ else:
     gettext.bindtextdomain('itaka', locale_dir)
     gettext.textdomain('itaka')
 
-validarguments = ('-help', '-debug')
+valid_arguments = ('-help', '-debug')
 arguments = sys.argv
 
 # Only one option at a time
-if len(arguments) > 2 or (len(arguments) == 2 and arguments[-1] not in validarguments or arguments[-1] == validarguments[0]):
+if len(arguments) > 2 or (len(arguments) == 2 and arguments[-1] \
+        not in valid_arguments or arguments[-1] == valid_arguments[0]):
     print _('Usage: %s (-debug|-help)') % (arguments[0])
     sys.exit(1)
 elif len(arguments) == 1:
@@ -65,12 +71,13 @@ elif len(arguments) == 1:
 
 try:
     # Initiate our Console and Configuration engines
-    configinstance = itakaglobals.ConfigParser(arguments)
-    configinstance.load()
+    config_instance = itaka_globals.ConfigParser(arguments)
+    config_instance.load()
 
     try:
-        # Initiate console with a reference to our global configuration values
-        console = console.Console(itakaglobals)
+        # Initiate console with a reference to our global configuration values,
+        # not the user's configuration
+        console_instance = console.Console(itaka_globals)
     except:
         print_error(_('Could not initiate Console engine'))
         traceback.print_exc()
@@ -82,10 +89,10 @@ except:
 
 if __name__ == "__main__":
     try:
-        gui = igui.Gui(console, (itakaglobals, configinstance))
+        gui = igui.Gui(console_instance, (itaka_globals, config_instance))
         gui.main()
     except Exception, e:
-        console.failure(('Itaka', 'core'), _('Could not initiate GUI: %s') % (e), 'ERROR')
-        if itakaglobals.output['debug']:
+        console_instance.failure(('Itaka', 'core'), _('Could not initiate GUI: %s') % (e), 'ERROR')
+        if itaka_globals.console_verbosity['debug']:
             traceback.print_exc()
         sys.exit(1)

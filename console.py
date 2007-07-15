@@ -124,16 +124,16 @@ class Console:
     Console I/O handler organized by message type. Also handle GUI logging when passed an instance
     """
 
-    def __init__(self, itakaglobals):
+    def __init__(self, itaka_globals):
         """
         Constructor for console output handler
         
         @type itakaglobals: module
-        @param itakaglobals: Configuration module
+        @param itakaglobals: Configuration module globals
         """
 
-        self.itakaglobals = itakaglobals
-        if self.itakaglobals.output['normal']: 
+        self.itaka_globals = itaka_globals
+        if self.itaka_globals.console_verbosity['normal']: 
             BaseMessage(_('Itaka %s starting') % (itakaglobals.version))
             
     def __del__(self):
@@ -141,7 +141,7 @@ class Console:
         Destructor
         """
         
-        if self.itakaglobals.output['normal']: 
+        if self.itaka_globals.console_verbosity['normal']: 
             BaseMessage(_('Itaka shutting down'))
 
     def message(self, message):
@@ -152,10 +152,10 @@ class Console:
         @param message: Message to print to the console
         """
         
-        if self.itakaglobals.output['normal']:
+        if self.itaka_globals.console_verbosity['normal']:
             BaseMessage(message)
 
-    def failure(self, caller, message, failuretype='ERROR'):
+    def failure(self, caller, message, failure_type='ERROR'):
         """
         Failure handler abstract
 
@@ -165,19 +165,19 @@ class Console:
         @type message: str
         @param message: Message to print to the console
 
-        @type failuretype: str
-        @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
+        @type failure_type: str
+        @param failure_type: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
         """
 
-        if failuretype == 'ERROR':
-            if not self.itakaglobals.output['quiet']:
-                BaseFailureMessage(self.itakaglobals.output['quiet'], caller, message, failuretype)
+        if failure_type == 'ERROR':
+            if not self.itaka_globals.console_verbosity['quiet']:
+                BaseFailureMessage(self.itaka_globals.console_verbosity['quiet'], caller, message, failure_type)
 
-        elif failuretype == 'WARNING':
-            if self.itakaglobals.output['normal']:
-                BaseFailureMessage(self.itakaglobals.output['normal'], caller, message, failuretype)
+        elif failure_type == 'WARNING':
+            if self.itaka_globals.console_verbosity['normal']:
+                BaseFailureMessage(self.itaka_globals.console_verbosity['normal'], caller, message, failure_type)
 
-        elif failuretype == 'DEBUG':
-            if self.itakaglobals.output['debug']:
-                BaseFailureMessage(self.itakaglobals.output['debug'], caller, message, failuretype)
+        elif failure_type == 'DEBUG':
+            if self.itaka_globals.console_verbosity['debug']:
+                BaseFailureMessage(self.itaka_globals.console_verbosity['debug'], caller, message, failure_type)
 

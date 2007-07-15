@@ -296,7 +296,7 @@ msgstr "Kurt Erickson <psychogenicshk@users.sourceforge.net> (Paquetes)"
 
 #: uigtk.py:1008
 msgid "Logging paused"
-msgstr "Registro detuvido"
+msgstr "Registro detenido"
 
 #: uigtk.py:1030
 msgid "Logging resumed"

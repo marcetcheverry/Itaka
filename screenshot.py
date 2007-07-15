@@ -22,42 +22,47 @@
 
 """ Itaka screenshot engine """
 
-import gc, os, gtk, pygtk, error, traceback
+import gc
+import os
+import gtk
+import pygtk
 pygtk.require("2.0")
+import error
+import traceback
 
 class Screenshot:
     """
     Takes screenshots of windows or screens
     """
 
-    def __init__(self, guiinstance, scalingmethod=gtk.gdk.INTERP_BILINEAR): 
+    def __init__(self, gui_instance, scaling_method=gtk.gdk.INTERP_BILINEAR): 
         """
         Constructor
 
-        @type scalingmethod: gtk.gdk.INTERP_TYPE
-        @param scalingmethod: A type of interpolation for screenshot scaling. U{http://pygtk.org/pygtk2reference/class-gdkpixbuf.html#method-gdkpixbuf--scale-simple}
+        @type scaling_method: gtk.gdk.INTERP_TYPE
+        @param scaling_method: A type of interpolation for screenshot scaling. U{http://pygtk.org/pygtk2reference/class-gdkpixbuf.html#method-gdkpixbuf--scale-simple}
 
-        @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class
+        @type gui_instance: instance
+        @param gui_instance: An instance of our L{Gui} class
         """
 
-        self.gui = guiinstance
-        self.itakaglobals = self.gui.itakaglobals
+        self.gui = gui_instance
+        self.itaka_globals = self.gui.itaka_globals
         self.configuration = self.gui.configuration
         self.console = self.gui.console
-        self.scalingmethod = scalingmethod
+        self.scaling_method = scaling_method
 
         #: Whether our current window method failed or not
-        self.currentwindowfailed = False
+        self.current_window_failed = False
 
         #: Final absolute path to the screenshot file
-        self.shotFile = os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))
+        self.shot_file = os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))
         
-        self.rootscreen = gtk.gdk.screen_get_default()
-        self.rootwindow = gtk.gdk.get_default_root_window()
+        self.root_screen = gtk.gdk.screen_get_default()
+        self.root_window = gtk.gdk.get_default_root_window()
 
-        self.screenwidth = gtk.gdk.screen_width()
-        self.screenheight = gtk.gdk.screen_height()
+        self.screen_width = gtk.gdk.screen_width()
+        self.screen_height = gtk.gdk.screen_height()
 
     def find_current_active_window(self):
         """ 
@@ -67,70 +72,71 @@ class Screenshot:
         @return: (int) window width, (int) window heigth, (int) window position x, (int) window position y
         """
 
-        if self.rootscreen.supports_net_wm_hint("_NET_ACTIVE_WINDOW") and self.rootscreen.supports_net_wm_hint("_NET_WM_WINDOW_TYPE"):
-            self.activewindow = self.rootscreen.get_active_window()
+        if self.root_screen.supports_net_wm_hint("_NET_ACTIVE_WINDOW") and \
+            self.root_screen.supports_net_wm_hint("_NET_WM_WINDOW_TYPE"):
+            self.active_window = self.root_screen.get_active_window()
 
             # Calculate the size of the window including window manager decorations
-            self.relativex, self.relativey, self.winw, self.winh, self.d = self.activewindow.get_geometry() 
-            self.windowwidth = self.winw + (self.relativex*2)
-            self.windowheight = self.winh + (self.relativey+self.relativex)
+            self.relativex, self.relativey, self.winw, self.winh, self.d = self.active_window.get_geometry() 
+            self.window_width = self.winw + (self.relativex*2)
+            self.window_height = self.winh + (self.relativey+self.relativex)
 
             # Calculate the position of where the window manager decorations start
             # get_position() will return the position of the window relative to the WM
-            self.windowpositionx, self.windowpositiony = self.activewindow.get_root_origin()
+            self.window_positionx, self.window_positiony = self.active_window.get_root_origin()
         else:
-            self.currentwindowfailed = True
+            self.current_window_failed = True
             raise error.ItakaScreenshotErrorWmHints, _('Window Manager does not support _NET_WM hints')
     
         # We do not want to grab the desktop window
-        if self.activewindow.property_get("_NET_WM_WINDOW_TYPE")[-1][0] == '_NET_WM_WINDOW_TYPE_DESKTOP':
-            self.currentwindowfailed = True
+        if self.active_window.property_get("_NET_WM_WINDOW_TYPE")[-1][0] == '_NET_WM_WINDOW_TYPE_DESKTOP':
+            self.current_window_failed = True
             raise error.ItakaScreenshotErrorActiveDesktop, _('Active window is desktop')
 
-        return (self.windowwidth, self.windowheight, self.windowpositionx, self.windowpositiony)
+        return (self.window_width, self.window_height, self.window_positionx, self.window_positiony)
 
     def take_screenshot(self):
         """
         Take a screenshot of the whole screen or a window
 
         @rtype: str
-        @return: Path to the screenshot (L{self.shotFile})
+        @return: Path to the screenshot (L{self.shot_file})
         """
 
         # Get up to date configuration values everytime there is a request
         
         self.configuration = self.gui.configuration
 
-        if self.configuration['screenshot']['currentwindow'] and not self.itakaglobals.system == 'nt':
+        if self.configuration['screenshot']['currentwindow'] and not self.itaka_globals.system == 'nt':
             try:
-                self.currentwindow = self.find_current_active_window()
+                self.current_window = self.find_current_active_window()
             except error.ItakaScreenshotErrorWmHints:
                 self.gui.log.failure(('Screenshot', 'take_screenshot'), (_('Can not grab the current window'), _('Can not grab the current window because your window manager does not support NET_WM_* hints')), 'WARNING')
             except error.ItakaScreenshotErrorActiveDesktop:
                 self.gui.log.failure(('Screenshot', 'take_screenshot'), (_('Not grabing the desktop as the current window'), _('Your focus was on the destop when a client requested a screenshot, Itaka instead took a screenshot of the whole screen')), 'WARNING')
 
-            if not self.currentwindowfailed:
+            if not self.current_window_failed:
                 # Make the window size also the screen size for scaling purposes
-                self.activewindowwidth = self.currentwindow[0]
-                self.activewindowheight = self.currentwindow[1]
+                self.active_windowwidth = self.current_window[0]
+                self.active_windowheight = self.current_window[1]
 
                 self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
-                        gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.activewindowwidth, self.activewindowheight),
-                        self.rootwindow,
+                        gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.active_windowwidth, self.active_windowheight),
+                        self.root_window,
                         gtk.gdk.colormap_get_system(),
-                        self.currentwindow[2], self.currentwindow[3], 0, 0, self.activewindowwidth, self.activewindowheight)
+                        self.current_window[2], self.current_window[3], 0, 0, self.active_windowwidth, self.active_windowheight)
 
-        if self.currentwindowfailed or not self.configuration['screenshot']['currentwindow'] or self.itakaglobals.system == 'nt': 
+        if self.current_window_failed or not self.configuration['screenshot']['currentwindow'] or self.itaka_globals.system == 'nt': 
             self.screenshot = gtk.gdk.Pixbuf.get_from_drawable(
-                    gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screenwidth, self.screenheight),
-                    self.rootwindow,
+                    gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, self.screen_width, self.screen_height),
+                    self.root_window,
                     gtk.gdk.colormap_get_system(),
-                    0, 0, 0, 0, self.screenwidth, self.screenheight)
+                    0, 0, 0, 0, self.screen_width, self.screen_height)
 
         # GTK manages errors this way
         if not hasattr(self, 'screenshot') or self.screenshot is None:
             # Reset the failure flag
-            self.currentwindowfailed = False
+            self.current_window_failed = False
             self.gui.log.failure(('Screenshot', 'take_screenshot'), (_('Could not grab screenshot'), _('GTK+ could not grab a screenshot of the screen')), 'ERROR')
             raise error.ItakaScreenshotError, _('Could not grab screenshot, GTK+ error')
 
@@ -139,20 +145,20 @@ class Screenshot:
             if self.configuration['screenshot']['scalepercent'] == 0:
                 self.configuration['screenshot']['scalepercent'] = 1
 
-            if self.configuration['screenshot']['currentwindow'] and not self.currentwindowfailed and not self.itakaglobals.system == 'nt':
-                self.scalewidth = self.activewindowwidth * int(self.configuration['screenshot']['scalepercent']) / 100
-                self.scaleheight = self.activewindowheight * int(self.configuration['screenshot']['scalepercent']) / 100
+            if self.configuration['screenshot']['currentwindow'] and not self.current_window_failed and not self.itaka_globals.system == 'nt':
+                self.scale_width = self.active_windowwidth * int(self.configuration['screenshot']['scalepercent']) / 100
+                self.scale_height = self.active_windowheight * int(self.configuration['screenshot']['scalepercent']) / 100
             else:
-                self.scalewidth = self.screenwidth * int(self.configuration['screenshot']['scalepercent']) / 100
-                self.scaleheight = self.screenheight * int(self.configuration['screenshot']['scalepercent']) / 100
-            self.screenshot = self.screenshot.scale_simple(self.scalewidth, self.scaleheight, self.scalingmethod)
+                self.scale_width = self.screen_width * int(self.configuration['screenshot']['scalepercent']) / 100
+                self.scale_height = self.screen_height * int(self.configuration['screenshot']['scalepercent']) / 100
+            self.screenshot = self.screenshot.scale_simple(self.scale_width, self.scale_height, self.scaling_method)
 
         # Save the screnshot, checking before if to set JPEG quality
         try:
             if self.configuration['screenshot']['format'] == 'jpeg':
-                self.screenshot.save(self.shotFile, self.configuration['screenshot']['format'].lower(), {"quality":str(self.configuration['screenshot']['quality'])})
+                self.screenshot.save(self.shot_file, self.configuration['screenshot']['format'].lower(), {"quality":str(self.configuration['screenshot']['quality'])})
             else:
-                self.screenshot.save(self.shotFile, self.configuration['screenshot']['format'].lower())
+                self.screenshot.save(self.shot_file, self.configuration['screenshot']['format'].lower())
         except:
             self.gui.log.failure(('Screenshot','take_screenshot'), (_('Could not save screenshot'), _('Could not save screenshot %s') % (traceback.format_exc())), 'ERROR')
             raise error.ItakaSaveScreenshotError, _('Could not save screenshot')
@@ -163,6 +169,6 @@ class Screenshot:
         gc.collect()
 
         # Reset the failure flag
-        self.currentwindowfailed = False
+        self.current_window_failed = False
 
-        return self.shotFile
+        return self.shot_file

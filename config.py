@@ -20,40 +20,40 @@
 #
 # $Id$
 
-""" Itaka configuration parser and engine """
+""" Itaka configuration engine """
 
-# It works by the core initiating the main instance, and the
-# modules accessing the global values variables set up by the initation.
+__version__ = '1.0'
+__revision__ = '$Rev$'
 
-import ConfigParser, os, sys, shutil, traceback
+import os
+import sys
+import ConfigParser
+import shutil
+import traceback
 
-# Set up instance
-config = ConfigParser.ConfigParser()
+#: Availability of libnotify
+notify_available = False
 
-#: Configuration file
-local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
+try:
+    import pynotify
+    notify_available = True
 
-#: Version
-version = '1.0'
-#: SVN Revision
-revision = '$Rev$'
+    if not pynotify.init('Itaka'):
+        print_warning(_('Pynotify module is failing, disabling notifications'))
+        notify_available = False
+except ImportError:
+    print_warning(_('Pynotify module is missing, disabling notifications'))
+    notify_available = False
 
-#: System
+config_instance = ConfigParser.ConfigParser()
+image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'share/images/')
 system = os.name
 
-#: Platform
-platform = None
-if (sys.platform.startswith('darwin')): platform = 'darwin'
-
-#: Images directory
-image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'share/images/')
-
 #: To be changed on install to specify where the installed files actually are
-prefix = '/usr/share/itaka/images/'
-if os.path.exists(prefix):
+image_prefix = '/usr/share/itaka/images/'
+if os.path.exists(image_prefix):
     image_dir = prefix
 
-# See if our images are there before starting
 if not os.path.exists(image_dir):
     print_error(_('Could not find images directory %s' % (image_dir)))
     sys.exit(1)
@@ -61,38 +61,25 @@ if not os.path.exists(image_dir):
 #: Save path for screenshots (system-specific specified later on)
 save_path = os.getcwd()
 
+""" Console output verbosity
+'normal' is for all normal operation mesages and warnings (not including errors)
+'debug' is for all messages through self.console.debug
+'quiet' is to quiet all errors and warnings. (totally quiet is in conjunction 
+with 'normal' = False, which quiets normal messages too)
+"""
+console_verbosity = {'normal': False, 'debug': False, 'quiet': False}
+
+#: Globally acessable configuration values
+configuration_values = {}
+
 if os.environ.get('HOME'):
     save_path = os.path.join(os.environ.get('HOME'), '.itaka')
 else:
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
-#: Availability of libnotify
-notifyavailable = False
-
-if system == 'posix' and platform != 'darwin':
-    try:
-        import pynotify
-        notifyavailable = True
-
-        if not pynotify.init('Itaka'):
-            print_warning(_('Pynotify module is failing, disabling notifications'))
-            notifyavailable = False
-    except ImportError:
-        print_warning(_('Pynotify module is missing, disabling notifications'))
-        notifyavailable = False
-
-#: Console output setting
-# 'normal' is for all normal operation mesages and warnings (not including errors)
-# 'debug' is for all messages through self.console.debug
-# 'quiet' is to quiet all errors and warnings. (totally quiet is in conjunction with 'normal')
-output = {'normal': False, 'debug': False, 'quiet': False}
-
-#: User's configuration values 
-values = {}
-
-#: Default HTML header.
+#: Default HTML headers and footers for the server.
 # Putting <meta http-equiv="Refresh" content="5; url=http://localhost:8000"> is very useful for debugging
-headhtml = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+head_html = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -102,8 +89,7 @@ headhtml = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.o
 <div id="main">
 '''
 
-#: Default HTML footer.
-footerhtml = '''
+footer_html = '''
 </div>
 </body>
 </html>'''
@@ -115,22 +101,37 @@ class ConfigParser:
 
     def __init__(self, arguments=None):
         """
-        Configuration engine constructor. It also handles whether the L{output} setting is set to print everything to the console
+        Configuration engine constructor. It also handles whether the
+        L{console_verbosity} setting is set to debug.
 
         @type arguments: tuple
         @param arguments: A tuple of sys.argv 
         """
+
         if arguments is not None and len(arguments) > 1 and arguments[-1] == '-debug':
-            global output
-            output = {'normal': True, 'debug': True, 'quiet': False}
+            global console_verbosity
+            console_verbosity = {'normal': True, 'debug': True, 'quiet': False}
             print_m(_('Initializing in debug mode'))
 
         #: Default configuration sections and values
-        self.defaultoptions = ( 
-                {'server': (('port', 8000), ('authentication', False), ('username', 'user'), ('password', 'password'), ('notify', notifyavailable))},
-                {'screenshot': (('format', 'jpeg'), ('quality', 30), ('path', save_path), ('currentwindow', False), ('scale', False), ('scalepercent', 100))},
-                {'html': (('html', '<img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser.">'), ('authfailure', '<p><strong>Sorry, but you cannot access this resource without authorization.</strong></p>'))}
-                )
+        self.default_options = ( 
+                {'server': (
+                    ('port', 8000), ('authentication', False),
+                    ('username', 'user'), ('password', 'password'),
+                    ('notify', notify_available)
+                )},
+
+                {'screenshot': (
+                    ('format', 'jpeg'), ('quality', 30), ('path', save_path),
+                    ('currentwindow', False), ('scale', False),
+                    ('scalepercent', 100)
+                )},
+                
+                {'html': (
+                    ('html', '<img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser.">'),
+                    ('authfailure', '<p><strong>Sorry, but you cannot access this resource without authorization.</strong></p>')
+                )}
+        )
 
     def load(self):
         """
@@ -140,79 +141,78 @@ class ConfigParser:
         @return: Dictionary of configuration values.
         """
 
-        self.configfile = None
+        self.config_file = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
+
+        global configuration_values
+        configuration_values = {}
 
         # Check routine
         if system in ('posix'):
             if not (os.path.exists(os.path.join(os.environ['HOME'], '.itaka/itaka.conf'))):
                 self.create(os.path.join(os.environ['HOME'], '.itaka/itaka.conf'))
             else:
-                self.configfile = os.path.join(os.environ['HOME'], '.itaka/itaka.conf')
+                self.config_file = os.path.join(os.environ['HOME'], '.itaka/itaka.conf')
         elif (system == 'nt'):
             if not (os.path.exists(os.path.join(os.environ['APPDATA'], 'itaka/itaka.ini'))):
                 self.create(os.path.join(os.environ['APPDATA'], 'itaka/itaka.ini'))
             else:
-                self.configfile = os.path.join(os.environ['APPDATA'], 'itaka/itaka.ini')
+                self.config_file = os.path.join(os.environ['APPDATA'], 'itaka/itaka.ini')
         else:
-            # Generic system/paths (using local)	
-            if (os.path.exists(local_config)): 
-                self.configfile = local_config
-            else:	
-                self.create(local_config)
+            # Generic path
+            if not os.path.exists(self.config_file): 
+                self.create(self.config_file)
+
         # Read and assign values from the configuration file 
         try:
-            config.read(self.configfile)
-            if output['normal']: 
-                print_m(_('Loaded configuration %s' % (self.configfile)))
+            config_instance.read(self.config_file)
+            if console_verbosity['normal']: 
+                print_m(_('Loaded configuration %s' % (self.config_file)))
 
         except:
-            if output['normal']: print_error(_('Could not read configuration file (%s)' % (self.configfile)))
-            if output['debug']: traceback.print_exc()
+            if console_verbosity['normal']: print_error(_('Could not read configuration file (%s)' % (self.config_file)))
+            if console_verbosity['debug']: traceback.print_exc()
 
-        """ Retrieve values and return them as a dict """
-        global values
-        values = {}
         # Get values as a dict and return it
-        for section in config.sections():
-            values[section] = dict(config.items(section))
+        for section in config_instance.sections():
+            configuration_values[section] = dict(config_instance.items(section))
             # Convert 'False' and 'True' into booleans, and numbers into ints
             # Add config options that are not there
-            for option, value in values[section].iteritems():
+            for option, value in configuration_values[section].iteritems():
                 if value.strip() == 'True':
-                    values[section][option] = True
+                    configuration_values[section][option] = True
                 elif value.strip() == 'False':
-                    values[section][option] = False
+                    configuration_values[section][option] = False
                 elif value.isdigit():
-                    values[section][option] = int(value)
+                    configuration_values[section][option] = int(value)
 
         # Compare it to our default configuration set, to see if there is anything missing
         # This is useful for updates, and corrupted files.
         # NOTE: The setting of values[section][key] here is purely pragmatical, so we
         # dont have to reload
         brokenwarning = False
-        for configdict in self.defaultoptions:
+        for configdict in self.default_options:
             for section in configdict:
-                if not values.has_key(section):
-                    if not output['quiet'] and not brokenwarning: 
+                if not configuration_values.has_key(section):
+                    if not console_verbosity['quiet'] and not brokenwarning: 
                         print_warning(_('Detected old or broken configuration file. Fixing'))
                         brokenwarning = True
-                    config.add_section(section)
-                    values[section] = {}
+                    config_instance.add_section(section)
+                    configuration_values[section] = {}
                     for keyset in configdict[section]:
                         key, val = keyset
                         self.update(section, key, val)
-                        values[section][key] = val
+                        configuration_values[section][key] = val
                 else:
                     # Check if all the key:vals are in the section
                     for keyset in configdict[section]:
                         key, val = keyset
-                        if not values[section].has_key(key):
-                            if not output['quiet'] and not brokenwarning:
+                        if not configuration_values[section].has_key(key):
+                            if not console_verbosity['quiet'] and not brokenwarning:
                                 print_warning(_('Detected old or broken configuration file. Fixing'))
                             self.update(section, key, val)
-                            values[section][key] = val
+                            configuration_values[section][key] = val
                             brokenwarning = True
-        return values
+        return configuration_values
 
     def save(self, valuesdict):
         """ 
@@ -225,20 +225,20 @@ class ConfigParser:
         # Unpack the dict into section, option, value
         for section in valuesdict.keys():
             for key, value in valuesdict[section].items():
-                config.set(section, key, value)
+                config_instance.set(section, key, value)
 
         # Save
         try:
-            config.write(open(self.configfile, 'w'))
-            if output['normal']: print_m(_('Saving configuration'))	
+            config_instance.write(open(self.config_file, 'w'))
+            if console_verbosity['normal']: print_m(_('Saving configuration'))	
         except:		
-            if not output['quiet']: print_error(_('Could not write configuration file %s' % (self.configfile)))
-            if output['debug']: traceback.print_exc()
+            if not console_verbosity['quiet']: print_error(_('Could not write configuration file %s' % (self.config_file)))
+            if console_verbosity['debug']: traceback.print_exc()
 
     def update(self, section, key, value):
         """ 
         Update a specific key's value
-        
+
         @type section: str
         @param section: String of the section of the key to update
         @type key: str
@@ -246,43 +246,41 @@ class ConfigParser:
         @type value: str/int/bool
         @param value: Value of the key to update
         """	
-        
-        config.set(section, key, value)
-        
+
+        config_instance.set(section, key, value)
+
         try:
-            config.write(open(self.configfile, 'w'))
-            if output['debug']: print_m(_('Updating configuration key %s to %s' % (key, value)))	
+            config_instance.write(open(self.config_file, 'w'))
+            if console_verbosity['debug']: print_m(_('Updating configuration key %s to %s' % (key, value)))	
         except:
-            if not output['quiet']: print_error(_('Could not write configuration file %s' % (self.configfile)))
-            if output['debug']: traceback.print_exc()
+            if not console_verbosity['quiet']: print_error(_('Could not write configuration file %s' % (self.config_file)))
+            if console_verbosity['debug']: traceback.print_exc()
 
     def create(self, path):
         """
         Create a configuration file from default values
-        
+
         @type path: str
         @param path: Path to the configuration file
         """
-        
-        if output['normal']: print_m(_('Creating default configuration'))
+
+        if console_verbosity['normal']: print_m(_('Creating default configuration'))
 
         # Set default sections and options
-        for configdict in self.defaultoptions:
+        for configdict in self.default_options:
             for section in configdict:
-                config.add_section(section)
+                config_instance.add_section(section)
                 for keyset in configdict[section]:
                     key, val = keyset
-                    config.set(section, key, val)
+                    config_instance.set(section, key, val)
 
-        # Check if the directory exists, if not create it
-        # and write the config file with its variables
         if not (os.path.exists(os.path.dirname(path))):
             shutil.os.mkdir(os.path.dirname(path))
 
         try:
-            config.write(open(path, 'w'))
+            config_instance.write(open(path, 'w'))
         except:
-            if not output['quiet']: print_error(_('Could not write configuration file %s' % (path)))
-            if output['debug']: traceback.print_exc()
+            if not console_verbosity['quiet']: print_error(_('Could not write configuration file %s' % (path)))
+            if console_verbosity['debug']: traceback.print_exc()
 
-        self.configfile = path		
+        self.config_file = path	

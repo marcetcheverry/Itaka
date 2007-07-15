@@ -22,7 +22,10 @@
 
 """ Itaka server engine """
 
-import datetime, os, traceback, sys
+import datetime
+import os
+import traceback
+import sys
 
 try:
     import screenshot
@@ -173,16 +176,16 @@ class ScreenshotServer(BaseHTTPServer):
     Screenshot server that builds upon BaseHTTPServer
     """
 
-    def __init__(self, guiinstance):
+    def __init__(self, gui_instance):
         """
         Constructor. Overrides BaseHTTPServer's __init__ to create our resources on-the-fly
 
-        @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class
+        @type gui_instance: instance
+        @param gui_instance: An instance of our L{Gui} class
         """
 
-        self.gui = guiinstance
-        self.itakaglobals = self.gui.itakaglobals
+        self.gui = gui_instance
+        self.itaka_globals = self.gui.itaka_globals
         self.configuration = self.gui.configuration
         self.console = self.gui.console
 
@@ -190,7 +193,7 @@ class ScreenshotServer(BaseHTTPServer):
 
         # Here we use our own static.Data special child resource because we need Authentication handling
         # Otherwise we would just use our own self.add_static_resource
-        self.root = RootResource(self.gui, self.itakaglobals.headhtml + self.configuration['html']['html'] + self.itakaglobals.footerhtml)
+        self.root = RootResource(self.gui, self.itaka_globals.head_html + self.configuration['html']['html'] + self.itaka_globals.footer_html)
         self.add_child_to_resource('root', '', self.root)
         self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui))
         self.create_site(self.root)
@@ -202,13 +205,13 @@ class RootResource(static.Data):
     Please read RFC 2617 to understand the HTTP Authentication process
     """
 
-    def __init__(self, guiinstance, data, type='text/html; charset=UTF-8'):
+    def __init__(self, gui_instance, data, type='text/html; charset=UTF-8'):
 
         """ 
         Constructor that inherits code from resource.Resource->static.Data
 
-        @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class
+        @type gui_instance: instance
+        @param gui_instance: An instance of our L{Gui} class
 
         @type html: string
         @param html: The HTML to be displayed
@@ -217,9 +220,9 @@ class RootResource(static.Data):
         @param type: The type of data we are serving
         """
 
-        self.gui = guiinstance
+        self.gui = gui_instance
         self.console = self.gui.console
-        self.itakaglobals = self.gui.itakaglobals
+        self.itaka_globals = self.gui.itaka_globals
         self.configuration = self.gui.configuration
 
         # Inherited from the actual code of Twisted's static.Data
@@ -227,7 +230,7 @@ class RootResource(static.Data):
         self.data = data
         self.type = type
 
-        self.noauth = self.itakaglobals.headhtml + self.configuration['html']['authfailure'] + self.itakaglobals.footerhtml
+        self.noauth = self.itaka_globals.head_html + self.configuration['html']['authfailure'] + self.itaka_globals.footer_html
 
     def _promptAuth(self):
         """
@@ -287,17 +290,17 @@ class ScreenshotResource(resource.Resource):
     Handle server requests and call for a screenshot
     """
 
-    def __init__(self, guiinstance):
+    def __init__(self, gui_instance):
         """ 
         Constructor
 
-        @type guiinstance: instance
-        @param guiinstance: An instance of our L{Gui} class
+        @type gui_instance: instance
+        @param gui_instance: An instance of our L{Gui} class
         """
 
-        self.gui = guiinstance
+        self.gui = gui_instance
         self.console = self.gui.console
-        self.itakaglobals = self.gui.itakaglobals
+        self.itaka_globals = self.gui.itaka_globals
         self.screenshot = screenshot.Screenshot(self.gui)
         
         #: Server hits counter
@@ -323,19 +326,19 @@ class ScreenshotResource(resource.Resource):
 
         if (self.request.uri == "/screenshot"):
             try:
-                self.shotFile = self.screenshot.take_screenshot()
+                self.shot_file = self.screenshot.take_screenshot()
             except error.ItakaScreenshotError:
                 return
             
             self.request.setHeader('Content-Type', "image/" + self.configuration['screenshot']['format'])
-            self.request.setHeader('Content-Length', str(len(self.shotFile)))
+            self.request.setHeader('Content-Length', str(len(self.shot_file)))
             self.request.setHeader('Connection', 'close')
 
             self.counter += 1
 
-            if self.configuration['server']['notify'] and self.itakaglobals.notifyavailable:
+            if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
                 import pynotify
-                uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
+                uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
 
                 n = pynotify.Notification(_('Screenshot taken'), _('%s requested screenshot' % (self.ip)), uri)
 
@@ -344,4 +347,4 @@ class ScreenshotResource(resource.Resource):
                 n.show()
             self.gui.update_gui(self.counter, self.ip, self.time)
 
-            return open(self.shotFile, 'rb').read()
+            return open(self.shot_file, 'rb').read()

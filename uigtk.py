@@ -22,7 +22,11 @@
 
 """ Itaka GTK+ GUI """
 
-import sys, os, datetime, traceback, copy 
+import sys
+import os
+import datetime
+import traceback
+import copy
 
 try:
     from twisted.internet import gtk2reactor
@@ -65,12 +69,12 @@ class GuiLog:
     GTK+ GUI logging handler
     """
 
-    def __init__(self, guiinstance, console, configuration):
+    def __init__(self, gui_instance, console, configuration):
         """
         Constructor
 
-        @type guiinstance: instance
-        @param guiinstance: Instance of L{Gui}
+        @type gui_instance: instance
+        @param gui_instance: Instance of L{Gui}
 
         @type console: instance
         @param console: Instance of L{Console}
@@ -79,7 +83,7 @@ class GuiLog:
         @param configuration: Configuration values dictionary from L{ConfigParser}
         """
 
-        self.gui = guiinstance
+        self.gui = gui_instance
         self.console = console
         self.configuration = configuration
 
@@ -114,24 +118,24 @@ class GuiLog:
         self.console.message(message)
         self._write_gui_log(message, None, icon, False)
 
-    def detailed_message(self, message, detailedmessage, icon=None):
+    def detailed_message(self, message, detailed_message, icon=None):
         """
         Write detailed message on Gui log widgets
 
         @type message: str
         @param message: Message to be inserted in the events log
 
-        @type detailedmessage: str
-        @param detailedmessage: Message to be inserted in the detailed log
+        @type detailed_message: str
+        @param detailed_message: Message to be inserted in the detailed log
 
         @type icon: tuple
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
         """
 
-        self.console.message(detailedmessage)
-        self._write_gui_log(message, detailedmessage, icon, False, False)
+        self.console.message(detailed_message)
+        self._write_gui_log(message, detailed_message, icon, False, False)
 
-    def failure(self, caller, message, failuretype='ERROR'):
+    def failure(self, caller, message, failure_type='ERROR'):
         """
         Write failure message on Gui log widgets
 
@@ -141,21 +145,21 @@ class GuiLog:
         @type message: tuple
         @param message: A tuple containing first the simple message to the events log, and then the detailed message for the detailed log
 
-        @type failuretype: str
-        @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
+        @type failure_type: str
+        @param failure_type: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
         """
         
-        self.simplemessage = message[0]
-        self.detailedmessage = message[1]
+        self.simple_message = message[0]
+        self.detailed_message = message[1]
 
-        self.console.failure(caller, self.detailedmessage, failuretype)
+        self.console.failure(caller, self.detailed_message, failure_type)
 
         # ERRORS require some more actions
-        if failuretype == 'ERROR':
+        if failure_type == 'ERROR':
             # Show the window and its widgets, set the status icon blinking timeout
             if not self.gui.window.get_property("visible"):
                 self.gui.window.present()
-                self.gui.statusicon_blinktimeout()
+                self.gui.status_icon_timeout_blink()
                 self.gui.window.move(self.gui.window_position[0], self.gui.window_position[1])
 
             self.gui.expander.set_expanded(True)
@@ -164,14 +168,14 @@ class GuiLog:
             if self.gui.server.listening():
                 self.gui.stop_server(None, True)
 
-        self._write_gui_log(self.simplemessage, self.detailedmessage, self._get_failure_icon(failuretype), True, True)
+        self._write_gui_log(self.simple_message, self.detailed_message, self._get_failure_icon(failure_type), True, True)
 
-    def _get_failure_icon(self, failuretype):
+    def _get_failure_icon(self, failure_type):
         """
         Return a default stock icon for a failure type
 
-        @type failuretype: str
-        @param failuretype: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
+        @type failure_type: str
+        @param failure_type: What kind of failure it is, either 'ERROR' (default), 'WARNING' or 'DEBUG'
 
         @rtype: tuple
         @return: An GTK+ stock icon definition. ['stock', 'STOCK_ICON']
@@ -179,45 +183,45 @@ class GuiLog:
         # Default icon is always STOCK_DIALOG_ERROR
         icon = ['stock', 'STOCK_DIALOG_ERROR']
         
-        if failuretype == "WARNING":
+        if failure_type == "WARNING":
             icon = ['stock', 'STOCK_DIALOG_WARNING']
-        elif failuretype == "DEBUG": 
+        elif failure_type == "DEBUG": 
             icon = ['stock', 'STOCK_DIALOG_INFO']
 
         return icon
 
-    def _write_gui_log(self, message, detailedmessage=None, icon=None, unpauselogger=True, failure=False):
+    def _write_gui_log(self, message, detailed_message=None, icon=None, unpause_logger=True, failure=False):
         """
         Private method to write to both Gui logs
 
         @type message: str
         @param message: Message to be inserted
 
-        @type detailedmessage: str
-        @param detailedmessage: Optional detailed message if the event log and detailed log messages differ
+        @type detailed_message: str
+        @param detailed_message: Optional detailed message if the event log and detailed log messages differ
 
         @type icon: tuple
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
 
-        @type unpauselogger: bool
-        @param unpauselogger: Whether to unpause the GUI Logger
+        @type unpause_logger: bool
+        @param unpause_logger: Whether to unpause the GUI Logger
 
         @type failure: bool
         @param failure: Whether the message is a failure or not
         """
 
-        if detailedmessage is None:
-            detailedmessage = message
+        if detailed_message is None:
+            detailed_message = message
 
         # Only write messages when the logging is unpaused. Unless we are told otherwise
         if self.gui.log_paused():
-            if unpauselogger:
+            if unpause_logger:
                 self.gui.unpause_log(True)
                 self._write_events_log(message, icon, failure)
-                self._write_detailed_log(detailedmessage)
+                self._write_detailed_log(detailed_message)
         else:
             self._write_events_log(message, icon, failure)
-            self._write_detailed_log(detailedmessage)
+            self._write_detailed_log(detailed_message)
 
     def _write_events_log(self, message, icon=None, failure=False):
         """
@@ -235,18 +239,18 @@ class GuiLog:
 
         if icon is not None:
             if icon[0] == "stock":
-                self.inserted_iter = self.gui.logeventsstore.append([self.gui.logeventstreeview.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), message])
+                self.inserted_iter = self.gui.log_events_store.append([self.gui.log_events_tree_view.render_icon(stock_id=getattr(gtk, icon[1]), size=gtk.ICON_SIZE_MENU, detail=None), message])
                 # Select the iter if it's a failure
                 if failure:
-                    self.selection = self.gui.logeventstreeview.get_selection()
+                    self.selection = self.gui.log_events_tree_view.get_selection()
                     self.selection.select_iter(self.inserted_iter)
             else:
-                self.inserted_iter = self.gui.logeventsstore.append([icon[1], message])
+                self.inserted_iter = self.gui.log_events_store.append([icon[1], message])
         else:
-            self.inserted_iter = self.gui.logeventsstore.append([icon, message])
+            self.inserted_iter = self.gui.log_events_store.append([icon, message])
 
         # Scroll
-        self.gui.logeventstreeview.scroll_to_cell(self.gui.logeventstreeview.get_model().get_path(self.inserted_iter))
+        self.gui.log_events_tree_view.scroll_to_cell(self.gui.log_events_tree_view.get_model().get_path(self.inserted_iter))
 
     def _write_detailed_log(self, message, bold=True):
         """
@@ -262,44 +266,45 @@ class GuiLog:
         message = message + '\r'
 
         if bold:
-            self.gui.logdetailsbuffer.insert_with_tags_by_name(self.gui.logdetailsbuffer.get_end_iter(), message, 'bold-text')
+            self.gui.log_details_buffer.insert_with_tags_by_name(self.gui.log_details_buffer.get_end_iter(), message, 'bold-text')
         else:
-            self.gui.logdetailsbuffer.insert_at_cursor(message, len(message))
+            self.gui.log_details_buffer.insert_at_cursor(message, len(message))
 
         # Automatically scroll. Use wrap until fix
-        self.gui.logdetailstextview.scroll_mark_onscreen(self.gui.logdetailsbuffer.get_insert())
+        self.gui.log_details_text_view.scroll_mark_onscreen(self.gui.log_details_buffer.get_insert())
+
 
 class Gui:
     """
     GTK+ GUI
     """
 
-    def __init__(self, consoleinstance, configuration):
+    def __init__(self, console_instance, configuration):
         """
         Constructor
 
-        @type consoleinstance: instance
-        @param consoleinstance: An instance of the L{Console} class
+        @type console_instance: instance
+        @param console_instance: An instance of the L{Console} class
 
         @type configuration: tuple
         @param configuration: A tuple of configuration globals and an instance of L{ConfigParser}
         """
 
         # Load our configuration and console instances and values
-        self.console = consoleinstance
-        self.itakaglobals = configuration[0]
+        self.console = console_instance
+        self.itaka_globals = configuration[0]
 
         # The configuration instance has the user's preferences already loaded
-        self.configinstance = configuration[1]
-        self.configuration = self.itakaglobals.values
+        self.config_instance = configuration[1]
+        self.configuration = self.itaka_globals.configuration_values
 
         # Instances of our Gui Logging class and Screenshot Server
         self.server = iserver.ScreenshotServer(self)
         self.log = GuiLog(self, self.console, self.configuration)
-        self.logpaused = False
+        self.log_is_paused = False
 
         # Start defining widgets
-        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka.png'))
+        self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka.png'))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.connect('destroy', self.destroy)
         self.window.connect('size-allocate', self.windowsizechanged)
@@ -311,329 +316,329 @@ class Gui:
         self.window_position = self.window.get_position()
 
         # Create our tray icon
-        self.statusIcon = gtk.StatusIcon()
-        self.statusmenu = gtk.Menu()
+        self.status_icon = gtk.StatusIcon()
+        self.status_menu = gtk.Menu()
         if self.configuration['server']['authentication']:
-            self.statusIcon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure.png')))
+            self.status_icon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka-secure.png')))
         else:
-            self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
-        self.statusIcon.set_tooltip('Itaka')
-        self.statusIcon.set_visible(True)
-        self.statusIcon.connect('activate', self.statusicon_activate)
-        self.statusIcon.connect('popup-menu', self.statusicon_menu, self.statusmenu)
+            self.status_icon.set_from_pixbuf(self.icon_pixbuf)
+        self.status_icon.set_tooltip('Itaka')
+        self.status_icon.set_visible(True)
+        self.status_icon.connect('activate', self.status_icon_activate)
+        self.status_icon.connect('popup-menu', self.status_icon_menu, self.status_menu)
 
-        self.startimage = gtk.Image()
-        self.startimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU)
+        self.start_image = gtk.Image()
+        self.start_image.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU)
 
-        self.stopimage = gtk.Image()
-        self.stopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
-        self.menuitemstart = gtk.ImageMenuItem(_('St_art')) 
-        self.menuitemstart.set_image(self.startimage)
-        self.menuitemstart.connect('activate', self.start_server, True)
-        self.menuitemstop = gtk.ImageMenuItem(_('St_op')) 
-        self.menuitemstop.set_image(self.stopimage)
-        self.menuitemstop.connect('activate', self.stop_server, True)
-        self.menuitemstop.set_sensitive(False)
+        self.stop_image = gtk.Image()
+        self.stop_image.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_MENU)
+        self.menu_item_start = gtk.ImageMenuItem(_('St_art')) 
+        self.menu_item_start.set_image(self.start_image)
+        self.menu_item_start.connect('activate', self.start_server, True)
+        self.menu_item_stop = gtk.ImageMenuItem(_('St_op')) 
+        self.menu_item_stop.set_image(self.stop_image)
+        self.menu_item_stop.connect('activate', self.stop_server, True)
+        self.menu_item_stop.set_sensitive(False)
 
-        if self.itakaglobals.notifyavailable: 
-            self.menuitemnotifications = gtk.CheckMenuItem(_('Show _Notifications'))
+        if self.itaka_globals.notify_available: 
+            self.menu_item_notifications = gtk.CheckMenuItem(_('Show _Notifications'))
             if self.configuration['server']['notify']:
-                self.menuitemnotifications.set_active(True)
-            self.menuitemnotifications.connect('toggled', self.statusicon_notify)
+                self.menu_item_notifications.set_active(True)
+            self.menu_item_notifications.connect('toggled', self.status_icon_notify)
 
-        self.menuitemseparator = gtk.SeparatorMenuItem()
-        self.menuitemseparator1 = gtk.SeparatorMenuItem()
-        self.menuitemquit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
-        self.menuitemquit.connect('activate', self.destroy)
+        self.menu_item_separator = gtk.SeparatorMenuItem()
+        self.menu_item_separator1 = gtk.SeparatorMenuItem()
+        self.menu_item_quit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        self.menu_item_quit.connect('activate', self.destroy)
 
-        self.statusmenu.append(self.menuitemstart)
-        self.statusmenu.append(self.menuitemstop)
-        if self.itakaglobals.notifyavailable: 
-            self.statusmenu.append(self.menuitemseparator)
-            self.statusmenu.append(self.menuitemnotifications)
-        self.statusmenu.append(self.menuitemseparator1)
-        self.statusmenu.append(self.menuitemquit)
+        self.status_menu.append(self.menu_item_start)
+        self.status_menu.append(self.menu_item_stop)
+        if self.itaka_globals.notify_available: 
+            self.status_menu.append(self.menu_item_separator)
+            self.status_menu.append(self.menu_item_notifications)
+        self.status_menu.append(self.menu_item_separator1)
+        self.status_menu.append(self.menu_item_quit)
 
         self.vbox = gtk.VBox(False, 6)
         self.box = gtk.HBox(False, 0)
 
-        self.itakaLogo = gtk.Image()
+        self.itaka_logo = gtk.Image()
         if self.configuration['server']['authentication']:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure.png'))
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka-secure.png'))
         else:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka.png'))
-        self.itakaLogo.show()
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka.png'))
+        self.itaka_logo.show()
 
-        self.box.pack_start(self.itakaLogo, False, False, 35)
+        self.box.pack_start(self.itaka_logo, False, False, 35)
 
-        self.buttonStartstop = gtk.ToggleButton(_('Start'), gtk.STOCK_PREFERENCES)
-        self.startstopimage = gtk.Image()
+        self.button_start_stop = gtk.ToggleButton(_('Start'), gtk.STOCK_PREFERENCES)
+        self.start_stop_image = gtk.Image()
 
-        self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
-        self.buttonStartstop.set_image(self.startstopimage)
-        self.buttonStartstop.connect('toggled', self.button_start_server)
+        self.start_stop_image.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
+        self.button_start_stop.set_image(self.start_stop_image)
+        self.button_start_stop.connect('toggled', self.button_start_server)
 
-        self.preferencesButton = gtk.Button('Preferences', gtk.STOCK_PREFERENCES)
-        self.preferencesButton.connect('clicked', self.expandpreferences)
+        self.button_preferences = gtk.Button('Preferences', gtk.STOCK_PREFERENCES)
+        self.button_preferences.connect('clicked', self.expandpreferences)
 
         # Set up some variables for our timeouts/animations
-        self.preferenceshidden = False
-        self.preferencesexpanded = False
-        self.contracttimeout = None
-        self.expandtimeout = None
-        self.blinktimeout = None
+        self.preferences_hidden = False
+        self.preferences_expanded = False
+        self.timeout_contract = None
+        self.timeout_expand = None
+        self.timeout_blink = None
 
-        self.box.pack_start(self.buttonStartstop, True, True, 5)
-        self.box.pack_start(self.preferencesButton, True, True, 8)
+        self.box.pack_start(self.button_start_stop, True, True, 5)
+        self.box.pack_start(self.button_preferences, True, True, 8)
 
         self.vbox.pack_start(self.box, False, False, 0)
 
-        self.statusBox = gtk.HBox(False, 0)
-        self.labelServed = gtk.Label()
-        self.labelLastip = gtk.Label()
-        self.labelTime = gtk.Label()
+        self.hbox_status = gtk.HBox(False, 0)
+        self.label_served = gtk.Label()
+        self.label_last_ip = gtk.Label()
+        self.label_time = gtk.Label()
 
-        self.statusBox.pack_start(self.labelLastip, True, False, 0)
-        self.statusBox.pack_start(self.labelTime, True, False, 0)
-        self.statusBox.pack_start(self.labelServed, True, False, 0)
+        self.hbox_status.pack_start(self.label_last_ip, True, False, 0)
+        self.hbox_status.pack_start(self.label_time, True, False, 0)
+        self.hbox_status.pack_start(self.label_served, True, False, 0)
 
         # Logger widget (displayed when expanded)
-        self.logvbox = gtk.VBox(False, 0)
-        self.lognotebook = gtk.Notebook()
-        self.lognotebook.set_tab_pos(gtk.POS_BOTTOM)
+        self.vbox_log = gtk.VBox(False, 0)
+        self.notebook_log = gtk.Notebook()
+        self.notebook_log.set_tab_pos(gtk.POS_BOTTOM)
 
-        self.logeventslabel = gtk.Label(_('Events'))
-        self.logdetailslabel = gtk.Label(_('Details'))
+        self.label_log_events = gtk.Label(_('Events'))
+        self.label_log_details = gtk.Label(_('Details'))
 
-        self.logeventsscroll = gtk.ScrolledWindow()
-        self.logeventsscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.logeventsscroll.set_shadow_type(gtk.SHADOW_NONE)
+        self.scroll_log_events = gtk.ScrolledWindow()
+        self.scroll_log_events.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.scroll_log_events.set_shadow_type(gtk.SHADOW_NONE)
 
-        self.logeventsstore = gtk.ListStore(gtk.gdk.Pixbuf, str)
-        self.logeventstreeview = gtk.TreeView(self.logeventsstore)
-        self.logeventstreeview.set_property('headers-visible', False)
-        self.logeventstreeview.set_property('rules-hint', True)
+        self.log_events_store = gtk.ListStore(gtk.gdk.Pixbuf, str)
+        self.log_events_tree_view = gtk.TreeView(self.log_events_store)
+        self.log_events_tree_view.set_property('headers-visible', False)
+        self.log_events_tree_view.set_property('rules-hint', True)
 
-        self.logeventscolumnicon = gtk.TreeViewColumn()
-        self.logeventscolumntext = gtk.TreeViewColumn()
-        self.logeventstreeview.append_column(self.logeventscolumnicon)
-        self.logeventstreeview.append_column(self.logeventscolumntext)
+        self.column_log_events_icon = gtk.TreeViewColumn()
+        self.column_log_events = gtk.TreeViewColumn()
+        self.log_events_tree_view.append_column(self.column_log_events_icon)
+        self.log_events_tree_view.append_column(self.column_log_events)
 
-        self.logeventscellpixbuf = gtk.CellRendererPixbuf()
-        self.logeventscolumnicon.pack_start(self.logeventscellpixbuf)
-        self.logeventscolumnicon.add_attribute(self.logeventscellpixbuf, 'pixbuf', 0)
+        self.cell_pixbuf_log_events = gtk.CellRendererPixbuf()
+        self.column_log_events_icon.pack_start(self.cell_pixbuf_log_events)
+        self.column_log_events_icon.add_attribute(self.cell_pixbuf_log_events, 'pixbuf', 0)
 
-        self.logeventscelltext = gtk.CellRendererText()
-        self.logeventscolumntext.pack_start(self.logeventscelltext, True)
-        self.logeventscolumntext.add_attribute(self.logeventscelltext, 'text', 1)
-        self.logeventsscroll.add(self.logeventstreeview)
+        self.cell_text_log_events = gtk.CellRendererText()
+        self.column_log_events.pack_start(self.cell_text_log_events, True)
+        self.column_log_events.add_attribute(self.cell_text_log_events, 'text', 1)
+        self.scroll_log_events.add(self.log_events_tree_view)
 
-        self.logdetailsscroll = gtk.ScrolledWindow()
-        self.logdetailsscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.logdetailsscroll.set_shadow_type(gtk.SHADOW_NONE)
-        self.logdetailstextview = gtk.TextView()
-        self.logdetailstextview.set_wrap_mode(gtk.WRAP_WORD)
-        self.logdetailstextview.set_editable(False)
-        self.logdetailstextview.set_size_request(-1, 160)
-        self.logdetailsbuffer = self.logdetailstextview.get_buffer()
-        self.logdetailsbuffer.create_tag ('bold-text', weight = pango.WEIGHT_BOLD)
-        self.logdetailsscroll.add(self.logdetailstextview)
+        self.scroll_log_details = gtk.ScrolledWindow()
+        self.scroll_log_details.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.scroll_log_details.set_shadow_type(gtk.SHADOW_NONE)
+        self.log_details_text_view = gtk.TextView()
+        self.log_details_text_view.set_wrap_mode(gtk.WRAP_WORD)
+        self.log_details_text_view.set_editable(False)
+        self.log_details_text_view.set_size_request(-1, 160)
+        self.log_details_buffer = self.log_details_text_view.get_buffer()
+        self.log_details_buffer.create_tag ('bold-text', weight = pango.WEIGHT_BOLD)
+        self.scroll_log_details.add(self.log_details_text_view)
 
-        self.lognotebook.append_page(self.logeventsscroll, self.logeventslabel)
-        self.lognotebook.append_page(self.logdetailsscroll, self.logdetailslabel)
+        self.notebook_log.append_page(self.scroll_log_events, self.label_log_events)
+        self.notebook_log.append_page(self.scroll_log_details, self.label_log_details)
 
-        self.loghbox = gtk.HBox(False, 0)
-        self.logclearbutton = gtk.Button(_('Clear'))
-        self.logclearbuttonimage = gtk.Image()
-        self.logclearbuttonimage.set_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
-        self.logclearbutton.set_image(self.logclearbuttonimage)
-        self.logclearbutton.connect('clicked', self.clearlogger)
+        self.hbox_log = gtk.HBox(False, 0)
+        self.button_log_clear = gtk.Button(_('Clear'))
+        self.button_log_clearimage = gtk.Image()
+        self.button_log_clearimage.set_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
+        self.button_log_clear.set_image(self.button_log_clearimage)
+        self.button_log_clear.connect('clicked', self.clearlogger)
 
-        self.logpausebutton = gtk.ToggleButton(_('Pause'))
-        self.logpausebuttonimage = gtk.Image()
-        self.logpausebuttonimage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
-        self.logpausebutton.set_image(self.logpausebuttonimage)
-        self.logpausebutton.connect('toggled', self.button_pause_log)
+        self.button_log_pause = gtk.ToggleButton(_('Pause'))
+        self.button_log_pauseimage = gtk.Image()
+        self.button_log_pauseimage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
+        self.button_log_pause.set_image(self.button_log_pauseimage)
+        self.button_log_pause.connect('toggled', self.button_pause_log)
 
-        self.loghbox.pack_end(self.logclearbutton, False, False, 4)
-        self.loghbox.pack_end(self.logpausebutton, False, False, 4)
+        self.hbox_log.pack_end(self.button_log_clear, False, False, 4)
+        self.hbox_log.pack_end(self.button_log_pause, False, False, 4)
 
-        self.logvbox.pack_start(self.lognotebook, False, False, 4)
-        self.logvbox.pack_start(self.loghbox, False, False, 4)
+        self.vbox_log.pack_start(self.notebook_log, False, False, 4)
+        self.vbox_log.pack_start(self.hbox_log, False, False, 4)
 
-        self.logboxLabel = gtk.Label(_('<b>Server log</b>'))
-        self.logboxLabel.set_use_markup(True)
+        self.label_log_box = gtk.Label(_('<b>Server log</b>'))
+        self.label_log_box.set_use_markup(True)
 
         self.expander_size_finalized = False
         self.expander = gtk.Expander(None)
-        self.expander.set_label_widget(self.logboxLabel)
+        self.expander.set_label_widget(self.label_log_box)
         self.expander.connect('notify::expanded', self.expandlogger)
 
-        self.vbox.pack_start(self.statusBox, False, False, 4)
+        self.vbox.pack_start(self.hbox_status, False, False, 4)
         self.vbox.pack_start(self.expander, False, False, 0)
         self.expander.set_sensitive(False)
 
         # This is are the preference widgets that are going to be added and shown later
-        self.preferencesVBox = gtk.VBox(False, 7)
-        self.preferencesVBoxitems = gtk.VBox(False, 5)
-        self.preferencesVBoxitems.set_border_width(2)
+        self.vbox_preferences = gtk.VBox(False, 7)
+        self.vbox_preferences_items = gtk.VBox(False, 5)
+        self.vbox_preferences_items.set_border_width(2)
         
         # Create our Hboxes
         for n in xrange(1, 10+1):
-            setattr(self, 'preferencesHBox%d' % (n), gtk.HBox(False, 0))
+            setattr(self, 'hbox_preferences_%d' % (n), gtk.HBox(False, 0))
 
-        self.preferencesFramesettings = gtk.Frame()
-        self.preferencesSettingslabel = gtk.Label(_('<b>Preferences</b>'))
-        self.preferencesSettingslabel.set_use_markup(True)
-        self.preferencesFramesettings.set_label_widget(self.preferencesSettingslabel)
-        self.preferencesFramesettings.set_label_align(0.5, 0.5)
+        self.frame_preference_settings = gtk.Frame()
+        self.label_preferences_settings = gtk.Label(_('<b>Preferences</b>'))
+        self.label_preferences_settings.set_use_markup(True)
+        self.frame_preference_settings.set_label_widget(self.label_preferences_settings)
+        self.frame_preference_settings.set_label_align(0.5, 0.5)
 
-        self.preferencesLabelport = gtk.Label(_('Port'))
-        self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelport.set_alignment(0, 0.60)
+        self.label_preferences_port = gtk.Label(_('Port'))
+        self.label_preferences_port.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_port.set_alignment(0, 0.60)
 
-        self.preferencesLabelauth = gtk.Label(_('Authentication'))
-        self.preferencesLabelauth.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelauth.set_alignment(0, 0.60)
+        self.label_preferences_auth = gtk.Label(_('Authentication'))
+        self.label_preferences_auth.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_auth.set_alignment(0, 0.60)
 
-        self.preferencesLabeluser = gtk.Label(_('Username'))
-        self.preferencesLabeluser.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabeluser.set_alignment(0, 0.60)
+        self.label_preferences_user = gtk.Label(_('Username'))
+        self.label_preferences_user.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_user.set_alignment(0, 0.60)
 
-        self.preferencesLabelpass = gtk.Label(_('Password'))
-        self.preferencesLabelpass.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelpass.set_alignment(0, 0.60)
+        self.label_preferences_pass = gtk.Label(_('Password'))
+        self.label_preferences_pass.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_pass.set_alignment(0, 0.60)
 
-        self.preferencesLabelformat = gtk.Label(_('Format'))
-        self.preferencesLabelformat.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelformat.set_alignment(0, 0.50)
+        self.label_preferences_format = gtk.Label(_('Format'))
+        self.label_preferences_format.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_format.set_alignment(0, 0.50)
 
-        self.preferencesLabelquality = gtk.Label(_('Quality'))
-        self.preferencesLabelquality.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelquality.set_alignment(0, 0.50)
+        self.label_preferences_quality = gtk.Label(_('Quality'))
+        self.label_preferences_quality.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_quality.set_alignment(0, 0.50)
 
-        self.preferencesLabelscale = gtk.Label(_('Scale'))
-        self.preferencesLabelscale.set_justify(gtk.JUSTIFY_LEFT)
-        self.preferencesLabelscale.set_alignment(0, 0.50)
+        self.label_preferences_scale = gtk.Label(_('Scale'))
+        self.label_preferences_scale.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_scale.set_alignment(0, 0.50)
 
-        if not self.itakaglobals.system == 'nt':
-            self.preferencesLabelscreenshot = gtk.Label(_('Window'))
-            self.preferencesLabelscreenshot.set_justify(gtk.JUSTIFY_LEFT)
-            self.preferencesLabelscreenshot.set_alignment(0, 0.50)
+        if not self.itaka_globals.system == 'nt':
+            self.label_preferences_screenshot = gtk.Label(_('Window'))
+            self.label_preferences_screenshot.set_justify(gtk.JUSTIFY_LEFT)
+            self.label_preferences_screenshot.set_alignment(0, 0.50)
 
-        if self.itakaglobals.notifyavailable: 
-            self.preferencesLabelnotifications = gtk.Label(_('Notifications'))
-            self.preferencesLabelnotifications.set_justify(gtk.JUSTIFY_LEFT)
-            self.preferencesLabelnotifications.set_alignment(0, 0.50)
+        if self.itaka_globals.notify_available: 
+            self.label_preferences_notifications = gtk.Label(_('Notifications'))
+            self.label_preferences_notifications.set_justify(gtk.JUSTIFY_LEFT)
+            self.label_preferences_notifications.set_alignment(0, 0.50)
 
-        self.adjustmentport = gtk.Adjustment(float(self.configuration['server']['port']), 1024, 65535, 1, 0, 0)
-        self.preferencesSpinport = gtk.SpinButton(self.adjustmentport)
-        self.preferencesSpinport.set_numeric(True)
+        self.adjustment_preferences_port = gtk.Adjustment(float(self.configuration['server']['port']), 1024, 65535, 1, 0, 0)
+        self.spin_preferences_port = gtk.SpinButton(self.adjustment_preferences_port)
+        self.spin_preferences_port.set_numeric(True)
 
-        self.preferencesEntryuser = gtk.Entry()
-        self.preferencesEntryuser.set_width_chars(11)
-        self.preferencesEntryuser.set_text(self.configuration['server']['username'])
+        self.entry_preferences_user = gtk.Entry()
+        self.entry_preferences_user.set_width_chars(11)
+        self.entry_preferences_user.set_text(self.configuration['server']['username'])
 
-        self.preferencesEntrypass = gtk.Entry()
-        self.preferencesEntrypass.set_width_chars(11)
-        if self.itakaglobals.system == 'nt':
+        self.entry_preferences_pass = gtk.Entry()
+        self.entry_preferences_pass.set_width_chars(11)
+        if self.itaka_globals.system == 'nt':
             char = '*'
         else:
             char = u'\u25cf'
 
-        self.preferencesEntrypass.set_invisible_char(char)
-        self.preferencesEntrypass.set_visibility(False)
-        self.preferencesEntrypass.set_text(self.configuration['server']['password'])
+        self.entry_preferences_pass.set_invisible_char(char)
+        self.entry_preferences_pass.set_visibility(False)
+        self.entry_preferences_pass.set_text(self.configuration['server']['password'])
 
-        self.preferencesCheckauth = gtk.CheckButton()
-        self.preferencesCheckauth.connect('toggled', self._preferences_authentication_toggled)
+        self.check_preferences_auth = gtk.CheckButton()
+        self.check_preferences_auth.connect('toggled', self._preferences_authentication_toggled)
         if self.configuration['server']['authentication']:
-            self.preferencesCheckauth.set_active(1)
+            self.check_preferences_auth.set_active(1)
         else: 
-            self.preferencesCheckauth.set_active(0)
+            self.check_preferences_auth.set_active(0)
 
         if not self.configuration['server']['authentication']:
-            self.preferencesEntryuser.set_sensitive(False)
-            self.preferencesEntrypass.set_sensitive(False)
+            self.entry_preferences_user.set_sensitive(False)
+            self.entry_preferences_pass.set_sensitive(False)
 
-        self.adjustmentquality = gtk.Adjustment(float(self.configuration['screenshot']['quality']), 0, 100, 1, 0, 0)
-        self.preferencesSpinquality = gtk.SpinButton(self.adjustmentquality)
-        self.preferencesSpinquality.set_numeric(True)
+        self.adjustment_preferences_quality = gtk.Adjustment(float(self.configuration['screenshot']['quality']), 0, 100, 1, 0, 0)
+        self.spin_preferences_quality = gtk.SpinButton(self.adjustment_preferences_quality)
+        self.spin_preferences_quality.set_numeric(True)
 
-        self.adjustmentscale = gtk.Adjustment(float(self.configuration['screenshot']['scalepercent']), 1, 100, 1, 0, 0)
-        self.preferencesSpinscale = gtk.SpinButton(self.adjustmentscale)
-        self.preferencesSpinscale.set_numeric(True)
+        self.adjustment_preferences_scale = gtk.Adjustment(float(self.configuration['screenshot']['scalepercent']), 1, 100, 1, 0, 0)
+        self.spin_preferences_scale = gtk.SpinButton(self.adjustment_preferences_scale)
+        self.spin_preferences_scale.set_numeric(True)
 
-        self.preferencesComboformat = gtk.combo_box_new_text()
-        self.preferencesComboformat.connect('changed', self._preferences_combo_changed)
-        self.preferencesComboformat.append_text('JPG')
-        self.preferencesComboformat.append_text('PNG')
+        self.combo_preferences_format = gtk.combo_box_new_text()
+        self.combo_preferences_format.connect('changed', self._preferences_combo_changed)
+        self.combo_preferences_format.append_text('JPG')
+        self.combo_preferences_format.append_text('PNG')
         if self.configuration['screenshot']['format'] == 'jpeg':
-            self.preferencesComboformat.set_active(0)
+            self.combo_preferences_format.set_active(0)
         else: 
-            self.preferencesComboformat.set_active(1)
-            self.preferencesHBox6.set_sensitive(False)
+            self.combo_preferences_format.set_active(1)
+            self.hbox_preferences_6.set_sensitive(False)
 
-        if self.itakaglobals.notifyavailable: 
-            self.preferencesChecknotifications = gtk.CheckButton()
+        if self.itaka_globals.notify_available: 
+            self.check_preferences_notifications = gtk.CheckButton()
             if self.configuration['server']['notify']:
-                self.preferencesChecknotifications.set_active(1)
+                self.check_preferences_notifications.set_active(1)
             else: 
-                self.preferencesChecknotifications.set_active(0)
+                self.check_preferences_notifications.set_active(0)
 
-        if not self.itakaglobals.system == 'nt':
-            self.preferencesComboscreenshot = gtk.combo_box_new_text()
-            self.preferencesComboscreenshot.append_text(_('Fullscreen'))
-            self.preferencesComboscreenshot.append_text(_('Active window'))
+        if not self.itaka_globals.system == 'nt':
+            self.combo_preferences_screenshot = gtk.combo_box_new_text()
+            self.combo_preferences_screenshot.append_text(_('Fullscreen'))
+            self.combo_preferences_screenshot.append_text(_('Active window'))
             if self.configuration['screenshot']['currentwindow']:
-                self.preferencesComboscreenshot.set_active(1)
+                self.combo_preferences_screenshot.set_active(1)
             else: 
-                self.preferencesComboscreenshot.set_active(0)
+                self.combo_preferences_screenshot.set_active(0)
 
-        self.preferencesButtonClose = gtk.Button('Close', gtk.STOCK_CLOSE)
-        self.preferencesButtonClose.connect('clicked', lambda wid: self.contractpreferences())
+        self.button_preferences_close = gtk.Button('Close', gtk.STOCK_CLOSE)
+        self.button_preferences_close.connect('clicked', lambda wid: self.contractpreferences())
         
-        self.preferencesButtonAbout = gtk.Button('About', gtk.STOCK_ABOUT)
-        self.preferencesButtonAbout.connect('clicked', lambda wid: self.about())
+        self.button_preferences_about = gtk.Button('About', gtk.STOCK_ABOUT)
+        self.button_preferences_about.connect('clicked', lambda wid: self.about())
 
-        self.preferencesHBox1.pack_start(self.preferencesLabelport, False, False, 12)
-        self.preferencesHBox1.pack_end(self.preferencesSpinport, False, False, 7)
-        self.preferencesHBox2.pack_start(self.preferencesLabelauth, False, False, 12)
-        self.preferencesHBox3.pack_start(self.preferencesLabeluser, False, False, 12)
-        self.preferencesHBox4.pack_end(self.preferencesEntrypass, False, False, 7)
-        self.preferencesHBox4.pack_start(self.preferencesLabelpass, False, False, 12)
-        self.preferencesHBox3.pack_end(self.preferencesEntryuser, False, False, 7)
-        self.preferencesHBox2.pack_end(self.preferencesCheckauth, False, False, 7)
-        self.preferencesHBox5.pack_start(self.preferencesLabelformat, False, False, 12)
-        self.preferencesHBox5.pack_end(self.preferencesComboformat, False, False, 7)
-        self.preferencesHBox6.pack_start(self.preferencesLabelquality, False, False, 12)
-        self.preferencesHBox6.pack_end(self.preferencesSpinquality, False, False, 7)
-        if not self.itakaglobals.system == 'nt':
-            self.preferencesHBox7.pack_start(self.preferencesLabelscreenshot, False, False, 12)
-            self.preferencesHBox7.pack_end(self.preferencesComboscreenshot, False, False, 7)
-        self.preferencesHBox8.pack_start(self.preferencesLabelscale, False, False, 12)
-        self.preferencesHBox8.pack_end(self.preferencesSpinscale, False, False, 7)
-        if self.itakaglobals.notifyavailable: 
-            self.preferencesHBox9.pack_start(self.preferencesLabelnotifications, False, False, 12)
-            self.preferencesHBox9.pack_end(self.preferencesChecknotifications, False, False, 7)
-        self.preferencesHBox10.pack_start(self.preferencesButtonAbout, False, False, 7)
-        self.preferencesHBox10.pack_end(self.preferencesButtonClose, False, False, 7)
+        self.hbox_preferences_1.pack_start(self.label_preferences_port, False, False, 12)
+        self.hbox_preferences_1.pack_end(self.spin_preferences_port, False, False, 7)
+        self.hbox_preferences_2.pack_start(self.label_preferences_auth, False, False, 12)
+        self.hbox_preferences_3.pack_start(self.label_preferences_user, False, False, 12)
+        self.hbox_preferences_4.pack_end(self.entry_preferences_pass, False, False, 7)
+        self.hbox_preferences_4.pack_start(self.label_preferences_pass, False, False, 12)
+        self.hbox_preferences_3.pack_end(self.entry_preferences_user, False, False, 7)
+        self.hbox_preferences_2.pack_end(self.check_preferences_auth, False, False, 7)
+        self.hbox_preferences_5.pack_start(self.label_preferences_format, False, False, 12)
+        self.hbox_preferences_5.pack_end(self.combo_preferences_format, False, False, 7)
+        self.hbox_preferences_6.pack_start(self.label_preferences_quality, False, False, 12)
+        self.hbox_preferences_6.pack_end(self.spin_preferences_quality, False, False, 7)
+        if not self.itaka_globals.system == 'nt':
+            self.hbox_preferences_7.pack_start(self.label_preferences_screenshot, False, False, 12)
+            self.hbox_preferences_7.pack_end(self.combo_preferences_screenshot, False, False, 7)
+        self.hbox_preferences_8.pack_start(self.label_preferences_scale, False, False, 12)
+        self.hbox_preferences_8.pack_end(self.spin_preferences_scale, False, False, 7)
+        if self.itaka_globals.notify_available: 
+            self.hbox_preferences_9.pack_start(self.label_preferences_notifications, False, False, 12)
+            self.hbox_preferences_9.pack_end(self.check_preferences_notifications, False, False, 7)
+        self.hbox_preferences_10.pack_start(self.button_preferences_about, False, False, 7)
+        self.hbox_preferences_10.pack_end(self.button_preferences_close, False, False, 7)
 
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox1, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox2, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox3, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox4, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox5, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox6, False, False, 0)
-        if not self.itakaglobals.system == 'nt':
-            self.preferencesVBoxitems.pack_start(self.preferencesHBox7, False, False, 0)
-        self.preferencesVBoxitems.pack_start(self.preferencesHBox8, False, False, 0)
-        if self.itakaglobals.notifyavailable: 
-            self.preferencesVBoxitems.pack_start(self.preferencesHBox9, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_1, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_2, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_3, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_4, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_5, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_6, False, False, 0)
+        if not self.itaka_globals.system == 'nt':
+            self.vbox_preferences_items.pack_start(self.hbox_preferences_7, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_8, False, False, 0)
+        if self.itaka_globals.notify_available: 
+            self.vbox_preferences_items.pack_start(self.hbox_preferences_9, False, False, 0)
 
-        self.preferencesFramesettings.add(self.preferencesVBoxitems)
-        self.preferencesVBox.pack_start(self.preferencesFramesettings, False, False, 0)
-        self.preferencesVBox.pack_start(self.preferencesHBox10, False, False, 4)
+        self.frame_preference_settings.add(self.vbox_preferences_items)
+        self.vbox_preferences.pack_start(self.frame_preference_settings, False, False, 0)
+        self.vbox_preferences.pack_start(self.hbox_preferences_10, False, False, 4)
 
         self.window.add(self.vbox)
         self.window.show_all()
@@ -647,52 +652,52 @@ class Gui:
         """
         
         # So we can mess with the values in the running one and not mess up our comparison
-        self.currentconfiguration = copy.deepcopy(self.configuration)
+        self.current_configuration = copy.deepcopy(self.configuration)
 
         # Switch to the proper values
-        formatvalue = str(self.preferencesComboformat.get_active_text())
-        if formatvalue == 'PNG':
-            formatvalue = 'png'
+        self.format_value = str(self.combo_preferences_format.get_active_text())
+        if self.format_value == 'PNG':
+            self.format_value = 'png'
             self.configuration['screenshot']['format'] = 'png'
         else:
-            formatvalue = 'jpeg'
+            self.format_value = 'jpeg'
             self.configuration['screenshot']['format'] = 'jpeg'
 
-        if self.itakaglobals.notifyavailable:
-            notifyvalue = self.preferencesChecknotifications.get_active()
-            if notifyvalue:
-                notifyvalue = True
-                self.menuitemnotifications.set_active(True)
+        if self.itaka_globals.notify_available:
+            self.notify_value = self.check_preferences_notifications.get_active()
+            if self.notify_value:
+                self.notify_value = True
+                self.menu_item_notifications.set_active(True)
                 self.configuration['server']['notify'] = True
             else:
-                notifyvalue = False
-                self.menuitemnotifications.set_active(False)
+                self.notify_value = False
+                self.menu_item_notifications.set_active(False)
                 self.configuration['server']['notify'] = False
         else:
-            notifyvalue = False
+            self.notify_value = False
             self.configuration['server']['notify'] = False
 
-        if not self.itakaglobals.system == 'nt':
-            if self.preferencesComboscreenshot.get_active_text() == _('Active window'):
+        if not self.itaka_globals.system == 'nt':
+            if self.combo_preferences_screenshot.get_active_text() == _('Active window'):
                 self.configuration['screenshot']['currentwindow'] = True
-                screenshotvalue = True
+                self.screenshot_value = True
             else:
                 self.configuration['screenshot']['currentwindow'] = False
-                screenshotvalue = False
+                self.screenshot_value = False
         else:
-            screenshotvalue = False
+            self.screenshot_value = False
             self.configuration['screenshot']['currentwindow'] = False
 
-        scale = [self.preferencesSpinscale.get_value_as_int()]
-        if scale[0] == 100:
+        self.scale_value = [self.spin_preferences_scale.get_value_as_int()]
+        if self.scale_value[0] == 100:
             self.configuration['screenshot']['scale'] = False
-            scale.append(False)
+            self.scale_value.append(False)
         else:
             self.configuration['screenshot']['scale'] = True
-            scale.append(True)
+            self.scale_value.append(True)
 
-        if self.configuration['screenshot']['scalepercent'] != scale[0]:
-            self.configuration['screenshot']['scalepercent'] = scale[0]
+        if self.configuration['screenshot']['scalepercent'] != self.scale_value[0]:
+            self.configuration['screenshot']['scalepercent'] = self.scale_value[0]
         
         # Build a configuration dictionary to send to the configuration engine's
         # save method. Redundant values must be included for the comparison
@@ -703,45 +708,45 @@ class Gui:
                 
             'screenshot': 
                 {'path': self.configuration['screenshot']['path'],
-                'format': formatvalue,
-                'quality': self.preferencesSpinquality.get_value_as_int(),
-                'currentwindow': screenshotvalue,
-                'scale': scale[1],
-                'scalepercent': scale[0]},
+                'format': self.format_value,
+                'quality': self.spin_preferences_quality.get_value_as_int(),
+                'currentwindow': self.screenshot_value,
+                'scale': self.scale_value[1],
+                'scalepercent': self.scale_value[0]},
 
             'server': 
-                {'username': self.preferencesEntryuser.get_text(),
-                'authentication': self.preferencesCheckauth.get_active(),
-                'notify': notifyvalue,
-                'password': self.preferencesEntrypass.get_text(),
-                'port': self.preferencesSpinport.get_value_as_int()}
+                {'username': self.entry_preferences_user.get_text(),
+                'authentication': self.check_preferences_auth.get_active(),
+                'notify': self.notify_value,
+                'password': self.entry_preferences_pass.get_text(),
+                'port': self.spin_preferences_port.get_value_as_int()}
             }
 
         # Set them for local use now
-        if self.configuration['screenshot']['quality'] != self.preferencesSpinquality.get_value_as_int():
-            self.configuration['screenshot']['quality'] = self.preferencesSpinquality.get_value_as_int()
+        if self.configuration['screenshot']['quality'] != self.spin_preferences_quality.get_value_as_int():
+            self.configuration['screenshot']['quality'] = self.spin_preferences_quality.get_value_as_int()
 
-        if self.configuration['server']['port'] !=  self.preferencesSpinport.get_value_as_int():
-            self.configuration['server']['port'] =  self.preferencesSpinport.get_value_as_int()
+        if self.configuration['server']['port'] !=  self.spin_preferences_port.get_value_as_int():
+            self.configuration['server']['port'] =  self.spin_preferences_port.get_value_as_int()
             self.restart_server()
 
-        if self.configuration['server']['authentication'] is not self.preferencesCheckauth.get_active():
-            self.configuration['server']['authentication'] = self.preferencesCheckauth.get_active()
+        if self.configuration['server']['authentication'] is not self.check_preferences_auth.get_active():
+            self.configuration['server']['authentication'] = self.check_preferences_auth.get_active()
 
-        if self.configuration['server']['username'] != self.preferencesEntryuser.get_text():
-            self.configuration['server']['username'] = self.preferencesEntryuser.get_text()
+        if self.configuration['server']['username'] != self.entry_preferences_user.get_text():
+            self.configuration['server']['username'] = self.entry_preferences_user.get_text()
 
-        if self.configuration['server']['password'] != self.preferencesEntrypass.get_text():
-            self.configuration['server']['password'] = self.preferencesEntrypass.get_text()
+        if self.configuration['server']['password'] != self.entry_preferences_pass.get_text():
+            self.configuration['server']['password'] = self.entry_preferences_pass.get_text()
 
         # Check if the configuration changed
-        if (self.configurationdict != self.currentconfiguration):
+        if (self.configurationdict != self.current_configuration):
 
             # Update the needed keys
             try:
-                # self.configinstance.save(self.configurationdict)
+                # self.config_instance.save(self.configurationdict)
                 for section in self.configurationdict:
-                    [self.configinstance.update(section, key, value) for key, value in self.configurationdict[section].iteritems() if key not in self.currentconfiguration[section] or self.currentconfiguration[section][key] != value]
+                    [self.config_instance.update(section, key, value) for key, value in self.configurationdict[section].iteritems() if key not in self.current_configuration[section] or self.current_configuration[section][key] != value]
             except:
                 self.log.failure(('Gui', 'save_preferences'), _('Could not save preferences'), 'ERROR')
 
@@ -753,13 +758,13 @@ class Gui:
         # We have a race condition here. If GTK cant resize fast enough, then it gets very sluggish
         # See configure-event signal of gtk.Widget
         # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
-        if not self.preferencesexpanded:
-            if self.expandtimeout is not None:
+        if not self.preferences_expanded:
+            if self.timeout_expand is not None:
                 """NOTE: GTK+ GtkWidget.size_request() method can give you the amount of size a widget will take
-                however, it has to be show()ned before. For our little hack, we show the preferencesVBox widgets
+                however, it has to be show()ned before. For our little hack, we show the vbox_preferences widgets
                 but not itself, which should yield a close enough calculation."""
-                self.preferencesFramesettings.show_all()
-                self.preferencesHBox10.show_all()
+                self.frame_preference_settings.show_all()
+                self.hbox_preferences_10.show_all()
 
                 """If the logger is expanded, use that as the initial size. 
                 _expander_size is set by our GtkWindow resize callback
@@ -775,37 +780,37 @@ class Gui:
                     self.window.normal_size = self.window.initial_size
 
                 self.increment = 33
-                if self.window.current_size[1] < self.window.normal_size[1]+self.preferencesVBox.size_request()[1]:
+                if self.window.current_size[1] < self.window.normal_size[1]+self.vbox_preferences.size_request()[1]:
                     # Avoid overexpanding our calculation
-                    if self.window.current_size[1]+self.increment > self.window.normal_size[1]+self.preferencesVBox.size_request()[1]: 
-                        self.increment = (self.window.normal_size[1]+self.preferencesVBox.size_request()[1] - self.window.current_size[1]) 
+                    if self.window.current_size[1]+self.increment > self.window.normal_size[1]+self.vbox_preferences.size_request()[1]: 
+                        self.increment = (self.window.normal_size[1]+self.vbox_preferences.size_request()[1] - self.window.current_size[1]) 
 
                     self.window.resize(self.window.current_size[0], self.window.current_size[1]+self.increment)
                     return True
                 else:
                     # Its done expanding, add our widgets or display it if it has been done already
-                    self.preferencesButton.set_sensitive(False)
-                    self.preferencesexpanded = True
+                    self.button_preferences.set_sensitive(False)
+                    self.preferences_expanded = True
 
                     # Reload our configuration and show the preferences
-                    self.configuration = self.configinstance.load()
-                    if self.preferenceshidden:
-                        self.preferencesVBox.show_all()
+                    self.configuration = self.config_instance.load()
+                    if self.preferences_hidden:
+                        self.vbox_preferences.show_all()
                     else:
-                        self.vbox.pack_start(self.preferencesVBox, False, False, 0)
-                        self.preferencesVBox.show_all()
+                        self.vbox.pack_start(self.vbox_preferences, False, False, 0)
+                        self.vbox_preferences.show_all()
                     
-                    self.expandtimeout = None
+                    self.timeout_expand = None
                     return False
             else:
-                self.expandtimeout = gobject.timeout_add(30, self.expandpreferences)
+                self.timeout_expand = gobject.timeout_add(30, self.expandpreferences)
 
     def contractpreferences(self, *args):
         """
         Contracts the window of preferences
         """
 
-        if self.contracttimeout is not None:
+        if self.timeout_contract is not None:
             # If you dont use the normal_size proxy to our window sizes,
             # it generates a nice effect of doing the animation when closing the expander also. 
             # While sexy, it's inconsistent, and most definately a resource hungry bug
@@ -815,26 +820,26 @@ class Gui:
             else:
                 self.window.normal_size = self.window.initial_size
            
-            if self.preferencesVBox.get_property("visible"):
-                self.preferencesVBox.hide_all()
+            if self.vbox_preferences.get_property("visible"):
+                self.vbox_preferences.hide_all()
 
             if self.window.current_size[1] > self.window.normal_size[1]:
                 self.window.resize(self.window.current_size[0], self.window.current_size[1]-self.increment)
                 return True
             else:
                 # Done, set some variables and stop our timer
-                self.preferencesexpanded = False 
-                self.preferenceshidden = True
+                self.preferences_expanded = False 
+                self.preferences_hidden = True
                 self.expander.size_finalized = False
-                self.preferencesButton.set_sensitive(True)
+                self.button_preferences.set_sensitive(True)
                 
                 # Save our settings 
                 self.save_preferences()
 
-                self.contracttimeout = None
+                self.timeout_contract = None
                 return False
         else:
-            self.contracttimeout = gobject.timeout_add(30, self.contractpreferences)
+            self.timeout_contract = gobject.timeout_add(30, self.contractpreferences)
 
     def windowsizechanged(self, widget=None, data=None):
         """
@@ -853,11 +858,11 @@ class Gui:
         if self.expander.get_expanded() and not self.expander_size_finalized:
             self.expander_size = self.window.current_size
             # If the preferences were expanded before the logger
-            if self.preferencesexpanded:
+            if self.preferences_expanded:
                 # Cant assign tuple items
-                self.expander_size = [self.expander_size[0], self.expander_size[1] - self.preferencesVBox.size_request()[1]]
+                self.expander_size = [self.expander_size[0], self.expander_size[1] - self.vbox_preferences.size_request()[1]]
 
-    def statusicon_menu(self, widget, button, time, menu):
+    def status_icon_menu(self, widget, button, time, menu):
         """
         Display the menu on the status icon
         
@@ -880,7 +885,7 @@ class Gui:
                 menu.popup(None, None, None, 3, time)
             pass
 
-    def statusicon_blinktimeout(self, time=3000):
+    def status_icon_timeout_blink(self, time=3000):
         """
         Sets the timeout in miliseconds to blink and stop blinking the status icon
         
@@ -888,15 +893,15 @@ class Gui:
         @param time: Time in milliseconds to blink the status icon
         """
 
-        if self.blinktimeout is None:
-            self.statusIcon.set_blinking(True)
-            self.blinktimeout = gobject.timeout_add(time, self.statusicon_blinktimeout)
+        if self.timeout_blink is None:
+            self.status_icon.set_blinking(True)
+            self.timeout_blink = gobject.timeout_add(time, self.status_icon_timeout_blink)
         else:
-            self.statusIcon.set_blinking(False)
-            self.blinktimeout = None
+            self.status_icon.set_blinking(False)
+            self.timeout_blink = None
             return False
  
-    def statusicon_activate(self, widget):
+    def status_icon_activate(self, widget):
         """
         Toggle the window visibility from the status icon when clicked
         
@@ -911,7 +916,7 @@ class Gui:
         else:
             self.window.show()
 
-    def statusicon_notify(self, widget):
+    def status_icon_notify(self, widget):
         """
         Disable or enable notifications on the fly from the status icon
         
@@ -919,7 +924,7 @@ class Gui:
         @param widget: gtk.Widget
         """
 
-        if self.checkwidget(self.menuitemnotifications):
+        if self.check_widget(self.menu_item_notifications):
             self.configuration['server']['notify'] = True
         else:
             self.configuration['server']['notify'] = False
@@ -929,17 +934,17 @@ class Gui:
         Creates the About dialog
         """
 
-        self.aboutdialog = gtk.AboutDialog()
-        self.aboutdialog.set_transient_for(self.window)
-        self.aboutdialog.set_name('Itaka')
-        self.aboutdialog.set_version(self.itakaglobals.version)
-        self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
-        self.aboutdialog.set_comments('Screenshooting de mercado.')
-        self.aboutdialog.set_authors(['Marc E. <santusmarc@users.sourceforge.net>', _('Kurt Erickson <psychogenicshk@users.sourceforge.net> (Packaging)')])
-        self.aboutdialog.set_artists(['Marc E. <santusmarc@users.sourceforge.net>', 'Tango Project (http://tango.freedesktop.org)'])
-        self.aboutdialog.set_license('''Itaka is free software; you can redistribute it and/or modify
+        self.about_dialog = gtk.about_dialog()
+        self.about_dialog.set_transient_for(self.window)
+        self.about_dialog.set_name('Itaka')
+        self.about_dialog.set_version(self.itaka_globals.__version__)
+        self.about_dialog.set_copyright(u'© 2003-2007 Marc E.')
+        self.about_dialog.set_comments('Screenshooting de mercado.')
+        self.about_dialog.set_authors(['Marc E. <santusmarc@users.sourceforge.net>', _('Kurt Erickson <psychogenicshk@users.sourceforge.net> (Packaging)')])
+        self.about_dialog.set_artists(['Marc E. <santusmarc@users.sourceforge.net>', 'Tango Project (http://tango.freedesktop.org)'])
+        self.about_dialog.set_license('''Itaka is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation; either version 3 of the License, or
 any later version.
 
 Itaka is distributed in the hope that it will be useful,
@@ -950,11 +955,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Itaka; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
-        self.aboutdialog.set_website('http://itaka.jardinpresente.com.ar')
-        self.aboutdialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka64x64.png")))
-        self.aboutdialog.set_icon(self.icon_pixbuf)
-        self.aboutdialog.run()
-        self.aboutdialog.destroy()
+        self.about_dialog.set_website('http://itaka.jardinpresente.com.ar')
+        self.about_dialog.set_logo(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka64x64.png")))
+        self.about_dialog.set_icon(self.icon_pixbuf)
+        self.about_dialog.run()
+        self.about_dialog.destroy()
 
     def expandlogger(self, expander, params):
         """
@@ -969,9 +974,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if self.expander.get_expanded():
             # Show the debugvbox() and it's subwidgets
-            self.logvbox.show_all()
+            self.vbox_log.show_all()
 
-            self.expander.add(self.logvbox)
+            self.expander.add(self.vbox_log)
         else:
             self.expander.remove(self.expander.child)
             self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
@@ -982,8 +987,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Clear the log
         """
 
-        self.logeventsstore.clear()
-        self.logdetailsbuffer.set_text("")
+        self.log_events_store.clear()
+        self.log_details_buffer.set_text("")
 
     def button_pause_log(self, widget):
         """
@@ -993,7 +998,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param widget: gtk.Widget
         """
 
-        if self.checkwidget(widget):
+        if self.check_widget(widget):
             if not self.log_paused():
                 self.pause_log()
         else:
@@ -1005,13 +1010,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Pause Gui log output
         """
 
-        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging paused')])
+        self.log_events_store.append([self.log_events_tree_view.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging paused')])
         
-        self.logeventstreeview.set_sensitive(False)
-        self.logdetailstextview.set_sensitive(False)
+        self.log_events_tree_view.set_sensitive(False)
+        self.log_details_text_view.set_sensitive(False)
 
         self.server.remove_log_observer()
-        self.logpaused = True
+        self.log_is_paused = True
 
     def unpause_log(self, foreign=False):
         """
@@ -1023,23 +1028,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         self.server.add_log_observer(self.log.twisted_observer)
         if (foreign):
-            self.logpausebutton.set_active(False)
-        self.logdetailstextview.set_sensitive(True)
-        self.logeventstreeview.set_sensitive(True)
+            self.button_log_pause.set_active(False)
+        self.log_details_text_view.set_sensitive(True)
+        self.log_events_tree_view.set_sensitive(True)
 
-        self.logeventsstore.append([self.logeventstreeview.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging resumed')])
+        self.log_events_store.append([self.log_events_tree_view.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging resumed')])
 
-        self.logpaused = False
+        self.log_is_paused = False
 
     def log_paused(self):
         """
         Whether the Gui log is paused
 
         @rtype: bool
-        @return: True if the Gui log is paused. False otherwise
+        @return: True if the Gui log is paused
         """
         
-        return self.logpaused
+        return self.log_is_paused
 
     def main(self):
         """
@@ -1057,10 +1062,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param widget: gtk.Widget
         """
         
-        if self.preferencesComboformat.get_active_text() == 'PNG':
-            self.preferencesHBox6.set_sensitive(False)
+        if self.combo_preferences_format.get_active_text() == 'PNG':
+            self.hbox_preferences_6.set_sensitive(False)
         else:
-            self.preferencesHBox6.set_sensitive(True)
+            self.hbox_preferences_6.set_sensitive(True)
 
     def _preferences_authentication_toggled(self, widget):
         """
@@ -1070,19 +1075,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param widget: gtk.Widget
         """
 
-        if self.checkwidget(widget):
-            self.preferencesEntryuser.set_sensitive(True)
-            self.preferencesEntrypass.set_sensitive(True)
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png"))
-            self.statusIcon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png")))
+        if self.check_widget(widget):
+            self.entry_preferences_user.set_sensitive(True)
+            self.entry_preferences_pass.set_sensitive(True)
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, "itaka-secure.png"))
+            self.status_icon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka-secure.png")))
         else:
-            self.preferencesEntryuser.set_sensitive(False)
-            self.preferencesEntrypass.set_sensitive(False)
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
-            self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
+            self.entry_preferences_user.set_sensitive(False)
+            self.entry_preferences_pass.set_sensitive(False)
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, "itaka.png"))
+            self.status_icon.set_from_pixbuf(self.icon_pixbuf)
 
 
-    def checkwidget(self, widget):
+    def check_widget(self, widget):
         """
         Checks if a gtk.Widget is active
 
@@ -1102,7 +1107,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @type widget: instance
         @param widget: gtk.Widget
         """
-        if self.checkwidget(widget):
+        if self.check_widget(widget):
             self.start_server()
         else:
             self.stop_server()
@@ -1115,7 +1120,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param widget: gtk.Widget
 
         @type foreign: bool
-        @param foreign: Whether the caller of this method is not self.buttonStartstop
+        @param foreign: Whether the caller of this method is not self.button_start_stop
 
         """
 
@@ -1125,7 +1130,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.server.start_server(self.configuration['server']['port'])
         except error.ItakaServerErrorCannotListen, e:
             self.log.failure(('Gui', 'start_server'), (_('Failed to start server'), _('Failed to start server: %s') % (e)), 'ERROR')
-            self.buttonStartstop.set_active(False)
+            self.button_start_stop.set_active(False)
             return
 
         self.server.add_log_observer(self.log.twisted_observer)
@@ -1144,14 +1149,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         # Change buttons
         if foreign:
-            self.buttonStartstop.set_active(True)
-        self.buttonStartstop.set_label(_('Stop'))
-        self.startstopimage.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
-        self.buttonStartstop.set_image(self.startstopimage)
+            self.button_start_stop.set_active(True)
+        self.button_start_stop.set_label(_('Stop'))
+        self.start_stop_image.set_from_stock(gtk.STOCK_STOP, gtk.ICON_SIZE_BUTTON)
+        self.button_start_stop.set_image(self.start_stop_image)
 
-        self.statusIcon.set_tooltip(_('Itaka - Server running'))
-        self.menuitemstart.set_sensitive(False)
-        self.menuitemstop.set_sensitive(True)
+        self.status_icon.set_tooltip(_('Itaka - Server running'))
+        self.menu_item_start.set_sensitive(False)
+        self.menu_item_stop.set_sensitive(True)
 
         if not self.expander.get_property("sensitive"):
             self.expander.set_sensitive(True)
@@ -1164,7 +1169,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param widget: gtk.Widget
 
         @type foreign: bool
-        @param foreign: Whether the caller of this method is not self.buttonStartstop
+        @param foreign: Whether the caller of this method is not self.button_start_stop
         """
 
         if self.server.listening():
@@ -1179,17 +1184,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
             # Change GUI elements
             if (foreign):
-                self.buttonStartstop.set_active(False)
+                self.button_start_stop.set_active(False)
 
-            self.statusIcon.set_tooltip('Itaka')
-            self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
-            self.buttonStartstop.set_image(self.startstopimage)
-            self.buttonStartstop.set_label(_('Start'))
-            self.labelLastip.set_text('')
-            self.labelTime.set_text('')
-            self.labelServed.set_text('')
-            self.menuitemstart.set_sensitive(True)
-            self.menuitemstop.set_sensitive(False)
+            self.status_icon.set_tooltip('Itaka')
+            self.start_stop_image.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
+            self.button_start_stop.set_image(self.start_stop_image)
+            self.button_start_stop.set_label(_('Start'))
+            self.label_last_ip.set_text('')
+            self.label_time.set_text('')
+            self.label_served.set_text('')
+            self.menu_item_start.set_sensitive(True)
+            self.menu_item_stop.set_sensitive(False)
 
     def restart_server(self):
         """
@@ -1220,7 +1225,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             os.remove(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format'])))
 
         # Windows fix
-        del self.statusIcon
+        del self.status_icon
 
         gtk.main_quit()
 
@@ -1250,8 +1255,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if self.minutes or len(self.pieces) == 0:
             self.pieces.append(self.plural(self.minutes, _('minute')))
 
-        self.labelTime.set_text(_('<b>When</b>: ') + ', '.join(self.pieces) + _(' ago'))
-        self.labelTime.set_use_markup(True)
+        self.label_time.set_text(_('<b>When</b>: ') + ', '.join(self.pieces) + _(' ago'))
+        self.label_time.set_use_markup(True)
 
         # Need this so it runs more than once
         return True
@@ -1277,11 +1282,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
         
         if self.configuration['server']['authentication']:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png"))            
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, "itaka-secure.png"))            
         else:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, "itaka.png"))
 
-        self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
+        self.status_icon.set_from_pixbuf(self.icon_pixbuf)
         # Only run this event once
         return False
 
@@ -1304,20 +1309,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.ip = ip
         self.time = time
 
-        self.log.detailed_message(_('Screenshot served to %s') % (self.ip), _('Screenshot number %d served to %s') % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+        self.log.detailed_message(_('Screenshot served to %s') % (self.ip), _('Screenshot number %d served to %s') % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka16x16-take.png"))])
 
-        self.labelServed.set_text(_('<b>Served</b>: %d') % (self.counter))
-        self.labelServed.set_use_markup(True)
-        self.labelLastip.set_text(_('<b>Client</b>: %s') % (self.ip))
-        self.labelLastip.set_use_markup(True)
-        self.statusIcon.set_tooltip(_('Itaka - %s served') % (self.plural(self.counter, _('screenshot'))))
+        self.label_served.set_text(_('<b>Served</b>: %d') % (self.counter))
+        self.label_served.set_use_markup(True)
+        self.label_last_ip.set_text(_('<b>Client</b>: %s') % (self.ip))
+        self.label_last_ip.set_use_markup(True)
+        self.status_icon.set_tooltip(_('Itaka - %s served') % (self.plural(self.counter, _('screenshot'))))
 
         # Show the camera image on tray and interface for 1.5 seconds
         if self.configuration['server']['authentication']:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure-take.png'))
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka-secure-take.png'))
         else:
-            self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
-        self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
+            self.itaka_logo.set_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka-take.png'))
+        self.status_icon.set_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka-take.png'))
         gobject.timeout_add(1500, self.set_standard_images)
 
         # Call the update timer function, and add a timer to update the GUI of its

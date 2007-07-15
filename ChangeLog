@@ -1,8 +1,9 @@
-1.0:
- * Added RPM packages
+1.0 (Say no more):
  * Added interface translations #4
+ * Switch to GPLv3
+ * Added RPM packages
  * Simplified and improved Makefile
- * Switch to GPLv3.
+ * Cleaning of the code to try to be at least more compatible with PEP-8.
 
 0.2 (I've been watching you...):
  * Rewrote the screenshot module completely to support active window
