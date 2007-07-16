@@ -3,9 +3,10 @@
  * Switch to GPLv3
  * Added RPM packages
  * Added a favicon to the server
- * Simplified and improved Makefile
+ * Don't clean out status labels when restarting server
+ * Don't check for system compatibility of Libnotify
  * Cleaning of the code to try to be at least more compatible with PEP-8
- * Dont clean out status labels when restarting server
+ * Simplified and improved Makefile
 
 0.2.1:
  * Fixed a serious security bug in which /screenshot prompted no auth. Also

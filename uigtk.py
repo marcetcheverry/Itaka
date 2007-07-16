@@ -1213,13 +1213,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.server.listening():
-            self.console.message(_('Shutting down server'))
             self.server.stop_server()
-            del self.console
-        else:
-            # Console goodbye!
-            if hasattr(self, 'console'):
-                del self.console
 
         # Remove stale screenshot and quit
         if os.path.exists(os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))): 
@@ -1228,6 +1222,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Windows fix
         del self.status_icon
 
+        self.console.message(_('Itaka shutting down'))
         gtk.main_quit()
 
     def literal_time_difference(self, dtime):

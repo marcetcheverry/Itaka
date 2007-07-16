@@ -199,7 +199,8 @@ class ScreenshotServer(BaseHTTPServer):
         self.root = RootResource(self.gui, self.authresource, self.itaka_globals.head_html + self.configuration['html']['html'] + self.itaka_globals.footer_html)
         self.add_child_to_resource('root', '', self.root)
         self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui, self.authresource))
-        self.add_child_to_resource('root', 'favicon.ico', IconResource(self.gui, self.authresource))
+        self.add_child_to_resource('root', 'favicon.ico', FileResource(self.gui, self.authresource, os.path.join(self.itaka_globals.image_dir, 'favicon.ico'), 'image/x-icon'))
+
         self.create_site(self.root)
 
 class AuthenticatedResource:
@@ -453,12 +454,12 @@ class ScreenshotResource(resource.Resource):
             self.request.setHeader('Connection', 'close')
             return self.data
 
-class IconResource(resource.Resource):
+class FileResource(resource.Resource):
     """ 
-    Handle server requests and call for favicon.ico
+    Generic handler for file resources
     """
 
-    def __init__(self, gui_instance, auth_instance):
+    def __init__(self, gui_instance, auth_instance, path, type):
         """ 
         Constructor
 
@@ -467,11 +468,21 @@ class IconResource(resource.Resource):
 
         @type auth_instance: AuthenticatedResource
         @param auth_instance: An instance of our L{AuthenticatedResource} class
+
+        @type path: string
+        @param path: The path to the file to be served
+
+        @type type: str
+        @param type: The MIME-type to bepassed to Content-Type
         """
 
         self.gui = gui_instance
         self.auth = auth_instance
         self.itaka_globals = self.gui.itaka_globals
+
+        self.type = type
+        self.data = open(path, 'rb').read()
+        self.size = str(os.stat(path).st_size)
 
     def render_GET(self, request):
         """
@@ -483,10 +494,6 @@ class IconResource(resource.Resource):
 
         self.configuration = self.gui.configuration
         self.request = request
-        self.type = 'image/x-icon'
-        self.file = os.path.join(self.itaka_globals.image_dir, 'favicon.ico')
-        self.data = open(self.file, 'rb').read()
-        self.size = str(os.stat(self.file).st_size)
 
         if self.configuration['server']['authentication']:
             if self.auth.authenticated or self.auth.authenticate(self.request):

@@ -128,22 +128,14 @@ class Console:
         """
         Constructor for console output handler
         
-        @type itakaglobals: module
-        @param itakaglobals: Configuration module globals
+        @type itaka_globals: module
+        @param itaka_globals: Configuration module globals
         """
 
         self.itaka_globals = itaka_globals
         if self.itaka_globals.console_verbosity['normal']: 
-            BaseMessage(_('Itaka %s starting') % (itakaglobals.version))
+            BaseMessage(_('Itaka %s starting') % (self.itaka_globals.__version__))
             
-    def __del__(self):
-        """
-        Destructor
-        """
-        
-        if self.itaka_globals.console_verbosity['normal']: 
-            BaseMessage(_('Itaka shutting down'))
-
     def message(self, message):
         """
         Message handler
