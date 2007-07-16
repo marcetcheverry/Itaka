@@ -171,6 +171,7 @@ class BaseHTTPServer:
         if self.server_listening:
             return self.server.getHost()
 
+
 class ScreenshotServer(BaseHTTPServer):
     """
     Screenshot server that builds upon BaseHTTPServer
@@ -196,16 +197,18 @@ class ScreenshotServer(BaseHTTPServer):
 
         # Also we create our unique authentication handler this keeps track if the user authenticated or not
         self.authresource = AuthenticatedResource(self.gui)
-        self.root = RootResource(self.gui, self.authresource, self.itaka_globals.head_html + self.configuration['html']['html'] + self.itaka_globals.footer_html)
+        self.root = DataResource(self.gui, self.authresource, self.itaka_globals.head_html + self.configuration['html']['html'] + self.itaka_globals.footer_html)
         self.add_child_to_resource('root', '', self.root)
         self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui, self.authresource))
         self.add_child_to_resource('root', 'favicon.ico', FileResource(self.gui, self.authresource, os.path.join(self.itaka_globals.image_dir, 'favicon.ico'), 'image/x-icon'))
 
         self.create_site(self.root)
 
+
 class AuthenticatedResource:
     """
-    Helper object to handle authentication for resources.
+    Helper object to handle authentication for Resources.
+    Please read RFC 2617 to understand the HTTP Authentication process
     """
 
     def __init__(self, gui_instance):
@@ -281,11 +284,11 @@ class AuthenticatedResource:
         self.time = datetime.datetime.now()
        
         if not self.username and not self.password:
-            self.gui.log.failure(('RootResource', 'render'), (_('Client provided empty username and password'), _('Client %s provided empty username and password') % (self.ip)), 'WARNING')
+            self.gui.log.failure(('AuthenticatedResource', 'render'), (_('Client provided empty username and password'), _('Client %s provided empty username and password') % (self.ip)), 'WARNING')
             self._prompt_auth()
         else:
             if self.username != self.configuration['server']['username'] or self.password != self.configuration['server']['password']:
-                self.gui.log.failure(('RootResource', 'render'), (_('Client provided incorrect username and password'), _('Client %s provided incorrect username and password: %s:%s') % (self.ip, self.username, self.password)), 'WARNING')
+                self.gui.log.failure(('AuthenticatedResource', 'render'), (_('Client provided incorrect username and password'), _('Client %s provided incorrect username and password: %s:%s') % (self.ip, self.username, self.password)), 'WARNING')
                 self._prompt_auth()
             elif self.username == self.configuration['server']['username'] and self.password == self.configuration['server']['password']:
                 self.authenticated = True
@@ -313,11 +316,9 @@ class AuthenticatedResource:
             # No authentication given
             return self.noauth
     
-class RootResource(static.Data):
+class DataResource(static.Data):
     """
-    Main resource with authentication support
-
-    Please read RFC 2617 to understand the HTTP Authentication process
+    Generic Resource for data
     """
 
     def __init__(self, gui_instance, auth_instance, data, type='text/html; charset=UTF-8'):
@@ -370,10 +371,62 @@ class RootResource(static.Data):
             self.request.setHeader('Connection', 'close')
             return self.data
 
+class FileResource(resource.Resource):
+    """ 
+    Generic Resource for file objects
+    """
+
+    def __init__(self, gui_instance, auth_instance, path, type):
+        """ 
+        Constructor
+
+        @type gui_instance: Gui
+        @param gui_instance: An instance of our L{Gui} class
+
+        @type auth_instance: AuthenticatedResource
+        @param auth_instance: An instance of our L{AuthenticatedResource} class
+
+        @type path: string
+        @param path: The path to the file to be served
+
+        @type type: str
+        @param type: The MIME-type to bepassed to Content-Type
+        """
+
+        self.gui = gui_instance
+        self.auth = auth_instance
+        self.itaka_globals = self.gui.itaka_globals
+
+        self.type = type
+        self.data = open(path, 'rb').read()
+        self.size = str(os.stat(path).st_size)
+
+    def render_GET(self, request):
+        """
+        Handle GET requests
+
+        @type request: instance
+        @param request: twisted.web.server.Request instance
+        """
+
+        self.configuration = self.gui.configuration
+        self.request = request
+
+        if self.configuration['server']['authentication']:
+            if self.auth.authenticated or self.auth.authenticate(self.request):
+                self.auth.set_request_data(self.data, self.size, self.type, True)
+            return self.auth.return_object_data()
+        else:
+            self.request.setHeader('Content-Type', self.type)
+            self.request.setHeader('Content-Length', self.size)
+            self.request.setHeader('Connection', 'close')
+        if self.itaka_globals.console_verbosity['normal']: 
+            BaseMessage(_('Itaka shutting down'))
+            return self.data
 
 class ScreenshotResource(resource.Resource):
     """ 
-    Handle server requests and call for a screenshot
+    Handle request and call for a screenshot
     """
 
     def __init__(self, gui_instance, auth_instance):
@@ -398,7 +451,7 @@ class ScreenshotResource(resource.Resource):
 
     def get_screenshot(self):
         """
-        Takes a screenshot and notify the GUI.
+        Takes a screenshot and notifies the GUI.
         """
 
         try:
@@ -449,57 +502,6 @@ class ScreenshotResource(resource.Resource):
                 self.get_screenshot()
             except error.ItakaScreenshotError:
                 return
-            self.request.setHeader('Content-Type', self.type)
-            self.request.setHeader('Content-Length', self.size)
-            self.request.setHeader('Connection', 'close')
-            return self.data
-
-class FileResource(resource.Resource):
-    """ 
-    Generic handler for file resources
-    """
-
-    def __init__(self, gui_instance, auth_instance, path, type):
-        """ 
-        Constructor
-
-        @type gui_instance: Gui
-        @param gui_instance: An instance of our L{Gui} class
-
-        @type auth_instance: AuthenticatedResource
-        @param auth_instance: An instance of our L{AuthenticatedResource} class
-
-        @type path: string
-        @param path: The path to the file to be served
-
-        @type type: str
-        @param type: The MIME-type to bepassed to Content-Type
-        """
-
-        self.gui = gui_instance
-        self.auth = auth_instance
-        self.itaka_globals = self.gui.itaka_globals
-
-        self.type = type
-        self.data = open(path, 'rb').read()
-        self.size = str(os.stat(path).st_size)
-
-    def render_GET(self, request):
-        """
-        Handle GET requests
-
-        @type request: instance
-        @param request: twisted.web.server.Request instance
-        """
-
-        self.configuration = self.gui.configuration
-        self.request = request
-
-        if self.configuration['server']['authentication']:
-            if self.auth.authenticated or self.auth.authenticate(self.request):
-                self.auth.set_request_data(self.data, self.size, self.type, True)
-            return self.auth.return_object_data()
-        else:
             self.request.setHeader('Content-Type', self.type)
             self.request.setHeader('Content-Length', self.size)
             self.request.setHeader('Connection', 'close')
