@@ -3,7 +3,8 @@
  * Switch to GPLv3
  * Added RPM packages
  * Simplified and improved Makefile
- * Cleaning of the code to try to be at least more compatible with PEP-8.
+ * Cleaning of the code to try to be at least more compatible with PEP-8
+ * Dont clean out status labels when restarting server
 
 0.2.1:
  * Fixed a serious security bug in which /screenshot prompted no auth. Also

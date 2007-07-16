@@ -289,7 +289,6 @@ class AuthenticatedResource:
                 self.authenticated = True
         return self.authenticated
 
-
     def return_object_data(self):
         """
         Returns the data passed by set_request_data() or the default forbidden string if authentication failed.
@@ -303,7 +302,7 @@ class AuthenticatedResource:
             self.request.setHeader('Content-Type', self.type)
             self.request.setHeader('Content-Length', self.size)
             self.request.setHeader('Connection', 'close')
-            # Deauthenticate if it's the screenshot
+            # Deauthenticate if it's the screenshot (last object request)
             if self.session_end:
                 self.authenticated = False
             self.request_data_set = True
@@ -382,8 +381,8 @@ class ScreenshotResource(resource.Resource):
         @type gui_instance: Gui
         @param gui_instance: An instance of our L{Gui} class
 
-        @type gui_instance: AuthenticatedResource
-        @param gui_instance: An instance of our L{AuthenticatedResource} class
+        @type auth_instance: AuthenticatedResource
+        @param auth_instance: An instance of our L{AuthenticatedResource} class
         """
 
         self.gui = gui_instance
@@ -395,8 +394,7 @@ class ScreenshotResource(resource.Resource):
         #: Server hits counter
         self.counter = 0
 
-
-    def take_shot(self):
+    def get_screenshot(self):
         """
         Takes a screenshot and notify the GUI.
         """
@@ -427,42 +425,29 @@ class ScreenshotResource(resource.Resource):
 
         @type request: instance
         @param request: twisted.web.server.Request instance
-
-        @rtype: str
-        @return: Screenshot image
         """
 
+        # Get up to date configuration values everytime there is a request
+        self.configuration = self.gui.configuration
         self.request = request
-        if (self.request.uri == "/screenshot"):
+        self.ip = self.request.getClientIP()
+        self.time = datetime.datetime.now()
+        self.type = "image/" + self.configuration['screenshot']['format']
 
-            # Get up to date configuration values everytime there is a request
-            self.configuration = self.gui.configuration
-
-            self.ip = self.request.getClientIP()
-            self.time = datetime.datetime.now()
-            self.type = "image/" + self.configuration['screenshot']['format']
-
-            if self.configuration['server']['authentication']:
-                if self.auth.authenticated:
-                    try:
-                        self.take_shot()
-                    except error.ItakaScreenshotError:
-                        return
-                    self.auth.set_request_data(self.data, self.size, self.type, True)
-                else:
-                    if self.auth.authenticate(self.request):
-                        try:
-                            self.take_shot()
-                        except error.ItakaScreenshotError:
-                            return
-                        self.auth.set_request_data(self.data, self.size, self.type, True)
-                return self.auth.return_object_data()
-            else:
+        if self.configuration['server']['authentication']:
+            if self.auth.authenticated or self.auth.authenticate(self.request):
                 try:
-                    self.take_shot()
+                    self.get_screenshot()
                 except error.ItakaScreenshotError:
                     return
-                self.request.setHeader('Content-Type', self.type)
-                self.request.setHeader('Content-Length', self.size)
-                self.request.setHeader('Connection', 'close')
-                return self.data
+                self.auth.set_request_data(self.data, self.size, self.type, True)
+            return self.auth.return_object_data()
+        else:
+            try:
+                self.get_screenshot()
+            except error.ItakaScreenshotError:
+                return
+            self.request.setHeader('Content-Type', self.type)
+            self.request.setHeader('Content-Length', self.size)
+            self.request.setHeader('Connection', 'close')
+            return self.data

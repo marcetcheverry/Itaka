@@ -1183,16 +1183,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
                 gobject.source_remove(self.iagotimer)
 
             # Change GUI elements
-            if (foreign):
+            if foreign:
                 self.button_start_stop.set_active(False)
 
             self.status_icon.set_tooltip('Itaka')
             self.start_stop_image.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
             self.button_start_stop.set_image(self.start_stop_image)
             self.button_start_stop.set_label(_('Start'))
-            self.label_last_ip.set_text('')
-            self.label_time.set_text('')
-            self.label_served.set_text('')
+            if not foreign:
+                self.label_last_ip.set_text('')
+                self.label_time.set_text('')
+                self.label_served.set_text('')
             self.menu_item_start.set_sensitive(True)
             self.menu_item_stop.set_sensitive(False)
 
