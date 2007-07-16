@@ -228,7 +228,7 @@ msgstr "Detalles"
 
 #: uigtk.py:446
 msgid "Clear"
-msgstr "Limpiar"
+msgstr "Vaciar"
 
 #: uigtk.py:452
 msgid "Pause"

@@ -83,6 +83,7 @@ head_html = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
 <title>Itaka</title>
 </head>
 <body>

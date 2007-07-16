@@ -2,6 +2,7 @@
  * Added interface translations #4
  * Switch to GPLv3
  * Added RPM packages
+ * Added a favicon to the server
  * Simplified and improved Makefile
  * Cleaning of the code to try to be at least more compatible with PEP-8
  * Dont clean out status labels when restarting server
