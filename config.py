@@ -52,7 +52,7 @@ system = os.name
 #: To be changed on install to specify where the installed files actually are
 image_prefix = '/usr/share/itaka/images/'
 if os.path.exists(image_prefix):
-    image_dir = prefix
+    image_dir = image_prefix
 
 if not os.path.exists(image_dir):
     print_error(_('Could not find images directory %s' % (image_dir)))

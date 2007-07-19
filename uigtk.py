@@ -934,7 +934,7 @@ class Gui:
         Creates the About dialog
         """
 
-        self.about_dialog = gtk.about_dialog()
+        self.about_dialog = gtk.AboutDialog()
         self.about_dialog.set_transient_for(self.window)
         self.about_dialog.set_name('Itaka')
         self.about_dialog.set_version(self.itaka_globals.__version__)
