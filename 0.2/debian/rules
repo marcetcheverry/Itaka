@@ -25,7 +25,8 @@ build: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
 
-	/usr/bin/docbook-to-man debian/itaka.sgml > share/itaka.1
+	# This needs to be updated to have the new options
+	#/usr/bin/docbook-to-man debian/itaka.sgml > share/itaka.1
 
 	touch build-stamp
 
