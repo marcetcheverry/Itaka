@@ -1,6 +1,7 @@
 0.2.1: 
- * Fixed a serious security bug in which /screenshot prompted no auth.
- Also fixed sending the wrong Content-Lenght for the screenshot.
+ * Fixed a serious security bug in which /screenshot prompted no auth. Also
+ fixed sending the wrong Content-Lenght for the screenshot. Report Itaka
+ version on HTTP headers.
 
 0.2 (I've been watching you...):
  * Rewrote the screenshot module completely to support active window

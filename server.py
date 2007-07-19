@@ -90,14 +90,17 @@ class BaseHTTPServer:
 
         getattr(self, name).putChild(path, resource)
 
-    def create_site(self, resource):
+    def create_site(self, resource, version_header='TwistedWeb/' + twisted.copyright.version):
         """
-        Creates a Twisted.server.Site with a Twisted Resource.
+        Creates a Twisted.server.Site with a Twisted Resource
 
         @type resource: instance
-        @param resource: An instance of a Twisted resource created with L{add_static_resource}.
-        """
+        @param resource: An instance of a Twisted resource created with L{add_static_resource}
 
+        @type version_header: str
+        @param version_header: The 'Server: str' that is sent on HTTP headers. Defaults to Twisted's.
+        """
+        server.version = version_header
         self.site = server.Site(resource)
 
     def start_server(self, port):
@@ -182,7 +185,7 @@ class ScreenshotServer(BaseHTTPServer):
         """
 
         self.gui = guiinstance
-        self.itakaglobals = self.gui.itakaglobals
+        self.itaka_globals = self.gui.itakaglobals
         self.configuration = self.gui.configuration
         self.console = self.gui.console
 
@@ -193,10 +196,11 @@ class ScreenshotServer(BaseHTTPServer):
 
         # Also we create our unique authentication handler this keeps track if the user authenticated or not
         self.authresource = AuthenticatedResource(self.gui)
-        self.root = RootResource(self.gui, self.authresource, self.itakaglobals.headhtml + self.configuration['html']['html'] + self.itakaglobals.footerhtml)
+        self.root = RootResource(self.gui, self.authresource, self.itaka_globals.headhtml + self.configuration['html']['html'] + self.itaka_globals.footerhtml)
         self.add_child_to_resource('root', '', self.root)
         self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui, self.authresource))
-        self.create_site(self.root)
+
+        self.create_site(self.root, 'Itaka/%s (TwistedWeb/%s)' % (self.itaka_globals.version, twisted.copyright.version))
 
 class AuthenticatedResource:
     """
@@ -215,6 +219,7 @@ class AuthenticatedResource:
         self.gui = gui_instance
         self.configuration = self.gui.configuration
         self.itaka_globals = self.gui.itakaglobals
+
         self.noauth = self.itaka_globals.headhtml + self.configuration['html']['authfailure'] + self.itaka_globals.footerhtml
         self.request_data_set = False
         self.authenticated = False
@@ -334,14 +339,14 @@ class RootResource(static.Data):
         @param type: The type of data we are serving.
         """
 
+        self.children = {}
+
         self.gui = guiinstance
         self.auth = auth_instance
         self.console = self.gui.console
         self.itakaglobals = self.gui.itakaglobals
         self.configuration = self.gui.configuration
 
-        # Inherited from the actual code of Twisted's static.Data
-        self.children = {}
         self.data = data
         self.size = str(len(self.data))
         self.type = type
@@ -384,10 +389,13 @@ class ScreenshotResource(resource.Resource):
         @param auth_instance: An instance of our L{AuthenticatedResource} class
         """
 
+        self.children = {}
+
         self.gui = guiinstance
         self.auth = auth_instance
         self.console = self.gui.console
-        self.itakaglobals = self.gui.itakaglobals
+        self.itaka_globals = self.gui.itakaglobals
+
         self.screenshot = screenshot.Screenshot(self.gui)
         
         #: Server hits counter
@@ -408,7 +416,6 @@ class ScreenshotResource(resource.Resource):
 
         self.data = open(self.shot_file, 'rb').read()
         self.size = len(self.data)
-        print self.size
         self.counter += 1
 
         if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
