@@ -420,8 +420,6 @@ class FileResource(resource.Resource):
             self.request.setHeader('Content-Type', self.type)
             self.request.setHeader('Content-Length', self.size)
             self.request.setHeader('Connection', 'close')
-        if self.itaka_globals.console_verbosity['normal']: 
-            BaseMessage(_('Itaka shutting down'))
             return self.data
 
 class ScreenshotResource(resource.Resource):
