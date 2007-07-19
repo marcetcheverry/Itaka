@@ -190,10 +190,124 @@ class ScreenshotServer(BaseHTTPServer):
 
         # Here we use our own static.Data special child resource because we need Authentication handling.
         # Otherwise we would just use our own self.add_static_resource.
-        self.root = RootResource(self.gui, self.itakaglobals.headhtml + self.configuration['html']['html'] + self.itakaglobals.footerhtml)
+
+        # Also we create our unique authentication handler this keeps track if the user authenticated or not
+        self.authresource = AuthenticatedResource(self.gui)
+        self.root = RootResource(self.gui, self.authresource, self.itakaglobals.headhtml + self.configuration['html']['html'] + self.itakaglobals.footerhtml)
         self.add_child_to_resource('root', '', self.root)
-        self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui))
+        self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui, self.authresource))
         self.create_site(self.root)
+
+class AuthenticatedResource:
+    """
+    Helper object to handle authentication for Resources.
+    Please read RFC 2617 to understand the HTTP Authentication process
+    """
+
+    def __init__(self, gui_instance):
+        """ 
+        Constructor that inherits code from resource.Resource->static.Data
+
+        @type gui_instance: instance
+        @param gui_instance: An instance of our L{Gui} class
+        """
+
+        self.gui = gui_instance
+        self.configuration = self.gui.configuration
+        self.itaka_globals = self.gui.itakaglobals
+        self.noauth = self.itaka_globals.headhtml + self.configuration['html']['authfailure'] + self.itaka_globals.footerhtml
+        self.request_data_set = False
+        self.authenticated = False
+
+    def set_request_data(self, data, size, type, session_end=False):
+        """
+        Set the information about the data we are handling
+
+
+        @type data: string
+        @param data: The data to be displayed
+
+        @type size: string
+        @param size: A string for Content-lenght
+
+        @type type: str
+        @param type: The type of data we are serving
+
+        @type session_end: bool
+        @param session_end: Whether this request is the last of a session. This deauthenticates the session.
+        """
+
+        self.request_data_set = True
+        self.data = data
+        self.size = size
+        self.type = type
+        self.session_end = session_end
+
+    def _prompt_auth(self):
+        """
+        Prompt the authorization dialog on the browser
+        """
+
+        self.authenticated = False
+        self.request.setHeader('WWW-Authenticate', 'Basic realm="Itaka Screenshot Server"')
+        self.request.setResponseCode(http.UNAUTHORIZED)
+        self.request.setHeader('Content-Type', 'text/html; charset=UTF-8')
+        self.request.setHeader('Content-Length', str(len(self.noauth)))
+        self.request.setHeader('Connection', 'close')
+
+    def authenticate(self, request):
+        """
+        Main handler for authenticated objects.
+
+        @type request: instance
+        @param request: twisted.web.server.Request instance
+
+        @rtype: bool
+        @return: Whether the user authenticated sucessfully. 
+        """
+
+        # Get up to date configuration values everytime there is a request
+        self.configuration = self.gui.configuration
+
+        self.request = request
+        self._prompt_auth()
+        self.username = self.request.getUser()
+        self.password = self.request.getPassword()
+        self.ip = self.request.getClientIP()
+        self.time = datetime.datetime.now()
+       
+        if not self.username and not self.password:
+            self.gui.log.failure(('AuthenticatedResource', 'render'), ('Client provided empty username and password', 'Client %s provided empty username and password' % (self.ip)), 'WARNING')
+            self._prompt_auth()
+        else:
+            if self.username != self.configuration['server']['username'] or self.password != self.configuration['server']['password']:
+                self.gui.log.failure(('AuthenticatedResource', 'render'), ('Client provided incorrect username and password', 'Client %s provided incorrect username and password: %s:%s' % (self.ip, self.username, self.password)), 'WARNING')
+                self._prompt_auth()
+            elif self.username == self.configuration['server']['username'] and self.password == self.configuration['server']['password']:
+                self.authenticated = True
+        return self.authenticated
+
+    def return_object_data(self):
+        """
+        Returns the data passed by set_request_data() or the default forbidden string if authentication failed.
+
+        @rtype: str
+        @return: self.data or self.noauth
+        """
+
+        if self.request_data_set and self.authenticated:
+            self.request.setResponseCode(http.OK)
+            self.request.setHeader('Content-Type', self.type)
+            self.request.setHeader('Content-Length', self.size)
+            self.request.setHeader('Connection', 'close')
+            # Deauthenticate if it's the screenshot (last object request)
+            if self.session_end:
+                self.authenticated = False
+            self.request_data_set = True
+            return self.data
+        else:
+            # No authentication given
+            return self.noauth
 
 class RootResource(static.Data):
     """
@@ -202,13 +316,16 @@ class RootResource(static.Data):
     Please read RFC 2617 to understand the HTTP Authentication process.
     """
 
-    def __init__(self, guiinstance, data, type='text/html; charset=UTF-8'):
+    def __init__(self, guiinstance, auth_instance, data, type='text/html; charset=UTF-8'):
 
         """ 
         Constructor that inherits code from resource.Resource->static.Data.
 
         @type guiinstance: instance
         @param guiinstance: An instance of our L{Gui} class.
+
+        @type auth_instance: AuthenticatedResource
+        @param auth_instance: An instance of our L{AuthenticatedResource} class
 
         @type html: string
         @param html: The HTML to be displayed.
@@ -218,6 +335,7 @@ class RootResource(static.Data):
         """
 
         self.gui = guiinstance
+        self.auth = auth_instance
         self.console = self.gui.console
         self.itakaglobals = self.gui.itakaglobals
         self.configuration = self.gui.configuration
@@ -225,20 +343,8 @@ class RootResource(static.Data):
         # Inherited from the actual code of Twisted's static.Data
         self.children = {}
         self.data = data
+        self.size = str(len(self.data))
         self.type = type
-
-        self.noauth = self.itakaglobals.headhtml + self.configuration['html']['authfailure'] + self.itakaglobals.footerhtml
-
-    def _promptAuth(self):
-        """
-        Prompt the authorization dialog on the browser.
-        """
-
-        self.request.setHeader('WWW-Authenticate', 'Basic realm="Itaka Screenshot Server"')
-        self.request.setResponseCode(http.UNAUTHORIZED)
-        self.request.setHeader('Content-Type', self.type)
-        self.request.setHeader('Connection', 'close')
-        self.request.setHeader('Content-Length', str(len(self.noauth)))
 
     def render(self, request):
         """
@@ -250,52 +356,36 @@ class RootResource(static.Data):
         
         # Get up to date configuration values everytime there is a request
         self.configuration = self.gui.configuration
-
         self.request = request
-        self.ip = self.request.getClientIP()
-        self.time = datetime.datetime.now()
 
         if self.configuration['server']['authentication']:
-            self._promptAuth()
-            self.username = self.request.getUser()
-            self.password = self.request.getPassword()
-           
-            if not self.username and not self.password:
-                self.gui.log.failure(('RootResource', 'render'), ('Client provided empty username and password', 'Client %s provided empty username and password' % (self.ip)), 'WARNING')
-                self._promptAuth()
-            else:
-                if self.username != self.configuration['server']['username'] or self.password != self.configuration['server']['password']:
-                    self.gui.log.failure(('RootResource', 'render'), ('Client provided incorrect username and password', 'Client %s provided incorrect username and password: %s:%s' % (self.ip, self.username, self.password)), 'WARNING')
-                    self._promptAuth()
-                elif self.username == self.configuration['server']['username'] and self.password == self.configuration['server']['password']:
-                    self.request.setResponseCode(http.OK)
-                    self.request.setHeader('Content-Type', self.type)
-                    self.request.setHeader('Connection', 'close')
-                    self.request.setHeader('Content-Length', str(len(self.data)))
-                    return self.data
+            if self.auth.authenticate(self.request):
+                self.auth.set_request_data(self.data, self.size, self.type)
+            return self.auth.return_object_data()
         else:
             self.request.setHeader('Content-Type', self.type)
+            self.request.setHeader('Content-Length', self.size)
             self.request.setHeader('Connection', 'close')
-            self.request.setHeader('Content-Length', str(len(self.data)))
             return self.data
-
-        # No auth given
-        return self.noauth
 
 class ScreenshotResource(resource.Resource):
     """ 
     Handle server requests and call for a screenshot.
     """
 
-    def __init__(self, guiinstance):
+    def __init__(self, guiinstance, auth_instance):
         """ 
         Constructor.
 
         @type guiinstance: instance
         @param guiinstance: An instance of our L{Gui} class.
+
+        @type auth_instance: AuthenticatedResource
+        @param auth_instance: An instance of our L{AuthenticatedResource} class
         """
 
         self.gui = guiinstance
+        self.auth = auth_instance
         self.console = self.gui.console
         self.itakaglobals = self.gui.itakaglobals
         self.screenshot = screenshot.Screenshot(self.gui)
@@ -303,48 +393,62 @@ class ScreenshotResource(resource.Resource):
         #: Server hits counter
         self.counter = 0
 
+    def get_screenshot(self):
+        """
+        Takes a screenshot and notifies the GUI.
+        """
+
+        self.ip = self.request.getClientIP()
+        self.time = datetime.datetime.now()
+
+        try:
+            self.shot_file = self.screenshot.take_screenshot()
+        except error.ItakaScreenshotError, e:
+            raise error.ItakaScreenshotError, e
+
+        self.data = open(self.shot_file, 'rb').read()
+        self.size = len(self.data)
+        print self.size
+        self.counter += 1
+
+        if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
+            import pynotify
+            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
+
+            n = pynotify.Notification('Screenshot taken', '%s requested screenshot' % (self.ip), uri)
+
+            n.set_timeout(1500)
+            n.attach_to_status_icon(self.gui.statusIcon)
+            n.show()
+        self.gui.update_gui(self.counter, self.ip, self.time)
+
     def render_GET(self, request):
         """
-        Handle GET requests for screenshot.
+        Handle GET requests for screenshot
 
         @type request: instance
-        @param request: twisted.web.server.Request instance.
-
-        @rtype: str
-        @return: Screenshot image.
+        @param request: twisted.web.server.Request instance
         """
 
         # Get up to date configuration values everytime there is a request
         self.configuration = self.gui.configuration
-
         self.request = request
-        self.ip = self.request.getClientIP()
-        self.time = datetime.datetime.now()
+        self.type = "image/" + self.configuration['screenshot']['format']
 
-        if (self.request.uri == "/screenshot"):
+        if self.configuration['server']['authentication']:
+            if self.auth.authenticated or self.auth.authenticate(self.request):
+                try:
+                    self.get_screenshot()
+                except error.ItakaScreenshotError:
+                    return
+                self.auth.set_request_data(self.data, self.size, self.type, True)
+            return self.auth.return_object_data()
+        else:
             try:
-                self.shotFile = self.screenshot.take_screenshot()
+                self.get_screenshot()
             except error.ItakaScreenshotError:
                 return
-            
-            self.request.setHeader('Content-Type', "image/" + self.configuration['screenshot']['format'])
-            self.request.setHeader('Content-Length', str(len(self.shotFile)))
+            self.request.setHeader('Content-Type', self.type)
+            self.request.setHeader('Content-Length', self.size)
             self.request.setHeader('Connection', 'close')
-
-            self.counter += 1
-
-            if self.configuration['server']['notify'] and self.itakaglobals.notifyavailable:
-                import pynotify
-                uri = "file://" + (os.path.join(self.itakaglobals.image_dir, "itaka-take.png")) 
-
-                n = pynotify.Notification("Screenshot taken", 
-                "%s requested screenshot"
-                % (self.ip), uri)
-
-                n.set_timeout(1500)
-                n.attach_to_status_icon(self.gui.statusIcon)
-                n.show()
-
-            self.gui.update_gui(self.counter, self.ip, self.time)
-
-            return open(self.shotFile, 'rb').read()
+            return self.data
