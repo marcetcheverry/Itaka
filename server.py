@@ -418,7 +418,7 @@ class ScreenshotResource(resource.Resource):
         self.size = len(self.data)
         self.counter += 1
 
-        if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
+        if self.configuration['server']['notify'] and self.itaka_globals.notifyavailable:
             import pynotify
             uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
 

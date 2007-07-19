@@ -486,6 +486,7 @@ class Gui:
         self.preferencesSettingslabel = gtk.Label('<b>Preferences</b>')
         self.preferencesSettingslabel.set_use_markup(True)
         self.preferencesFramesettings.set_label_widget(self.preferencesSettingslabel)
+        self.preferencesFramesettings.set_label_align(0.5, 0.5)
 
         self.preferencesLabelport = gtk.Label('Port  ')
         self.preferencesLabelport.set_justify(gtk.JUSTIFY_LEFT)
@@ -934,7 +935,7 @@ class Gui:
         self.aboutdialog.set_version(self.itakaglobals.version)
         self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
         self.aboutdialog.set_comments('Screenshooting de mercado.')
-        self.aboutdialog.set_authors(['Marc E. <santusmarc@gmail.com>'])
+        self.aboutdialog.set_authors(['Marc E. <santusmarc@users.sourceforge.net>', 'Kurt Erickson <psychogenicshk@users.sourceforge.net> (Packaging)'])
         self.aboutdialog.set_artists(['Marc E. <santusmarc@gmail.com>', 'Tango Project (http://tango.freedesktop.org)'])
         self.aboutdialog.set_license('''Itaka is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
