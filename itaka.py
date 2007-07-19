@@ -24,15 +24,22 @@
 
 import sys, traceback
 
-validarguments = ('-help', '-debug')
+validarguments = ('-h', '--help', '-v', '--version', '-r', '--revision', '-d', '--debug')
 arguments = sys.argv
 
 # Only one option at a time
-if len(arguments) > 2 or (len(arguments) == 2 and arguments[-1] not in validarguments or arguments[-1] == validarguments[0]):
-    print "Usage: %s (-debug|-help)" % (arguments[0])
+if len(arguments) >= 2 and ((arguments[-1] not in validarguments) or (arguments[-1] in (validarguments[0], validarguments[1]))):
+    print """Usage:
+  %s [OPTION...]
+
+  Help Options:
+  -h, --help\t\t\t\tShow help options
+  -v, --version\t\t\t\tShow Itaka version
+  -r, --revision\t\t\tShow Itaka revision
+
+  Application Options:
+  -d, --debug\t\t\t\tStart in debug mode""" % arguments[0]
     sys.exit(1)
-elif len(arguments) == 1:
-    arguments = None
 
 # Itaka core modules
 try:
@@ -58,6 +65,14 @@ except ImportError:
     sys.exit(1)
 
 if __name__ == "__main__":
+    if len(arguments) >= 2: 
+        if (arguments[-1] in (validarguments[2], validarguments[3])):
+            print itakaglobals.version
+            sys.exit(0)
+        if (arguments[-1] in (validarguments[4], validarguments[5])):
+            print itakaglobals.revision
+            sys.exit(0)
+
     try:
         gui = igui.Gui(console, (itakaglobals, configinstance))
         gui.main()
