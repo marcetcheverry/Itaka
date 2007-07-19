@@ -58,16 +58,21 @@ else:
     gettext.bindtextdomain('itaka', locale_dir)
     gettext.textdomain('itaka')
 
-valid_arguments = ('-help', '-debug')
+validarguments = ('-h', '--help', '-v', '--version', '-r', '--revision', '-d', '--debug')
 arguments = sys.argv
 
-# Only one option at a time
-if len(arguments) > 2 or (len(arguments) == 2 and arguments[-1] \
-        not in valid_arguments or arguments[-1] == valid_arguments[0]):
-    print _('Usage: %s (-debug|-help)') % (arguments[0])
+if len(arguments) >= 2 and ((arguments[-1] not in validarguments) or (arguments[-1] in (validarguments[0], validarguments[1]))):
+    print """Usage:
+  %s [OPTION...]
+
+  Help Options:
+  -h, --help\t\t\t\tShow help options
+  -v, --version\t\t\t\tShow Itaka version
+  -r, --revision\t\t\tShow Itaka revision
+
+  Application Options:
+  -d, --debug\t\t\t\tStart in debug mode""" % arguments[0]
     sys.exit(1)
-elif len(arguments) == 1:
-    arguments = None
 
 try:
     # Initiate our Console and Configuration engines
@@ -88,6 +93,14 @@ except:
     sys.exit(1)
 
 if __name__ == "__main__":
+    if len(arguments) >= 2:
+        if (arguments[-1] in (validarguments[2], validarguments[3])):
+            print itaka_globals.__version__
+            sys.exit(0)
+        if (arguments[-1] in (validarguments[4], validarguments[5])):
+            print itaka_globals.__revision__
+            sys.exit(0)
+
     try:
         gui = igui.Gui(console_instance, (itaka_globals, config_instance))
         gui.main()

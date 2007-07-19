@@ -100,7 +100,7 @@ class ConfigParser:
     Itaka configuration engine
     """
 
-    def __init__(self, arguments=None):
+    def __init__(self, arguments=1):
         """
         Configuration engine constructor. It also handles whether the
         L{console_verbosity} setting is set to debug.
@@ -109,7 +109,7 @@ class ConfigParser:
         @param arguments: A tuple of sys.argv 
         """
 
-        if arguments is not None and len(arguments) > 1 and arguments[-1] == '-debug':
+        if len(arguments) > 1 and arguments[-1] in ('-d', '--debug'):
             global console_verbosity
             console_verbosity = {'normal': True, 'debug': True, 'quiet': False}
             print_m(_('Initializing in debug mode'))

@@ -75,13 +75,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/lib/itaka/itaka.py
 %{_prefix}/lib/itaka/screenshot.py
 %{_prefix}/lib/itaka/console.py
-%{_prefix}/lib/itaka/config.pyc
-%{_prefix}/lib/itaka/console.pyc
-%{_prefix}/lib/itaka/error.pyc
-%{_prefix}/lib/itaka/itaka.pyc
-%{_prefix}/lib/itaka/screenshot.pyc
-%{_prefix}/lib/itaka/server.pyc
-%{_prefix}/lib/itaka/uigtk.pyc
 
 %changelog
 * Wed Jul  4 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2-1

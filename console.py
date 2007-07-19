@@ -133,8 +133,10 @@ class Console:
         """
 
         self.itaka_globals = itaka_globals
-        if self.itaka_globals.console_verbosity['normal']: 
-            BaseMessage(_('Itaka %s starting') % (self.itaka_globals.__version__))
+        if self.itaka_globals.console_verbosity['debug']:
+            BaseMessage(_('Itaka %s (%s) starting' % (self.itaka_globals.__version__, self.itaka_globals.__revision__)))
+        elif self.itaka_globals.console_verbosity['normal']: 
+            BaseMessage(_('Itaka %s starting' % (self.itaka_globals.__version__)))
             
     def message(self, message):
         """
