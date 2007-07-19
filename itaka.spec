@@ -8,7 +8,7 @@ URL: http://www.jardinpresente.com.ar/trac/itaka/
 
 Packager: Kurt Erickson <psychogenicshk@users.sourceforge.net>
 
-Source: http://internap.dl.sourceforge.net/sourceforge/itaka/itaka-0.2.tar.bz2
+Source: http://internap.dl.sourceforge.net/sourceforge/itaka/itaka-0.2.1.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 Requires: python >= 2.3
@@ -77,5 +77,5 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/lib/itaka/console.py
 
 %changelog
-* Wed Jul  4 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2-1
-- Initial package release.
+* Thu Jul  19 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.1-1
+- Pulled 0.2.1 from upstream.
