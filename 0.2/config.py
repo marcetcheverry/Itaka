@@ -50,7 +50,7 @@ if (sys.platform.startswith("darwin")): platform = "darwin"
 #: Images directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
 #: To be changed on install to specify where the installed files actually are
-prefix = "/usr/share/itaka/images/"
+prefix = "/usr/share/itaka/images"
 if os.path.exists(prefix):
     image_dir = prefix
 
@@ -113,14 +113,14 @@ class ConfigParser:
     Itaka configuration engine.
     """
 
-    def __init__(self, arguments=None):
+    def __init__(self, arguments=1):
         """
         Configuration engine constructor. It also handles whether the L{output} setting is set to print everything to the console.
 
         @type arguments: tuple
         @param arguments: A tuple of sys.argv 
         """
-        if arguments is not None and len(arguments) > 1 and arguments[-1] == "-debug":
+        if len(arguments) > 1 and arguments[-1] in ("--debug", "-d"):
             global output
             output = {'normal': True, 'debug': True, 'quiet': False}
             print "[*] Initializing in debug mode"

@@ -86,7 +86,10 @@ class Console:
         """
 
         self.itakaglobals = itakaglobals
-        if self.itakaglobals.output['normal']: 
+
+        if self.itakaglobals.output['debug']:
+            BaseMessage('Itaka %s (%s) starting' % (itakaglobals.version, itakaglobals.revision))
+        elif self.itakaglobals.output['normal']: 
             BaseMessage('Itaka %s starting' % (itakaglobals.version))
             
     def __del__(self):
