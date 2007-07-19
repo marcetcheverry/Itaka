@@ -93,14 +93,17 @@ class BaseHTTPServer:
 
         getattr(self, name).putChild(path, resource)
 
-    def create_site(self, resource):
+    def create_site(self, resource, version_header='TwistedWeb/' + twisted.copyright.version):
         """
         Creates a Twisted.server.Site with a Twisted Resource
 
         @type resource: instance
         @param resource: An instance of a Twisted resource created with L{add_static_resource}
-        """
 
+        @type version_header: str
+        @param version_header: The 'Server: str' that is sent on HTTP headers. Defaults to Twisted's.
+        """
+        server.version = version_header
         self.site = server.Site(resource)
 
     def start_server(self, port):
@@ -202,7 +205,7 @@ class ScreenshotServer(BaseHTTPServer):
         self.add_child_to_resource('root', 'screenshot', ScreenshotResource(self.gui, self.authresource))
         self.add_child_to_resource('root', 'favicon.ico', FileResource(self.gui, self.authresource, os.path.join(self.itaka_globals.image_dir, 'favicon.ico'), 'image/x-icon'))
 
-        self.create_site(self.root)
+        self.create_site(self.root, 'Itaka/%s (TwistedWeb/%s)' % (self.itaka_globals.__version__, twisted.copyright.version))
 
 
 class AuthenticatedResource:
@@ -339,12 +342,12 @@ class DataResource(static.Data):
         @param type: The type of data we are serving
         """
 
+        self.children = {}
+
         self.gui = gui_instance
         self.auth = auth_instance
         self.configuration = self.gui.configuration
 
-        # Inherited from the actual code of Twisted's static.Data
-        self.children = {}
         self.data = data
         self.size = str(len(self.data))
         self.type = type
@@ -393,10 +396,12 @@ class FileResource(resource.Resource):
         @param type: The MIME-type to bepassed to Content-Type
         """
 
+        self.children = {}
+
         self.gui = gui_instance
         self.auth = auth_instance
         self.itaka_globals = self.gui.itaka_globals
-
+            
         self.type = type
         self.data = open(path, 'rb').read()
         self.size = str(len(self.data))
@@ -438,10 +443,13 @@ class ScreenshotResource(resource.Resource):
         @param auth_instance: An instance of our L{AuthenticatedResource} class
         """
 
+        self.children = {}
+
         self.gui = gui_instance
         self.auth = auth_instance
         self.console = self.gui.console
         self.itaka_globals = self.gui.itaka_globals
+
         self.screenshot = screenshot.Screenshot(self.gui)
         
         #: Server hits counter
