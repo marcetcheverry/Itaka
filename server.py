@@ -287,11 +287,11 @@ class AuthenticatedResource:
         self.time = datetime.datetime.now()
        
         if not self.username and not self.password:
-            self.gui.log.failure(('AuthenticatedResource', 'render'), (_('Client provided empty username and password'), _('Client %s provided empty username and password') % (self.ip)), 'WARNING')
+            self.gui.log.failure(('AuthenticatedResource', 'authenticate'), (_('Client provided empty username and password'), _('Client %s provided empty username and password') % (self.ip)), 'WARNING')
             self._prompt_auth()
         else:
             if self.username != self.configuration['server']['username'] or self.password != self.configuration['server']['password']:
-                self.gui.log.failure(('AuthenticatedResource', 'render'), (_('Client provided incorrect username and password'), _('Client %s provided incorrect username and password: %s:%s') % (self.ip, self.username, self.password)), 'WARNING')
+                self.gui.log.failure(('AuthenticatedResource', 'authenticate'), (_('Client provided incorrect username and password'), _('Client %s provided incorrect username and password: %s:%s') % (self.ip, self.username, self.password)), 'WARNING')
                 self._prompt_auth()
             elif self.username == self.configuration['server']['username'] and self.password == self.configuration['server']['password']:
                 self.authenticated = True

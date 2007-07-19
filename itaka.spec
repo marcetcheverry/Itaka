@@ -67,6 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/share/itaka/images/itaka.svg
 %{_prefix}/share/itaka/images/itaka-secure.png
 %{_prefix}/share/itaka/images/itaka-logo.png
+%{_prefix}/share/itaka/images/favicon.ico
 %{_prefix}/share/pixmaps/itaka.png
 %{_prefix}/lib/itaka/uigtk.py
 %{_prefix}/lib/itaka/config.py
