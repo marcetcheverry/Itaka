@@ -235,7 +235,7 @@ class AuthenticatedResource:
         @param data: The data to be displayed
 
         @type size: string
-        @param size: A string for Content-Lenght
+        @param size: A string for Content-lenght
 
         @type type: str
         @param type: The type of data we are serving
@@ -399,7 +399,7 @@ class FileResource(resource.Resource):
 
         self.type = type
         self.data = open(path, 'rb').read()
-        self.size = str(os.stat(path).st_size)
+        self.size = str(len(self.data))
 
     def render_GET(self, request):
         """
@@ -452,13 +452,16 @@ class ScreenshotResource(resource.Resource):
         Takes a screenshot and notifies the GUI.
         """
 
+        self.ip = self.request.getClientIP()
+        self.time = datetime.datetime.now()
+
         try:
             self.shot_file = self.screenshot.take_screenshot()
         except error.ItakaScreenshotError, e:
             raise error.ItakaScreenshotError, e
 
         self.data = open(self.shot_file, 'rb').read()
-        self.size = str(os.stat(self.shot_file).st_size)
+        self.size = str(len(self.data))
         self.counter += 1
 
         if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
@@ -483,8 +486,6 @@ class ScreenshotResource(resource.Resource):
         # Get up to date configuration values everytime there is a request
         self.configuration = self.gui.configuration
         self.request = request
-        self.ip = self.request.getClientIP()
-        self.time = datetime.datetime.now()
         self.type = "image/" + self.configuration['screenshot']['format']
 
         if self.configuration['server']['authentication']:
