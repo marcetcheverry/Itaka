@@ -36,7 +36,7 @@ config = ConfigParser.ConfigParser()
 local_config = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "itaka.conf")
 
 #: Version
-version = "0.2"
+version = "0.2.1"
 #: Revision
 revision = "$Rev$"
 
