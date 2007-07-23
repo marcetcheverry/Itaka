@@ -1320,7 +1320,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param time: Time of the request
         """
 
-        self.log.verbose_message(_('Screenshot served to %s') % ip, _('Screenshot number %d served to %s') % (counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka16x16-take.png"))])
+        self.log.verbose_message(_('Screenshot served to %s') % ip, _('Screenshot number %d served to %s') % (counter, ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka16x16-take.png"))])
 
         self.label_served.set_text(_('<b>Served</b>: %d') % (counter))
         self.label_served.set_use_markup(True)
