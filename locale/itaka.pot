@@ -286,10 +286,6 @@ msgstr ""
 msgid "Could not save preferences"
 msgstr ""
 
-#: uigtk.py:938
-msgid "Kurt Erickson <psychogenicshk@users.sourceforge.net> (Packaging)"
-msgstr ""
-
 #: uigtk.py:1008
 msgid "Logging paused"
 msgstr ""

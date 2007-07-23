@@ -290,10 +290,6 @@ msgstr "Ventana activa"
 msgid "Could not save preferences"
 msgstr "No se pudo grabar las preferencias"
 
-#: uigtk.py:938
-msgid "Kurt Erickson <psychogenicshk@users.sourceforge.net> (Packaging)"
-msgstr "Kurt Erickson <psychogenicshk@users.sourceforge.net> (Paquetes)"
-
 #: uigtk.py:1008
 msgid "Logging paused"
 msgstr "Registro detenido"
