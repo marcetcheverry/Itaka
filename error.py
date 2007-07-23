@@ -20,11 +20,11 @@
 #
 # $Id$
 
-""" Itaka error handling exception definitions """
+""" Itaka exceptions """
 
 class ItakaError(Exception):
     """
-    Base class for all Itaka Errors
+    Base class for all Itaka errors
     """
 
     def __init__(self, message):
@@ -47,11 +47,13 @@ class ItakaError(Exception):
 
         return repr(self.message)
 
+
 class ItakaServerError(ItakaError):
     """
     Exception raised by server methods
     """
     pass
+
 
 class ItakaServerErrorCannotListen(ItakaServerError):
     """
@@ -59,11 +61,13 @@ class ItakaServerErrorCannotListen(ItakaServerError):
     """
     pass
 
+
 class ItakaScreenshotError(ItakaError):
     """
     Exception raised by screenshooting methods
     """
     pass
+
 
 class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
     """
@@ -71,14 +75,17 @@ class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
     """
     pass
 
+
 class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods
     """
     pass
     
+
 class ItakaSaveScreenshotError(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods
     """
     pass
+

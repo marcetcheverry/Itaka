@@ -513,3 +513,4 @@ class ScreenshotResource(resource.Resource):
             self.request.setHeader('Content-Length', self.size)
             self.request.setHeader('Connection', 'close')
             return self.data
+

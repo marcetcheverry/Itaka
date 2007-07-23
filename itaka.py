@@ -109,3 +109,4 @@ if __name__ == "__main__":
         if itaka_globals.console_verbosity['debug']:
             traceback.print_exc()
         sys.exit(1)
+

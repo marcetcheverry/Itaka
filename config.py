@@ -285,3 +285,4 @@ class ConfigParser:
             if console_verbosity['debug']: traceback.print_exc()
 
         self.config_file = path	
+

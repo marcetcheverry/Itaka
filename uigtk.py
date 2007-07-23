@@ -1344,3 +1344,4 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             gobject.source_remove(self.iagotimer)
 
         self.iagotimer = gobject.timeout_add(60000, self._literal_time_difference, time)
+

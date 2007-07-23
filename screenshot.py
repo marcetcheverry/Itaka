@@ -172,3 +172,4 @@ class Screenshot:
         self.current_window_failed = False
 
         return self.shot_file
+

@@ -5,7 +5,7 @@
  * Added a favicon to the server
  * Don't clean out status labels when restarting server
  * Don't check for system compatibility of Libnotify
- * Cleaning of the code to try to be at least more compatible with PEP-8
+ * Code cleanup towards PEP-8 compliance
  * Simplified and improved Makefile
 
 0.2.1:
