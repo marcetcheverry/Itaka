@@ -90,7 +90,7 @@ HTTPServer *server2; //check this method of passing server pointer
 	NSLog(@"tag is%d", [[screenButton selectedItem] tag]);
 	
 	if ([[screenButton selectedItem] tag] == 1) {
-		NSLog (@"WIndow mode selected");
+		NSLog (@"Window mode selected");
 		system("screencapture -iW /tmp/image.jpg");
 	}
 		
