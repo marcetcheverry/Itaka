@@ -15,7 +15,7 @@
 # along with Itaka; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Copyright 2003-2007 Marc E.
+# Copyright 2003-2009 Marc E.
 # http://itaka.jardinpresente.com.ar
 #
 # $Id$
@@ -474,12 +474,13 @@ class ScreenshotResource(resource.Resource):
 
         if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
             import pynotify
-            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
+            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka64x64.png")) 
+            print_m(uri)
 
             n = pynotify.Notification(_('Screenshot taken'), _('%s requested screenshot' % (self.ip)), uri)
 
             n.set_timeout(1500)
-            n.attach_to_status_icon(self.gui.statusIcon)
+            n.attach_to_status_icon(self.gui.status_icon)
             n.show()
         self.gui.update_gui(self.counter, self.ip, self.time)
 

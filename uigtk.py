@@ -15,7 +15,7 @@
 # along with Itaka; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Copyright 2003-2007 Marc E.
+# Copyright 2003-2009 Marc E.
 # http://itaka.jardinpresente.com.ar
 #
 # $Id$
@@ -311,7 +311,7 @@ class Gui:
         self.window.set_title('Itaka')
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
-        self.window.set_default_size(370, 1)
+        self.window.set_default_size(400, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window_position = self.window.get_position()
 
@@ -377,7 +377,7 @@ class Gui:
 
         self.box.pack_start(self.itaka_logo, False, False, 35)
 
-        self.button_start_stop = gtk.ToggleButton(_('Start'), gtk.STOCK_PREFERENCES)
+        self.button_start_stop = gtk.ToggleButton(_('Start'))
         self.start_stop_image = gtk.Image()
 
         self.start_stop_image.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
@@ -955,7 +955,7 @@ class Gui:
         self.about_dialog.set_transient_for(self.window)
         self.about_dialog.set_name('Itaka')
         self.about_dialog.set_version(self.itaka_globals.__version__)
-        self.about_dialog.set_copyright(u'© 2003-2007 Marc E.')
+        self.about_dialog.set_copyright(u'© 2003-2009 Marc E.')
         self.about_dialog.set_comments('Screenshooting de mercado.')
         self.about_dialog.set_authors(['Marc E. <santusmarc@users.sourceforge.net>', 'Kurt Erickson <psychogenicshk@users.sourceforge.net>'])
         self.about_dialog.set_artists(['Marc E. <santusmarc@users.sourceforge.net>', 'Tango Project (http://tango.freedesktop.org)'])

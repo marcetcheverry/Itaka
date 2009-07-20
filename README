@@ -1,5 +1,5 @@
 Itaka: Screenshooting de Mercado.
-Version 1.0
+Version 0.3
 
 http://itaka.jardinpresente.com.ar
 
@@ -83,7 +83,7 @@ If you want to create a brand new translation, and have not modified code, do th
     $ LANG=de_DE msginit -o locale/de/LC_MESSAGES/itaka.po
     $ msgmerge -U locale/de/LC_MESSAGES/itaka.po locale/itaka.pot
 
-Of course relace 'de' for the language you are using.
+Of course relace 'de_DE' for the language you are using.
 
 Now edit the itaka.po file. When you are done translating the strings, submit
 the .po file to the bug tracker (see BUGS file) as an enhancement. If you want

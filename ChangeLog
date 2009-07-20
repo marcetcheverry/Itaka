@@ -1,8 +1,11 @@
-1.0 (Say no more):
+0.3 (Two years later, I am still here):
+ * Fixed a fatal bug with some recent versions of Python/PyGTK
+ * Fixed some minor window width issues with popular GTK themes
  * Added interface translations #4
- * Switch to GPLv3
- * Added RPM packages
  * Added a favicon to the server
+ * Added RPM packages
+ * Switch to GPLv3
+ * Better console help
  * Don't clean out status labels when restarting server
  * Don't check for system compatibility of Libnotify
  * Code cleanup towards PEP-8 compliance

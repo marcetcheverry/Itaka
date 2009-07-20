@@ -20,7 +20,7 @@ setup(
     version = "1.0",
     description = 'On-demand screen capture server',
     author = 'Marc E.',
-    author_email = 'santusmarc@gmail.com',
+    author_email = 'santusmarc@users.sf.net',
     url = 'http://itaka.jardinpresente.com.ar',
     license = 'GPL',
     windows = [

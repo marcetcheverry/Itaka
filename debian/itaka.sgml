@@ -2,7 +2,7 @@
 
   <!-- Please adjust the date whenever revising the manpage. -->
   <!ENTITY dhdate      "<date>5 Jun 2007</date>">
-  <!ENTITY dhemail     "<email>santusmarc@gmail.com</email>">
+  <!ENTITY dhemail     "<email>santusmarc@users.sf.net</email>">
   <!ENTITY dhusername  "Marc E.">
   <!ENTITY dhpackage   "itaka">
 
