@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 #
 # Itaka is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1163,9 +1163,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             serverstring = _('Server')
 
         if self.configuration['screenshot']['format'] == "jpeg":
-            self.log.verbose_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images with %d%% quality') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper(), self.configuration['screenshot']['quality']), ['stock', serverstock])
+            self.log.verbose_message(_('%(serverstring)s started on port %(port)d') % {'serverstring': serverstring, 'port': self.configuration['server']['port']}, _('%(serverstring)s started on port %(port)s TCP. Serving %(format)s images with %(quality)d%% quality') % {'serverstring': serverstring, 'port': self.configuration['server']['port'], 'format': self.configuration['screenshot']['format'].upper(), 'quality': self.configuration['screenshot']['quality']}, ['stock', serverstock])
         else:
-            self.log.verbose_message(_('%s started on port %d') % (serverstring, self.configuration['server']['port']), _('%s started on port %s TCP. Serving %s images') % (serverstring, self.configuration['server']['port'], self.configuration['screenshot']['format'].upper()), ['stock', serverstock])
+            self.log.verbose_message(_('%(serverstring)s started on port %(port)d') % {'serverstring': serverstring, 'port': self.configuration['server']['port']}, _('%(serverstring)s started on port %(port)s TCP. Serving %(format)s images') % {'serverstring': serverstring, 'port': self.configuration['server']['port'], 'format': self.configuration['screenshot']['format'].upper()}, ['stock', serverstock])
 
         # Change buttons
         if foreign:
@@ -1320,7 +1320,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         @param time: Time of the request
         """
 
-        self.log.verbose_message(_('Screenshot served to %s') % ip, _('Screenshot number %d served to %s') % (counter, ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka16x16-take.png"))])
+        self.log.verbose_message(_('Screenshot served to %s') % ip, _('Screenshot number %(number)d served to %(ip)s') % {'number': counter, 'ip':ip}, ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, "itaka16x16-take.png"))])
 
         self.label_served.set_text(_('<b>Served</b>: %d') % (counter))
         self.label_served.set_use_markup(True)

@@ -1,397 +1,412 @@
 # Itaka
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# Copyright (C) 2003-2009
+# This file is distributed under the same license as the Itaka package.
+# Marc E. <santusmarc@users.sourceforge.net>, 2007-2009
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 09:51-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: 0.3\n"
+"Report-Msgid-Bugs-To: Marc E. <santusmarc@users.sourceforge.net>\n"
+"POT-Creation-Date: 2009-07-20 14:09-0700\n"
+"PO-Revision-Date: 2007-07-06 12:13+GMT-8\n"
+"Last-Translator: Marc E. <santusmarc@users.sourceforge.net>\n"
+"Language-Team: Marc E. <santusmarc@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: config.py:42
+msgid "Pynotify module is failing, disabling notifications"
+msgstr ""
+
+#: config.py:45
+msgid "Pynotify module is missing, disabling notifications"
+msgstr ""
 
 #: config.py:58
 #, python-format
 msgid "Could not find images directory %s"
 msgstr ""
 
-#: config.py:78
-msgid "Pynotify module is failing, disabling notifications"
-msgstr ""
-
-#: config.py:81
-msgid "Pynotify module is missing, disabling notifications"
-msgstr ""
-
-#: config.py:126
+#: config.py:115
 msgid "Initializing in debug mode"
 msgstr ""
 
-#: config.py:166
+#: config.py:170
 #, python-format
 msgid "Loaded configuration %s"
 msgstr ""
 
-#: config.py:169
+#: config.py:173
 #, python-format
 msgid "Could not read configuration file (%s)"
 msgstr ""
 
-#: config.py:197 config.py:211
+#: config.py:198 config.py:212
 msgid "Detected old or broken configuration file. Fixing"
 msgstr ""
 
-#: config.py:233
+#: config.py:234
 msgid "Saving configuration"
 msgstr ""
 
-#: config.py:235 config.py:256 config.py:285
+#: config.py:236 config.py:257 config.py:284
 #, python-format
 msgid "Could not write configuration file %s"
 msgstr ""
 
-#: config.py:254
+#: config.py:255
 #, python-format
-msgid "Updating configuration key %s to %s"
+msgid "Updating configuration key '%(key)s' to '%(value)s'"
 msgstr ""
 
-#: config.py:267
+#: config.py:268
 msgid "Creating default configuration"
 msgstr ""
 
 #: console.py:137
 #, python-format
+msgid "Itaka %(version)s (r%(revision)s) starting"
+msgstr ""
+
+#: console.py:139
+#, python-format
 msgid "Itaka %s starting"
 msgstr ""
 
-#: console.py:145
-msgid "Itaka shutting down"
-msgstr ""
-
-#: itaka.py:51
+#: itaka.py:56
 #, python-format
 msgid "Could not find locale directory %s, not using locales."
 msgstr ""
 
-#: itaka.py:61
+#: itaka.py:65
 #, python-format
-msgid "Usage: %s (-debug|-help)"
+msgid ""
+"Usage:\n"
+"  %s [OPTION...]\n"
+"\n"
+"  Help Options:\n"
+"  -h, --help\t\t\t\tShow help options\n"
+"  -v, --version\t\t\t\tShow Itaka version\n"
+"  -r, --revision\t\t\tShow Itaka revision\n"
+"\n"
+"  Application Options:\n"
+"  -d, --debug\t\t\t\tStart in debug mode"
 msgstr ""
 
-#: itaka.py:75
+#: itaka.py:87
 msgid "Could not initiate Console engine"
 msgstr ""
 
-#: itaka.py:79
+#: itaka.py:91
 msgid "Could not initiate Configuration engine"
 msgstr ""
 
-#: itaka.py:88
+#: itaka.py:108
 #, python-format
 msgid "Could not initiate GUI: %s"
 msgstr ""
 
-#: screenshot.py:83
+#: screenshot.py:89
 msgid "Window Manager does not support _NET_WM hints"
 msgstr ""
 
-#: screenshot.py:88
+#: screenshot.py:94
 msgid "Active window is desktop"
 msgstr ""
 
-#: screenshot.py:108
+#: screenshot.py:114
 msgid "Can not grab the current window"
 msgstr ""
 
-#: screenshot.py:108
+#: screenshot.py:114
 msgid ""
 "Can not grab the current window because your window manager does not support "
 "NET_WM_* hints"
 msgstr ""
 
-#: screenshot.py:110
+#: screenshot.py:116
 msgid "Not grabing the desktop as the current window"
 msgstr ""
 
-#: screenshot.py:110
+#: screenshot.py:116
 msgid ""
 "Your focus was on the destop when a client requested a screenshot, Itaka "
 "instead took a screenshot of the whole screen"
 msgstr ""
 
-#: screenshot.py:134
+#: screenshot.py:140
 msgid "Could not grab screenshot"
 msgstr ""
 
-#: screenshot.py:134
+#: screenshot.py:140
 msgid "GTK+ could not grab a screenshot of the screen"
 msgstr ""
 
-#: screenshot.py:135
+#: screenshot.py:141
 msgid "Could not grab screenshot, GTK+ error"
 msgstr ""
 
-#: screenshot.py:157 screenshot.py:158
+#: screenshot.py:163 screenshot.py:164
 msgid "Could not save screenshot"
 msgstr ""
 
-#: screenshot.py:157
+#: screenshot.py:163
 #, python-format
 msgid "Could not save screenshot %s"
 msgstr ""
 
-#: server.py:31 uigtk.py:43
+#: server.py:34 uigtk.py:47
 msgid "Failed to import Itaka modules"
 msgstr ""
 
-#: server.py:41 uigtk.py:36
+#: server.py:44 uigtk.py:40
 msgid "Could not import Twisted Network Framework"
 msgstr ""
 
-#: server.py:264
+#: server.py:290
 msgid "Client provided empty username and password"
 msgstr ""
 
-#: server.py:264
+#: server.py:290
 #, python-format
 msgid "Client %s provided empty username and password"
 msgstr ""
 
-#: server.py:268
+#: server.py:294
 msgid "Client provided incorrect username and password"
 msgstr ""
 
-#: server.py:268
+#: server.py:294
 #, python-format
-msgid "Client %s provided incorrect username and password: %s:%s"
+msgid ""
+"Client %(ip)s provided incorrect username and password: %(username)s:%"
+"(password)s"
 msgstr ""
 
-#: server.py:340
+#: server.py:480
 msgid "Screenshot taken"
 msgstr ""
 
-#: server.py:340
+#: server.py:480
 #, python-format
-msgid "%s requested screenshot"
+msgid "%s captured the screen"
 msgstr ""
 
-#: uigtk.py:32
+#: uigtk.py:36
 #, python-format
 msgid "Could not initiate GTK modules: %s"
 msgstr ""
 
-#: uigtk.py:51
+#: uigtk.py:55
 msgid "Pygtk module is missing"
 msgstr ""
 
-#: uigtk.py:56
+#: uigtk.py:60
 msgid "GTK+ bindings are missing"
 msgstr ""
 
-#: uigtk.py:60
+#: uigtk.py:64
 #, python-format
 msgid "Itaka requires GTK+ 2.10, you have %s installed"
 msgstr ""
 
-#: uigtk.py:330
+#: uigtk.py:337
 msgid "St_art"
 msgstr ""
 
-#: uigtk.py:333
+#: uigtk.py:340
 msgid "St_op"
 msgstr ""
 
-#: uigtk.py:339
+#: uigtk.py:346
 msgid "Show _Notifications"
 msgstr ""
 
-#: uigtk.py:369 uigtk.py:1187
+#: uigtk.py:380 uigtk.py:1212
 msgid "Start"
 msgstr ""
 
-#: uigtk.py:405
+#: uigtk.py:416
 msgid "Events"
 msgstr ""
 
-#: uigtk.py:406
+#: uigtk.py:417
 msgid "Details"
 msgstr ""
 
-#: uigtk.py:446
+#: uigtk.py:457
 msgid "Clear"
 msgstr ""
 
-#: uigtk.py:452
+#: uigtk.py:463
 msgid "Pause"
 msgstr ""
 
-#: uigtk.py:464
+#: uigtk.py:475
 msgid "<b>Server log</b>"
 msgstr ""
 
-#: uigtk.py:486
+#: uigtk.py:497
 msgid "<b>Preferences</b>"
 msgstr ""
 
-#: uigtk.py:491
+#: uigtk.py:502
 msgid "Port"
 msgstr ""
 
-#: uigtk.py:495
+#: uigtk.py:506
 msgid "Authentication"
 msgstr ""
 
-#: uigtk.py:499
+#: uigtk.py:510
 msgid "Username"
 msgstr ""
 
-#: uigtk.py:503
+#: uigtk.py:514
 msgid "Password"
 msgstr ""
 
-#: uigtk.py:507
+#: uigtk.py:518
 msgid "Format"
 msgstr ""
 
-#: uigtk.py:511
+#: uigtk.py:522
 msgid "Quality"
 msgstr ""
 
-#: uigtk.py:515
+#: uigtk.py:526
 msgid "Scale"
 msgstr ""
 
-#: uigtk.py:520
+#: uigtk.py:531
 msgid "Window"
 msgstr ""
 
-#: uigtk.py:525
+#: uigtk.py:536
 msgid "Notifications"
 msgstr ""
 
-#: uigtk.py:586
+#: uigtk.py:599
 msgid "Fullscreen"
 msgstr ""
 
-#: uigtk.py:587 uigtk.py:676
+#: uigtk.py:600 uigtk.py:698
 msgid "Active window"
 msgstr ""
 
-#: uigtk.py:746
+#: uigtk.py:769
 msgid "Could not save preferences"
 msgstr ""
 
-#: uigtk.py:1008
+#: uigtk.py:1032
 msgid "Logging paused"
 msgstr ""
 
-#: uigtk.py:1030
+#: uigtk.py:1054
 msgid "Logging resumed"
 msgstr ""
 
-#: uigtk.py:1127
+#: uigtk.py:1152
 msgid "Failed to start server"
 msgstr ""
 
-#: uigtk.py:1127
+#: uigtk.py:1152
 #, python-format
 msgid "Failed to start server: %s"
 msgstr ""
 
-#: uigtk.py:1135
+#: uigtk.py:1160
 msgid "Secure server"
 msgstr ""
 
-#: uigtk.py:1138
+#: uigtk.py:1163
 msgid "Server"
 msgstr ""
 
-#: uigtk.py:1141 uigtk.py:1143
+#: uigtk.py:1166 uigtk.py:1168
 #, python-format
-msgid "%s started on port %d"
+msgid "%(serverstring)s started on port %(port)d"
 msgstr ""
 
-#: uigtk.py:1141
+#: uigtk.py:1166
 #, python-format
-msgid "%s started on port %s TCP. Serving %s images with %d%% quality"
+msgid ""
+"%(serverstring)s started on port %(port)s TCP. Serving %(format)s images "
+"with %(quality)d%% quality"
 msgstr ""
 
-#: uigtk.py:1143
+#: uigtk.py:1168
 #, python-format
-msgid "%s started on port %s TCP. Serving %s images"
+msgid ""
+"%(serverstring)s started on port %(port)s TCP. Serving %(format)s images"
 msgstr ""
 
-#: uigtk.py:1148
+#: uigtk.py:1173
 msgid "Stop"
 msgstr ""
 
-#: uigtk.py:1152
+#: uigtk.py:1177
 msgid "Itaka - Server running"
 msgstr ""
 
-#: uigtk.py:1171
+#: uigtk.py:1196
 msgid "Server stopped"
 msgstr ""
 
-#: uigtk.py:1200
+#: uigtk.py:1226
 #, python-format
 msgid "Restarting the server to listen on port %d"
 msgstr ""
 
-#: uigtk.py:1210
-msgid "Shutting down server"
+#: uigtk.py:1245
+msgid "Itaka shutting down"
 msgstr ""
 
-#: uigtk.py:1244
+#: uigtk.py:1265
 msgid "day"
 msgstr ""
 
-#: uigtk.py:1249
+#: uigtk.py:1270
 msgid "hour"
 msgstr ""
 
-#: uigtk.py:1251
+#: uigtk.py:1272
 msgid "minute"
 msgstr ""
 
-#: uigtk.py:1253
+#: uigtk.py:1274
 msgid "<b>When</b>: "
 msgstr ""
 
-#: uigtk.py:1253
+#: uigtk.py:1274
 msgid " ago"
 msgstr ""
 
-#: uigtk.py:1307
+#: uigtk.py:1323
 #, python-format
 msgid "Screenshot served to %s"
 msgstr ""
 
-#: uigtk.py:1307
+#: uigtk.py:1323
 #, python-format
-msgid "Screenshot number %d served to %s"
+msgid "Screenshot number %(number)d served to %(ip)s"
 msgstr ""
 
-#: uigtk.py:1309
+#: uigtk.py:1325
 #, python-format
 msgid "<b>Served</b>: %d"
 msgstr ""
 
-#: uigtk.py:1311
+#: uigtk.py:1327
 #, python-format
 msgid "<b>Client</b>: %s"
 msgstr ""
 
-#: uigtk.py:1313
+#: uigtk.py:1329
 #, python-format
 msgid "Itaka - %s served"
 msgstr ""
 
-#: uigtk.py:1313
+#: uigtk.py:1329
 msgid "screenshot"
 msgstr ""

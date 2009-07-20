@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 #
 # Itaka is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ validarguments = ('-h', '--help', '-v', '--version', '-r', '--revision', '-d', '
 arguments = sys.argv
 
 if len(arguments) >= 2 and ((arguments[-1] not in validarguments) or (arguments[-1] in (validarguments[0], validarguments[1]))):
-    print """Usage:
+    print _("""Usage:
   %s [OPTION...]
 
   Help Options:
@@ -71,7 +71,7 @@ if len(arguments) >= 2 and ((arguments[-1] not in validarguments) or (arguments[
   -r, --revision\t\t\tShow Itaka revision
 
   Application Options:
-  -d, --debug\t\t\t\tStart in debug mode""" % arguments[0]
+  -d, --debug\t\t\t\tStart in debug mode""") % arguments[0]
     sys.exit(1)
 
 try:
@@ -98,7 +98,7 @@ if __name__ == "__main__":
             print itaka_globals.__version__
             sys.exit(0)
         if (arguments[-1] in (validarguments[4], validarguments[5])):
-            print itaka_globals.__revision__
+            print "r" + itaka_globals.__revision__.split()[1]
             sys.exit(0)
 
     try:

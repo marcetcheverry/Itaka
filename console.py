@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 #
 # Itaka is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -134,9 +134,9 @@ class Console:
 
         self.itaka_globals = itaka_globals
         if self.itaka_globals.console_verbosity['debug']:
-            BaseMessage(_('Itaka %s (%s) starting' % (self.itaka_globals.__version__, self.itaka_globals.__revision__)))
+            BaseMessage(_('Itaka %(version)s (r%(revision)s) starting') % {'version': self.itaka_globals.__version__, 'revision': self.itaka_globals.__revision__.split()[1]})
         elif self.itaka_globals.console_verbosity['normal']: 
-            BaseMessage(_('Itaka %s starting' % (self.itaka_globals.__version__)))
+            BaseMessage(_('Itaka %s starting') % (self.itaka_globals.__version__))
             
     def message(self, message):
         """

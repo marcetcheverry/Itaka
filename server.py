@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 #
 # Itaka is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -291,7 +291,7 @@ class AuthenticatedResource:
             self._prompt_auth()
         else:
             if self.username != self.configuration['server']['username'] or self.password != self.configuration['server']['password']:
-                self.gui.log.failure(('AuthenticatedResource', 'authenticate'), (_('Client provided incorrect username and password'), _('Client %s provided incorrect username and password: %s:%s') % (self.ip, self.username, self.password)), 'WARNING')
+                self.gui.log.failure(('AuthenticatedResource', 'authenticate'), (_('Client provided incorrect username and password'), _('Client %(ip)s provided incorrect username and password: %(username)s:%(password)s') % {'ip': self.ip, 'username': self.username, 'password': self.password}), 'WARNING')
                 self._prompt_auth()
             elif self.username == self.configuration['server']['username'] and self.password == self.configuration['server']['password']:
                 self.authenticated = True

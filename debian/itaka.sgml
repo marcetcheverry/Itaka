@@ -1,8 +1,8 @@
 <!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
 
   <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>5 Jun 2007</date>">
-  <!ENTITY dhemail     "<email>santusmarc@users.sf.net</email>">
+  <!ENTITY dhdate      "<date>20 Jul 2009</date>">
+  <!ENTITY dhemail     "<email>santusmarc@users.sourceforge.net</email>">
   <!ENTITY dhusername  "Marc E.">
   <!ENTITY dhpackage   "itaka">
 
@@ -21,7 +21,7 @@
       <surname>E.</surname>
     </author>
     <copyright>
-      <year>2003-2007</year>
+      <year>2003-2009</year>
       <holder>&dhusername;</holder>
     </copyright>
     &dhdate;

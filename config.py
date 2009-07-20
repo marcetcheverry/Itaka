@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 #
 # Itaka is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -118,7 +118,7 @@ class ConfigParser:
         self.default_options = ( 
                 {'server': (
                     ('port', 8000), ('authentication', False),
-                    ('username', 'user'), ('password', 'password'),
+                    ('username', 'itaka'), ('password', 'password'),
                     ('notify', notify_available)
                 )},
 
@@ -167,7 +167,7 @@ class ConfigParser:
         try:
             config_instance.read(self.config_file)
             if console_verbosity['normal']: 
-                print_m(_('Loaded configuration %s' % (self.config_file)))
+                print_m(_('Loaded configuration %s') % (self.config_file))
 
         except:
             if console_verbosity['normal']: print_error(_('Could not read configuration file (%s)' % (self.config_file)))
@@ -252,7 +252,7 @@ class ConfigParser:
 
         try:
             config_instance.write(open(self.config_file, 'w'))
-            if console_verbosity['debug']: print_m(_('Updating configuration key %s to %s' % (key, value)))	
+            if console_verbosity['debug']: print_m(_("Updating configuration key '%(key)s' to '%(value)s'") % {'key': key, 'value': value})
         except:
             if not console_verbosity['quiet']: print_error(_('Could not write configuration file %s' % (self.config_file)))
             if console_verbosity['debug']: traceback.print_exc()
