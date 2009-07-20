@@ -1,12 +1,11 @@
 0.3 (Two years later, I am still here):
  * Fixed a fatal bug with some recent versions of Python/PyGTK
  * Fixed some minor window width issues with popular GTK themes
- * Added interface translations #4
+ * Added interface translations
  * Added a favicon to the server
  * Added RPM packages
  * Switch to GPLv3
  * Better console help
- * Report Itaka version in HTTP headers
  * Don't clean out status labels when restarting server
  * Don't check for system compatibility of Libnotify
  * Code cleanup towards PEP-8 compliance
