@@ -46,7 +46,7 @@ except ImportError:
 locale_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'locale/')
 
 #: To be changed on install to specify where the installed files actually are
-locale_prefix = "/usr/share/locale/"
+locale_prefix = "/usr/share/itaka/locale/"
 
 if os.path.exists(locale_prefix):
     locale_dir = locale_prefix

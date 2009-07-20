@@ -474,10 +474,10 @@ class ScreenshotResource(resource.Resource):
 
         if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
             import pynotify
-            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka64x64.png")) 
-            print_m(uri)
+            # 48x48 image by default looks bad in Ubuntu
+            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
 
-            n = pynotify.Notification(_('Screenshot taken'), _('%s requested screenshot' % (self.ip)), uri)
+            n = pynotify.Notification(_('Screenshot taken'), _('%s captured the screen' % (self.ip)), uri)
 
             n.set_timeout(1500)
             n.attach_to_status_icon(self.gui.status_icon)

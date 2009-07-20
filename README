@@ -100,6 +100,8 @@ the .pot template if code was changed, then do the following to merge the new ch
 
 For more information, please see the GNU gettext manual at http://www.gnu.org/software/gettext/manual/gettext.html
 
+NOTE: Your system must have the locale you want to work with installed prior to working with Itaka, if not you might get this message from Python "locale.Error: unsupported locale setting". Refer to your system documentations on how to install/set locales/languages.
+
 7. RELEASE NOTES:
 
 See the ChangeLog for more detailed information.

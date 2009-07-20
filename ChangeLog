@@ -6,6 +6,7 @@
  * Added RPM packages
  * Switch to GPLv3
  * Better console help
+ * Report Itaka version in HTTP headers
  * Don't clean out status labels when restarting server
  * Don't check for system compatibility of Libnotify
  * Code cleanup towards PEP-8 compliance

@@ -14,14 +14,14 @@ LIBDIR = $(DESTDIR)/lib/itaka
 BINDIR = $(DESTDIR)/bin
 DATADIR = $(DESTDIR)/share/itaka
 IMAGESDIR = $(DATADIR)/images
-LOCALEDIR = $(DESTDIR)/locale
+LOCALEDIR = $(DATADIR)/locale
 APPLICATIONSDIR = $(DESTDIR)/share/applications
 ICONDIR = $(DESTDIR)/share/pixmaps
 MANDIR = $(DESTDIR)/share/man/man1
 
 # For debian compatibility, these are hardcoded
 REPLACEIMAGESDIR = $(PREFIX)/share/itaka/images/
-REPLACELOCALEDIR = $(PREFIX)/locale/
+REPLACELOCALEDIR = $(PREFIX)/share/itaka/locale/
 
 PYFILES := $(shell $(FIND) . -name "*.py" -print)
 
