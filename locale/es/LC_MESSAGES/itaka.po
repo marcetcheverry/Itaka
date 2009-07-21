@@ -291,7 +291,7 @@ msgstr "Calidad"
 
 #: uigtk.py:526
 msgid "Scale"
-msgstr "Escala"
+msgstr "Tamaño"
 
 #: uigtk.py:531
 msgid "Window"
