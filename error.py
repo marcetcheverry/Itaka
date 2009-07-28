@@ -27,25 +27,25 @@ class ItakaError(Exception):
     Base class for all Itaka errors
     """
 
-    def __init__(self, message):
+    def __init__(self, value):
         """
         Constructor
 
-        @type message: str
-        @param message: Exception message
+        @type value: str
+        @param value: Exception value
         """
 
-        self.message = message
+        self.value = value
 
     def __str__(self):
         """
         String representation
 
         @rtype: str
-        @return: String representation of Exception message
+        @return: String representation of Exception value
         """
 
-        return repr(self.message)
+        return repr(self.value)
 
 
 class ItakaServerError(ItakaError):

@@ -1149,13 +1149,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         try:
             self.server.start_server(self.configuration['server']['port'])
         except error.ItakaServerErrorCannotListen, e:
-            self.log.failure(('Gui', 'start_server'), (_('Failed to start server'), _('Failed to start server: %s') % (e)), 'ERROR')
+            self.log.failure(('Gui', 'start_server'), (_('Failed to start server: %s' % e.value), _('Failed to start server: %s') % e.value), 'ERROR')
             self.button_start_stop.set_active(False)
             return
 
         self.server.add_log_observer(self.log.twisted_observer)
 
-        if self.configuration['server']['authentication']:
+        if self.configuration['server']['authytentication']:
             serverstock = 'STOCK_DIALOG_AUTHENTICATION'
             serverstring = _('Secure server')
         else:
