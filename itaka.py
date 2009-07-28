@@ -29,8 +29,14 @@ import gettext
 import locale
 import __builtin__
 
-locale.setlocale(locale.LC_ALL, '')
+
 __builtin__._ = gettext.gettext
+
+try:
+    locale.setlocale(locale.LC_ALL, '')
+except locale.Error, e:
+    print _('[*] WARNING: Selected locale not supported by your system. Using the fallback default locale')
+
 
 # Itaka modules
 try:
