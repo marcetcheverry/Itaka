@@ -31,17 +31,16 @@ try:
     import screenshot
     import error
 except ImportError:
-    print_error(_('Failed to import Itaka modules'))
+    print_e(_('Failed to import Itaka modules'))
     traceback.print_exc()
     sys.exit(1)
 
 try:
     from twisted.python import log
     from twisted.web import server, static, http, resource
-    from twisted.internet import reactor
     import twisted.internet.error
 except ImportError:
-    print_error(_('Could not import Twisted Network Framework'))
+    print_e(_('Could not import Twisted Network Framework'))
     traceback.print_exc()
     sys.exit(1)
 
@@ -106,16 +105,22 @@ class BaseHTTPServer:
         server.version = version_header
         self.site = server.Site(resource)
 
-    def start_server(self, port):
+    def start_server(self, reactor, port):
         """
         Start the server
+
+        @type reactor: twisted.internet.gtk2reactor.Gtk2Reactor
+        @param reactor: An instance of a reactor already run()
 
         @type port: int
         @param port: Port number to listen on
         """
 
         try:
-            self.server = reactor.listenTCP(port, self.site)
+            if hasattr(self, 'server'):
+                self.server.startListening()
+            else:
+                self.server = reactor.listenTCP(port, self.site)
         except twisted.internet.error.CannotListenError, e:
             raise error.ItakaServerCannotListenError, e
 

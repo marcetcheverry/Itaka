@@ -55,9 +55,6 @@ class Screenshot:
         #: Whether our current window method failed or not
         self.current_window_failed = False
 
-        #: Final absolute path to the screenshot file
-        self.shot_file = os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))
-        
         self.root_screen = gtk.gdk.screen_get_default()
         self.root_window = gtk.gdk.get_default_root_window()
 
@@ -103,10 +100,12 @@ class Screenshot:
         @return: Path to the screenshot (L{self.shot_file})
         """
 
-        # Get up to date configuration values everytime there is a request
-        
+        # Get up to date configuration values and build shot file path everytime there is a request
         self.configuration = self.gui.configuration
 
+        #: Final absolute path to the screenshot file
+        self.shot_file = os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))
+        
         if self.configuration['screenshot']['currentwindow'] and not self.itaka_globals.system == 'nt':
             try:
                 self.current_window = self.find_current_active_window()

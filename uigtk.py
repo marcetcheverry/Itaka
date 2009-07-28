@@ -22,29 +22,30 @@
 
 """ Itaka GTK+ GUI """
 
-import sys
-import os
-import datetime
-import traceback
 import copy
+import datetime
+import os
+import sys
+import signal
+import traceback
 
 try:
     from twisted.internet import gtk2reactor
     try:
         gtk2reactor.install()
     except Exception, e:
-        print_error(_('Could not initiate GTK modules: %s' % (e)))
+        print_e(_('Could not initiate GTK modules: %s' % (e)))
         sys.exit(1)
     from twisted.internet import reactor
 except ImportError:
-    print_error(_('Could not import Twisted Network Framework'))
+    print_e(_('Could not import Twisted Network Framework'))
     sys.exit(1)
 
 try:
     import server as iserver
     import error
 except ImportError:
-    print_error(_('Failed to import Itaka modules'))
+    print_e(_('Failed to import Itaka modules'))
     traceback.print_exc()
     sys.exit(1)
 
@@ -52,16 +53,16 @@ try:
     import pygtk
     pygtk.require("2.0")
 except ImportError:
-    print_warning(_('Pygtk module is missing'))
+    print_w(_('Pygtk module is missing'))
     pass
 try:
     import gtk, gobject, pango
 except ImportError:
-    print_error(_('GTK+ bindings are missing'))
+    print_e(_('GTK+ bindings are missing'))
     sys.exit(1)
 
 if gtk.gtk_version[1] < 10:
-    print_error(_('Itaka requires GTK+ 2.10, you have %s installed' % (".".join(str(x) for x in gtk.gtk_version))))
+    print_e(_('Itaka requires GTK+ 2.10, you have %s installed' % (".".join(str(x) for x in gtk.gtk_version))))
     sys.exit(1)
 
 class GuiLog:
@@ -114,7 +115,7 @@ class GuiLog:
         @type icon: tuple
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
         """
-        
+       
         self.console.message(message)
         self._write_gui_log(message, None, icon, False)
 
@@ -306,7 +307,7 @@ class Gui:
         # Start defining widgets
         self.icon_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.itaka_globals.image_dir, 'itaka.png'))
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.connect('destroy', self.destroy)
+        self.window.connect('destroy', self._destroy)
         self.window.connect('size-allocate', self._window_size_changed)
         self.window.set_title('Itaka')
         self.window.set_icon(self.icon_pixbuf)
@@ -351,7 +352,7 @@ class Gui:
         self.menu_item_separator = gtk.SeparatorMenuItem()
         self.menu_item_separator1 = gtk.SeparatorMenuItem()
         self.menu_item_quit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
-        self.menu_item_quit.connect('activate', self.destroy)
+        self.menu_item_quit.connect('activate', self._destroy)
 
         self.status_menu.append(self.menu_item_start)
         self.status_menu.append(self.menu_item_stop)
@@ -678,6 +679,13 @@ class Gui:
         else:
             self.format_value = 'jpeg'
             self.configuration['screenshot']['format'] = 'jpeg'
+
+        # Delete stale old screenshot
+        if (self.current_configuration['screenshot']['format'] != self.configuration['screenshot']['format']):
+            if os.path.exists(os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format']))): 
+                os.remove(os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format'])))
+                if self.itaka_globals.console_verbosity['debug']: print_m(_("Deleting stale screenshot file '%s'" % ((os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format']))))))
+
 
         if self.itaka_globals.notify_available:
             self.notify_value = self.check_preferences_notifications.get_active()
@@ -1070,9 +1078,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Main initiation function. Starts the Twisted GUI reactors
         """
 
-        # Server reactor (interacts with the Twisted reactor)	
-        self.sreact = reactor.run()
-
+        # Run the gtk.main() loop and start a reactor for our server.
+        # False can be passed for it to not register to it's SIGINT handler.
+        # Register our own handler to send to _destroy
+        signal.signal(signal.SIGINT, self._destroy)
+        reactor.run()
+        
     def _preferences_combo_changed(self, widget):
         """
         Callback for preferenes gtk.ComboBox widget
@@ -1147,7 +1158,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         if self.server.listening(): return
 
         try:
-            self.server.start_server(self.configuration['server']['port'])
+            self.server.start_server(reactor, self.configuration['server']['port'])
         except error.ItakaServerCannotListenError, e:
             self.log.failure(('Gui', 'start_server'), (_('Failed to start server on port %(port)s: %(errorstring)s' % {'port': e.value.port, 'errorstring': e.value.args[-1][-1]}), _('Failed to start server: %s') % e.value), 'ERROR')
             self.button_start_stop.set_active(False)
@@ -1227,7 +1238,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.stop_server(None, True)
             self.start_server(None, True)
 
-    def destroy(self, *args):
+    def _destroy(self, *args):
         """
         Main window destroy event
         """
@@ -1242,8 +1253,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Windows fix
         del self.status_icon
 
+        self.log.verbose_message(_('Itaka Shutting down'), _('Received SIGINT, shutting down'), ['stock', 'STOCK_DISCONNECT'])
+
         self.console.message(_('Itaka shutting down'))
-        gtk.main_quit()
+
+        reactor.stop()
 
     def _literal_time_difference(self, dtime):
         """
