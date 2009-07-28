@@ -177,8 +177,11 @@ class GuiLog:
                 self.gui.status_icon_timeout_blink()
                 self.gui.window.move(self.gui.window_position[0], self.gui.window_position[1])
 
-            self.gui.expander.set_expanded(True)
-            self.gui.expander.set_sensitive(True)
+            if not self.expander.get_property("sensitive"):
+                self.expander.set_sensitive(True)
+            if not self.expander.get_property("expanded"):
+                self.expander.set_expanded(True)
+            
             # Stop the server
             if self.gui.server.listening():
                 self.gui.stop_server(None, True)
@@ -1209,8 +1212,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if not self.expander.get_property("sensitive"):
             self.expander.set_sensitive(True)
-        self.expander.set_expanded(True)
-
+        if not self.expander.get_property("expanded"):
+            self.expander.set_expanded(True)
 
     def stop_server(self, widget=None, foreign=False):
         """
