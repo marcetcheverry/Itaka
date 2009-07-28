@@ -5,7 +5,8 @@
  * Added a favicon to the server
  * Added RPM packages
  * Switch to GPLv3
- * Better console help
+ * Better error reporting on the main log
+ * Better console help and internal functions
  * Don't clean out status labels when restarting server
  * Don't check for system compatibility of Libnotify
  * Code cleanup towards PEP-8 compliance

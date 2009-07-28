@@ -117,7 +117,7 @@ class BaseHTTPServer:
         try:
             self.server = reactor.listenTCP(port, self.site)
         except twisted.internet.error.CannotListenError, e:
-            raise error.ItakaServerErrorCannotListen, e
+            raise error.ItakaServerCannotListenError, e
 
         self.server_listening = True
     

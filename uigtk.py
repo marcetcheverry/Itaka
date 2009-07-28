@@ -1148,8 +1148,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         try:
             self.server.start_server(self.configuration['server']['port'])
-        except error.ItakaServerErrorCannotListen, e:
-            self.log.failure(('Gui', 'start_server'), (_('Failed to start server: %s' % e.value), _('Failed to start server: %s') % e.value), 'ERROR')
+        except error.ItakaServerCannotListenError, e:
+            self.log.failure(('Gui', 'start_server'), (_('Failed to start server: port %s already in use' % e.value.port), _('Failed to start server: %s') % e.value), 'ERROR')
             self.button_start_stop.set_active(False)
             return
 

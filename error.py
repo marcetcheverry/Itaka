@@ -55,7 +55,7 @@ class ItakaServerError(ItakaError):
     pass
 
 
-class ItakaServerErrorCannotListen(ItakaServerError):
+class ItakaServerCannotListenError(ItakaServerError):
     """
     Exception raised by server methods
     """
@@ -69,21 +69,21 @@ class ItakaScreenshotError(ItakaError):
     pass
 
 
-class ItakaScreenshotErrorWmHints(ItakaScreenshotError):
+class ItakaScreenshotWmHintsError(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods
     """
     pass
 
 
-class ItakaScreenshotErrorActiveDesktop(ItakaScreenshotError):
+class ItakaScreenshotActiveDesktopError(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods
     """
     pass
     
 
-class ItakaSaveScreenshotError(ItakaScreenshotError):
+class ItakaScreenshotSaveError(ItakaScreenshotError):
     """
     Exception raised by screenshooting methods
     """

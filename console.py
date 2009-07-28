@@ -35,40 +35,41 @@ def print_m(string):
     
     print '[*] %s' % (str(string))
 
-def print_warning(string):
+def print_warning(*strings):
     """
-    Print wrapper.
+    Print warning wrapper.
 
-    @type str: str
-    @param str: Message
-    """
-
-    print_m('WARNING: %s' % (string))
-
-def print_error(string):
-    """
-    Print wrapper.
-
-    @type str: str
-    @param str: Message
+    @type *strings: anything
+    @param *strings: Anything
     """
 
-    print_m('ERROR: %s' % (string))
+    print_m('WARNING: %s' % (" - ".join(str(item) for item in strings)))
 
-def print_debug(string):
+def print_error(*strings):
     """
-    Print wrapper.
+    Print error wrapper.
 
-    @type str: str
-    @param str: Message
+    @type *strings: anything
+    @param *strings: Anything
     """
 
-    print_m('DEBUG: %s' % (string))
+    print_m('ERROR: %s' % (" - ".join(str(item) for item in strings)))
+
+def print_debug(*strings):
+    """
+    Print debug wrapper.
+
+    @type *strings: anything
+    @param *strings: Anything
+    """
+
+    print_m('DEBUG: %s' % (" - ".join(str(item) for item in strings)))
 
 # Register them for global use
 __builtin__.print_m = print_m
 __builtin__.print_error = print_error
 __builtin__.print_warning = print_warning
+__builtin__.print_debug = print_debug
 
 class BaseMessage:
     """
