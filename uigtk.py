@@ -889,7 +889,6 @@ class Gui:
                 
                 # Save our settings (but not if we are on small displays and we just want to hide the pane)
                 if save is not False:
-                    print_m("Saving")
                     self._save_preferences()
 
                 self.timeout_contract = None
