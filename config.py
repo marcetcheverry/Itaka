@@ -39,10 +39,10 @@ try:
     notify_available = True
 
     if not pynotify.init('Itaka'):
-        print_warning(_('Pynotify module is failing, disabling notifications'))
+        print_w(_('Pynotify module is failing, disabling notifications'))
         notify_available = False
 except ImportError:
-    print_warning(_('Pynotify module is missing, disabling notifications'))
+    print_w(_('Pynotify module is missing, disabling notifications'))
     notify_available = False
 
 config_instance = ConfigParser.ConfigParser()
@@ -55,7 +55,7 @@ if os.path.exists(image_prefix):
     image_dir = image_prefix
 
 if not os.path.exists(image_dir):
-    print_error(_('Could not find images directory %s' % (image_dir)))
+    print_e(_('Could not find images directory %s' % (image_dir)))
     sys.exit(1)
 
 #: Save path for screenshots (system-specific specified later on)
@@ -115,6 +115,7 @@ class ConfigParser:
             print_m(_('Initializing in debug mode'))
 
         #: Default configuration sections and values
+        # WARNING: Don't forget to update configuration_dict in uigtk.py if you change this! 
         self.default_options = ( 
                 {'server': (
                     ('port', 8000), ('authentication', False),
@@ -126,6 +127,11 @@ class ConfigParser:
                     ('format', 'jpeg'), ('quality', 30), ('path', save_path),
                     ('currentwindow', False), ('scale', False),
                     ('scalepercent', 100)
+                )},
+                
+                {'log': (
+                    ('logtimeformat', '[%d/%b/%Y %H:%M:%S]'),
+                    ('logfile', '~/.itaka/access.log')
                 )},
                 
                 {'html': (
@@ -170,7 +176,7 @@ class ConfigParser:
                 print_m(_('Loaded configuration %s') % (self.config_file))
 
         except:
-            if console_verbosity['normal']: print_error(_('Could not read configuration file (%s)' % (self.config_file)))
+            if console_verbosity['normal']: print_e(_('Could not read configuration file (%s)' % (self.config_file)))
             if console_verbosity['debug']: traceback.print_exc()
 
         # Get values as a dict and return it
@@ -195,7 +201,7 @@ class ConfigParser:
             for section in configdict:
                 if not configuration_values.has_key(section):
                     if not console_verbosity['quiet'] and not brokenwarning: 
-                        print_warning(_('Detected old or broken configuration file. Fixing'))
+                        print_w(_('Upgrading configuration file.'))
                         brokenwarning = True
                     config_instance.add_section(section)
                     configuration_values[section] = {}
@@ -209,7 +215,7 @@ class ConfigParser:
                         key, val = keyset
                         if not configuration_values[section].has_key(key):
                             if not console_verbosity['quiet'] and not brokenwarning:
-                                print_warning(_('Detected old or broken configuration file. Fixing'))
+                                print_w(_('Detected old or broken configuration file. Fixing'))
                             self.update(section, key, val)
                             configuration_values[section][key] = val
                             brokenwarning = True
@@ -233,7 +239,7 @@ class ConfigParser:
             config_instance.write(open(self.config_file, 'w'))
             if console_verbosity['normal']: print_m(_('Saving configuration'))	
         except:		
-            if not console_verbosity['quiet']: print_error(_('Could not write configuration file %s' % (self.config_file)))
+            if not console_verbosity['quiet']: print_e(_('Could not write configuration file %s' % (self.config_file)))
             if console_verbosity['debug']: traceback.print_exc()
 
     def update(self, section, key, value):
@@ -254,7 +260,7 @@ class ConfigParser:
             config_instance.write(open(self.config_file, 'w'))
             if console_verbosity['debug']: print_m(_("Updating configuration key '%(key)s' to '%(value)s'") % {'key': key, 'value': value})
         except:
-            if not console_verbosity['quiet']: print_error(_('Could not write configuration file %s' % (self.config_file)))
+            if not console_verbosity['quiet']: print_e(_('Could not write configuration file %s' % (self.config_file)))
             if console_verbosity['debug']: traceback.print_exc()
 
     def create(self, path):
@@ -281,7 +287,7 @@ class ConfigParser:
         try:
             config_instance.write(open(path, 'w'))
         except:
-            if not console_verbosity['quiet']: print_error(_('Could not write configuration file %s' % (path)))
+            if not console_verbosity['quiet']: print_e(_('Could not write configuration file %s' % (path)))
             if console_verbosity['debug']: traceback.print_exc()
 
         self.config_file = path	

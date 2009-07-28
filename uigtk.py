@@ -92,10 +92,13 @@ class GuiLog:
         """
         A log observer for our Twisted server
 
+        Interestingly it carries a time timestamp.
+        datetime.datetime.fromtimestamp(args['time']).strftime("%b %d %H:%M:%S")
+
         @type args: dict
         @param args: dict {'key': [str(message)]}
         """
-
+        
         # Handle twisted errors
         # 'isError': 1, 'failure': <twisted.python.failure.Failure <type 'exceptions.AttributeError'>> 
         if args.has_key('isError') and args['isError'] == 1:
@@ -115,7 +118,10 @@ class GuiLog:
         @type icon: tuple
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
         """
-       
+      
+        if self.configuration['log']['logtimeformat']:
+            message = "%s %s" % (datetime.datetime.now().strftime(self.configuration['log']['logtimeformat']), message)
+
         self.console.message(message)
         self._write_gui_log(message, None, icon, False)
 
@@ -132,6 +138,10 @@ class GuiLog:
         @type icon: tuple
         @param icon: The first argument is a string of either 'stock' or 'pixbuf', and the second is a string of gtk.STOCK_ICON or a gtk.gdk.pixbuf object (without the 'gtk.' prefix)
         """
+
+        if self.configuration['log']['logtimeformat']:
+            message = "%s %s" % (datetime.datetime.now().strftime(self.configuration['log']['logtimeformat']), message)
+            detailed_message = "%s %s" % (datetime.datetime.now().strftime(self.configuration['log']['logtimeformat']), detailed_message)
 
         self.console.message(detailed_message)
         self._write_gui_log(message, detailed_message, icon, False, False)
@@ -152,6 +162,10 @@ class GuiLog:
         
         self.simple_message = message[0]
         self.detailed_message = message[1]
+
+        if self.configuration['log']['logtimeformat']:
+            self.simple_message = "%s %s" % (datetime.datetime.now().strftime(self.configuration['log']['logtimeformat']), self.simple_message)
+            self.detailed_message = "%s %s" % (datetime.datetime.now().strftime(self.configuration['log']['logtimeformat']), self.detailed_message)
 
         self.console.failure(caller, self.detailed_message, failure_type)
 
@@ -727,7 +741,7 @@ class Gui:
         
         # Build a configuration dictionary to send to the configuration engine's
         # save method. Redundant values must be included for the comparison
-        self.configurationdict = {
+        self.configuration_dict = {
             'html':
                 {'html': '<img src="screenshot" alt="If you are seeing this message it means there was an error in Itaka or you are using a text-only browser.">',
                 'authfailure': '<p><strong>Sorry, but you cannot access this resource without authorization.</strong></p>'},
@@ -739,6 +753,10 @@ class Gui:
                 'currentwindow': self.screenshot_value,
                 'scale': self.scale_value[1],
                 'scalepercent': self.scale_value[0]},
+
+            'log': 
+                {'logtimeformat': '[%d/%b/%Y %H:%M:%S]',
+                'logfile': '~/.itaka/access.log'},
 
             'server': 
                 {'username': self.entry_preferences_user.get_text(),
@@ -766,13 +784,13 @@ class Gui:
             self.configuration['server']['password'] = self.entry_preferences_pass.get_text()
 
         # Check if the configuration changed
-        if (self.configurationdict != self.current_configuration):
+        if (self.configuration_dict != self.current_configuration):
 
             # Update the needed keys
             try:
-                # self.config_instance.save(self.configurationdict)
-                for section in self.configurationdict:
-                    [self.config_instance.update(section, key, value) for key, value in self.configurationdict[section].iteritems() if key not in self.current_configuration[section] or self.current_configuration[section][key] != value]
+                # self.config_instance.save(self.configuration_dict)
+                for section in self.configuration_dict:
+                    [self.config_instance.update(section, key, value) for key, value in self.configuration_dict[section].iteritems() if key not in self.current_configuration[section] or self.current_configuration[section][key] != value]
             except:
                 self.log.failure(('Gui', '_save_preferences'), _('Could not save preferences'), 'ERROR')
 
@@ -1191,6 +1209,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         if not self.expander.get_property("sensitive"):
             self.expander.set_sensitive(True)
+        self.expander.set_expanded(True)
+
 
     def stop_server(self, widget=None, foreign=False):
         """
@@ -1252,8 +1272,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         # Windows fix
         del self.status_icon
-
-        self.log.verbose_message(_('Itaka Shutting down'), _('Received SIGINT, shutting down'), ['stock', 'STOCK_DISCONNECT'])
 
         self.console.message(_('Itaka shutting down'))
 

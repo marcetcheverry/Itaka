@@ -117,10 +117,9 @@ class BaseHTTPServer:
         """
 
         try:
-            if hasattr(self, 'server'):
-                self.server.startListening()
-            else:
-                self.server = reactor.listenTCP(port, self.site)
+            # We need to create a new instance because of server port changes, don't use hasattr()
+            # Returns a 'twisted.internet.tcp.Port'
+            self.server = reactor.listenTCP(port, self.site)
         except twisted.internet.error.CannotListenError, e:
             raise error.ItakaServerCannotListenError, e
 
@@ -148,6 +147,7 @@ class BaseHTTPServer:
         """
         Add a twisted.log observer
         
+        See: http://twistedmatrix.com/projects/core/documentation/howto/logging.html 
         @type observer: method
         @param observer: A method to send the logs to
         """
@@ -480,8 +480,8 @@ class ScreenshotResource(resource.Resource):
         if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
             import pynotify
             # 48x48 image by default looks bad in Ubuntu
-            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
-
+            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka512x512-take.png")) 
+            
             n = pynotify.Notification(_('Screenshot taken'), _('%s captured the screen' % (self.ip)), uri)
 
             n.set_timeout(1500)

@@ -65,11 +65,33 @@ def print_debug(*strings):
 
     print_message('DEBUG: %s' % (" - ".join(str(item) for item in strings)))
 
+def print_type(*strings):
+    """
+    Print type wrapper.
+
+    @type *strings: anything
+    @param *strings: Anything
+    """
+
+    print_message('DEBUG: %s' % (" - ".join(str(type(item)) for item in strings)))
+
+def print_dir(*strings):
+    """
+    Print dir wrapper.
+
+    @type *strings: anything
+    @param *strings: Anything
+    """
+
+    print_message('DEBUG: %s' % (" - ".join(str(dir(item)) for item in strings)))
+
 # Register them for global use
 __builtin__.print_m = print_message
 __builtin__.print_e = print_error
 __builtin__.print_w = print_warning
 __builtin__.print_d = print_debug
+__builtin__.print_t = print_type
+__builtin__.print_dir = print_dir
 
 class BaseMessage:
     """
