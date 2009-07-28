@@ -480,7 +480,7 @@ class ScreenshotResource(resource.Resource):
         if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
             import pynotify
             # 48x48 image by default looks bad in Ubuntu
-            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka512x512-take.png")) 
+            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
             
             n = pynotify.Notification(_('Screenshot taken'), _('%s captured the screen' % (self.ip)), uri)
 

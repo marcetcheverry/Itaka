@@ -1,13 +1,14 @@
 0.3 (Two years later, I am still here):
- * Fixed a fatal bug with some recent versions of Python/PyGTK
- * Fixed some minor window width issues with popular GTK themes
  * Added interface translations
+ * Added timestamps and enhanced error reporting to the log
  * Added a favicon to the server
  * Added RPM packages
  * Switch to GPLv3
- * Better error reporting on the main log
- * Better console help and internal functions
- * Don't clean out status labels when restarting server
+ * Fixed a fatal bug with some recent versions of Python/PyGTK affecting most distributions
+ * Fixed preference pane issues for low resolution displays and some minor issues with popular GTK themes
+ * Fixed a bug where screenshot files would be saved under the wrong extension and not erased after quitting
+ * Fixed duplication of Twisted reactor
+ * Better console help and handling of SIGINT
  * Don't check for system compatibility of Libnotify
  * Code cleanup towards PEP-8 compliance
  * Simplified and improved Makefile

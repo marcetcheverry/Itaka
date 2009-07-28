@@ -806,6 +806,8 @@ class Gui:
         # See configure-event signal of gtk.Widget
         # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
         if not self.preferences_expanded:
+            if ((gtk.gdk.screen_height() < 800) and self.expander.get_property("expanded")):
+                self.expander.set_expanded(False)
             if self.timeout_expand is not None:
                 """NOTE: GTK+ GtkWidget.size_request() method can give you the amount of size a widget will take
                 however, it has to be show()ned before. For our little hack, we show the vbox_preferences widgets
