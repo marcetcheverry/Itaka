@@ -403,7 +403,7 @@ class Gui:
         self.button_start_stop.connect('toggled', self.button_start_server)
 
         self.button_preferences = gtk.Button('Preferences', gtk.STOCK_PREFERENCES)
-        self.button_preferences.connect('clicked', self.expand_preferences)
+        self.button_preferences.connect('clicked', self._expand_preferences)
 
         # Set up some variables for our timeouts/animations
         self.preferences_hidden = False
@@ -476,7 +476,7 @@ class Gui:
         self.button_log_clear_image = gtk.Image()
         self.button_log_clear_image.set_from_stock(gtk.STOCK_CLEAR, gtk.ICON_SIZE_BUTTON)
         self.button_log_clear.set_image(self.button_log_clear_image)
-        self.button_log_clear.connect('clicked', self.clear_logger)
+        self.button_log_clear.connect('clicked', self._clear_logger)
 
         self.button_log_pause = gtk.ToggleButton(_('Pause'))
         self.button_log_pause_image = gtk.Image()
@@ -496,7 +496,7 @@ class Gui:
         self.expander_size_finalized = False
         self.expander = gtk.Expander(None)
         self.expander.set_label_widget(self.label_log_box)
-        self.expander.connect('notify::expanded', self.expand_logger)
+        self.expander.connect('notify::expanded', self._expand_logger)
 
         self.vbox.pack_start(self.hbox_status, False, False, 4)
         self.vbox.pack_start(self.expander, False, False, 0)
@@ -622,7 +622,7 @@ class Gui:
                 self.combo_preferences_screenshot.set_active(0)
 
         self.button_preferences_close = gtk.Button('Close', gtk.STOCK_SAVE)
-        self.button_preferences_close.connect('clicked', self.contractpreferences)
+        self.button_preferences_close.connect('clicked', self._contract_preferences)
         
         self.button_preferences_about = gtk.Button('About', gtk.STOCK_ABOUT)
         self.button_preferences_about.connect('clicked', self.about)
@@ -797,7 +797,7 @@ class Gui:
             except:
                 self.log.failure(('Gui', '_save_preferences'), _('Could not save preferences'), 'ERROR')
 
-    def expand_preferences(self, *args):
+    def _expand_preferences(self, *args):
         """
         Expands the window for preferences
         """
@@ -806,8 +806,10 @@ class Gui:
         # See configure-event signal of gtk.Widget
         # start timer, resize, catch configure-notify, set up idle handler, when idle resize to what the size should be at this point of time, repeat
         if not self.preferences_expanded:
-            if ((gtk.gdk.screen_height() < 800) and self.expander.get_property("expanded")):
+            # Close log in small screen displays
+            if ((gtk.gdk.screen_height() < self.itaka_globals.min_screen_height) and self.expander.get_property("expanded")):
                 self.expander.set_expanded(False)
+
             if self.timeout_expand is not None:
                 """NOTE: GTK+ GtkWidget.size_request() method can give you the amount of size a widget will take
                 however, it has to be show()ned before. For our little hack, we show the vbox_preferences widgets
@@ -852,11 +854,14 @@ class Gui:
                     self.timeout_expand = None
                     return False
             else:
-                self.timeout_expand = gobject.timeout_add(30, self.expand_preferences)
+                self.timeout_expand = gobject.timeout_add(30, self._expand_preferences)
 
-    def contractpreferences(self, *args):
+    def _contract_preferences(self, save):
         """
         Contracts the window of preferences
+
+        @type args: unknown
+        @param args: gtk.Widget or "False" if you don't want to save preferences, just hide the pane
         """
 
         if self.timeout_contract is not None:
@@ -882,13 +887,15 @@ class Gui:
                 self.expander.size_finalized = False
                 self.button_preferences.set_sensitive(True)
                 
-                # Save our settings 
-                self._save_preferences()
+                # Save our settings (but not if we are on small displays and we just want to hide the pane)
+                if save is not False:
+                    print_m("Saving")
+                    self._save_preferences()
 
                 self.timeout_contract = None
                 return False
         else:
-            self.timeout_contract = gobject.timeout_add(30, self.contractpreferences)
+            self.timeout_contract = gobject.timeout_add(30, self._contract_preferences, save)
 
     def _window_size_changed(self, widget=None, data=None):
         """
@@ -916,10 +923,10 @@ class Gui:
         Display the menu on the status icon
         
         @type widget: instance
-        @SAVE widget: gtk.Widget
+        @param widget: gtk.Widget
 
         @type button: int
-        @SAVE button: The button pressed.
+        @param button: The button pressed.
 
         @type time: unknown
         @param time: Unknown
@@ -1011,7 +1018,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.about_dialog.run()
         self.about_dialog.destroy()
 
-    def expand_logger(self, expander, params):
+    def _expand_logger(self, expander, params):
         """
         Expand or contract the logger
         
@@ -1023,6 +1030,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         """
 
         if self.expander.get_expanded():
+            # Close preferences pane in small screen displays
+            if ((gtk.gdk.screen_height() < self.itaka_globals.min_screen_height) and self.preferences_expanded):
+                # Tell it to not save
+                self._contract_preferences(False)
+
             # Show the debugvbox() and it's subwidgets
             self.vbox_log.show_all()
 
@@ -1032,7 +1044,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
             self.window.resize(self.window.initial_size[0], self.window.initial_size[1])
         return
 
-    def clear_logger(self, *args):
+    def _clear_logger(self, *args):
         """
         Clear the log
         """

@@ -48,6 +48,8 @@ except ImportError:
 config_instance = ConfigParser.ConfigParser()
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'share/images/')
 system = os.name
+#: Minimum screen height to display all panes of Itaka
+min_screen_height = 800
 
 #: To be changed on install to specify where the installed files actually are
 image_prefix = '/usr/share/itaka/images/'
