@@ -177,10 +177,10 @@ class GuiLog:
                 self.gui.status_icon_timeout_blink()
                 self.gui.window.move(self.gui.window_position[0], self.gui.window_position[1])
 
-            if not self.expander.get_property("sensitive"):
-                self.expander.set_sensitive(True)
-            if not self.expander.get_property("expanded"):
-                self.expander.set_expanded(True)
+            if not self.gui.expander.get_property("sensitive"):
+                self.gui.expander.set_sensitive(True)
+            if not self.gui.expander.get_property("expanded"):
+                self.gui.expander.set_expanded(True)
             
             # Stop the server
             if self.gui.server.listening():
