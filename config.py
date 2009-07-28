@@ -80,7 +80,7 @@ else:
     save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
 #: Default HTML headers and footers for the server.
-# Putting <meta http-equiv="Refresh" content="5; url=http://localhost:8000"> is very useful for debugging
+# Putting <meta http-equiv="Refresh" content="5; url=/"> is very useful for debugging
 head_html = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
