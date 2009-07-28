@@ -311,7 +311,7 @@ class Gui:
         self.window.set_title('Itaka')
         self.window.set_icon(self.icon_pixbuf)
         self.window.set_border_width(6)
-        self.window.set_default_size(400, 1)
+        self.window.set_default_size(425, 1)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window_position = self.window.get_position()
 
@@ -1149,13 +1149,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         try:
             self.server.start_server(self.configuration['server']['port'])
         except error.ItakaServerCannotListenError, e:
-            self.log.failure(('Gui', 'start_server'), (_('Failed to start server: port %s already in use' % e.value.port), _('Failed to start server: %s') % e.value), 'ERROR')
+            self.log.failure(('Gui', 'start_server'), (_('Failed to start server on port %(port)s: %(errorstring)s' % {'port': e.value.port, 'errorstring': e.value.args[-1][-1]}), _('Failed to start server: %s') % e.value), 'ERROR')
             self.button_start_stop.set_active(False)
             return
 
         self.server.add_log_observer(self.log.twisted_observer)
 
-        if self.configuration['server']['authytentication']:
+        if self.configuration['server']['authentication']:
             serverstock = 'STOCK_DIALOG_AUTHENTICATION'
             serverstring = _('Secure server')
         else:
