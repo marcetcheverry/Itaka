@@ -39,6 +39,7 @@ try:
     from twisted.internet import reactor
 except ImportError:
     print_e(_('Could not import Twisted Network Framework'))
+    traceback.print_exc()
     sys.exit(1)
 
 try:
@@ -106,7 +107,7 @@ class GuiLog:
         else:
             self.msg = args['message'][0]
 
-        self._write_detailed_log(self.msg, False)
+        self._write_server_log(self.msg, False)
 
     def message(self, message, icon=None):
         """
@@ -291,6 +292,26 @@ class GuiLog:
         # Automatically scroll. Use wrap until fix
         self.gui.log_details_text_view.scroll_mark_onscreen(self.gui.log_details_buffer.get_insert())
 
+    def _write_server_log(self, message, bold=True):
+        """
+        Private method to write to the server log Gui widget
+
+        @type message: str
+        @param message: Message to be inserted
+
+        @type bold: bool
+        @param bold: Whether the text will be inserted as bold
+        """
+
+        message = message + '\r'
+
+        if bold:
+            self.gui.log_server_buffer.insert_with_tags_by_name(self.gui.log_server_buffer.get_end_iter(), message, 'bold-text')
+        else:
+            self.gui.log_server_buffer.insert_at_cursor(message, len(message))
+
+        # Automatically scroll. Use wrap until fix
+        self.gui.log_server_text_view.scroll_mark_onscreen(self.gui.log_server_buffer.get_insert())
 
 class Gui:
     """
@@ -433,6 +454,7 @@ class Gui:
 
         self.label_log_events = gtk.Label(_('Events'))
         self.label_log_details = gtk.Label(_('Details'))
+        self.label_log_server = gtk.Label(_('Server'))
 
         self.scroll_log_events = gtk.ScrolledWindow()
         self.scroll_log_events.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -468,8 +490,20 @@ class Gui:
         self.log_details_buffer.create_tag ('bold-text', weight = pango.WEIGHT_BOLD)
         self.scroll_log_details.add(self.log_details_text_view)
 
+        self.scroll_log_server = gtk.ScrolledWindow()
+        self.scroll_log_server.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.scroll_log_server.set_shadow_type(gtk.SHADOW_NONE)
+        self.log_server_text_view = gtk.TextView()
+        self.log_server_text_view.set_wrap_mode(gtk.WRAP_WORD)
+        self.log_server_text_view.set_editable(False)
+        self.log_server_text_view.set_size_request(-1, 160)
+        self.log_server_buffer = self.log_server_text_view.get_buffer()
+        self.log_server_buffer.create_tag ('bold-text', weight = pango.WEIGHT_BOLD)
+        self.scroll_log_server.add(self.log_server_text_view)
+
         self.notebook_log.append_page(self.scroll_log_events, self.label_log_events)
         self.notebook_log.append_page(self.scroll_log_details, self.label_log_details)
+        self.notebook_log.append_page(self.scroll_log_server, self.label_log_server)
 
         self.hbox_log = gtk.HBox(False, 0)
         self.button_log_clear = gtk.Button(_('Clear'))
@@ -484,8 +518,15 @@ class Gui:
         self.button_log_pause.set_image(self.button_log_pause_image)
         self.button_log_pause.connect('toggled', self.button_pause_log)
 
-        self.hbox_log.pack_end(self.button_log_clear, False, False, 4)
-        self.hbox_log.pack_end(self.button_log_pause, False, False, 4)
+        self.button_log_save = gtk.ToggleButton(_('Save'))
+        self.button_log_save_image = gtk.Image()
+        self.button_log_save_image.set_from_stock(gtk.STOCK_SAVE, gtk.ICON_SIZE_BUTTON)
+        self.button_log_save.set_image(self.button_log_pause_image)
+        #self.button_log_save.connect('toggled', self._save_log)
+
+        self.hbox_log.pack_start(self.button_log_clear, False, False, 4)
+        self.hbox_log.pack_start(self.button_log_pause, False, False, 4)
+        self.hbox_log.pack_end(self.button_log_save, False, False, 4)
 
         self.vbox_log.pack_start(self.notebook_log, False, False, 4)
         self.vbox_log.pack_start(self.hbox_log, False, False, 4)
@@ -508,7 +549,7 @@ class Gui:
         self.vbox_preferences_items.set_border_width(2)
         
         # Create our Hboxes
-        for n in xrange(1, 10+1):
+        for n in xrange(1, 11+1):
             setattr(self, 'hbox_preferences_%d' % (n), gtk.HBox(False, 0))
 
         self.frame_preference_settings = gtk.Frame()
@@ -555,6 +596,10 @@ class Gui:
             self.label_preferences_notifications.set_justify(gtk.JUSTIFY_LEFT)
             self.label_preferences_notifications.set_alignment(0, 0.50)
 
+        self.label_preferences_timestamp = gtk.Label(_('Show timestamp in log'))
+        self.label_preferences_timestamp.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_timestamp.set_alignment(0, 0.50)
+            
         self.adjustment_preferences_port = gtk.Adjustment(float(self.configuration['server']['port']), 1024, 65535, 1, 0, 0)
         self.spin_preferences_port = gtk.SpinButton(self.adjustment_preferences_port)
         self.spin_preferences_port.set_numeric(True)
@@ -612,6 +657,12 @@ class Gui:
             else: 
                 self.check_preferences_notifications.set_active(0)
 
+        self.check_preferences_timestamp = gtk.CheckButton()
+##        if self.configuration['log']['timestamp']:
+##            self.check_preferences_notifications.set_active(1)
+##        else: 
+##            self.check_preferences_notifications.set_active(0)
+
         if not self.itaka_globals.system == 'nt':
             self.combo_preferences_screenshot = gtk.combo_box_new_text()
             self.combo_preferences_screenshot.append_text(_('Fullscreen'))
@@ -651,8 +702,11 @@ class Gui:
             self.hbox_preferences_9.pack_start(self.label_preferences_notifications, False, False, 12)
             self.hbox_preferences_9.pack_end(self.check_preferences_notifications, False, False, 7)
 
-        self.hbox_preferences_10.pack_start(self.button_preferences_about, False, False, 7)
-        self.hbox_preferences_10.pack_end(self.button_preferences_close, False, False, 7)
+        self.hbox_preferences_10.pack_start(self.label_preferences_timestamp, False, False, 12)
+        self.hbox_preferences_10.pack_end(self.check_preferences_timestamp, False, False, 7)
+
+        self.hbox_preferences_11.pack_start(self.button_preferences_about, False, False, 7)
+        self.hbox_preferences_11.pack_end(self.button_preferences_close, False, False, 7)
 
         self.vbox_preferences_items.pack_start(self.hbox_preferences_1, False, False, 0)
         self.vbox_preferences_items.pack_start(self.hbox_preferences_2, False, False, 0)
@@ -669,9 +723,11 @@ class Gui:
         if self.itaka_globals.notify_available: 
             self.vbox_preferences_items.pack_start(self.hbox_preferences_9, False, False, 0)
 
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_10, False, False, 0)
+
         self.frame_preference_settings.add(self.vbox_preferences_items)
         self.vbox_preferences.pack_start(self.frame_preference_settings, False, False, 0)
-        self.vbox_preferences.pack_start(self.hbox_preferences_10, False, False, 4)
+        self.vbox_preferences.pack_start(self.hbox_preferences_11, False, False, 4)
 
         self.window.add(self.vbox)
         self.window.show_all()
@@ -1050,6 +1106,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
 
         self.log_events_store.clear()
         self.log_details_buffer.set_text("")
+        self.log_server_buffer.set_text("")
 
     def button_pause_log(self, widget):
         """
@@ -1071,7 +1128,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         Pause Gui log output
         """
 
-        self.log_events_store.append([self.log_events_tree_view.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging paused')])
+        self.log_events_store.append([self.log_events_tree_view.render_icon(stock_id=gtk.STOCK_MEDIA_PAUSE, size=gtk.ICON_SIZE_MENU, detail=None), _('%s Logging paused' %(datetime.datetime.now().strftime(self.configuration['log']['logtimeformat'])))])
         
         self.log_events_tree_view.set_sensitive(False)
         self.log_details_text_view.set_sensitive(False)
@@ -1090,10 +1147,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.server.add_log_observer(self.log.twisted_observer)
         if (foreign):
             self.button_log_pause.set_active(False)
-        self.log_details_text_view.set_sensitive(True)
+            
         self.log_events_tree_view.set_sensitive(True)
+        self.log_details_text_view.set_sensitive(True)
+        self.log_server_text_view.set_sensitive(True)
 
-        self.log_events_store.append([self.log_events_tree_view.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), _('Logging resumed')])
+        self.log_events_store.append([self.log_events_tree_view.render_icon(stock_id=gtk.STOCK_MEDIA_PLAY, size=gtk.ICON_SIZE_MENU, detail=None), _('%s Logging resumed' %(datetime.datetime.now().strftime(self.configuration['log']['logtimeformat'])))])
 
         self.log_is_paused = False
 
