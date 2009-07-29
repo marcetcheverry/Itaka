@@ -2,7 +2,6 @@
  * Added interface translations
  * Added timestamps and enhanced error reporting to the log
  * Added a favicon to the server
- * Added RPM packages
  * Switch to GPLv3
  * Fixed a fatal bug with some recent versions of Python/PyGTK affecting most distributions
  * Fixed preference pane issues for low resolution displays and some minor issues with popular GTK themes

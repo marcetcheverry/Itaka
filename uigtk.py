@@ -518,10 +518,10 @@ class Gui:
         self.button_log_pause.set_image(self.button_log_pause_image)
         self.button_log_pause.connect('toggled', self.button_pause_log)
 
-        self.button_log_save = gtk.ToggleButton(_('Save'))
+        self.button_log_save = gtk.Button(_('Save'))
         self.button_log_save_image = gtk.Image()
         self.button_log_save_image.set_from_stock(gtk.STOCK_SAVE, gtk.ICON_SIZE_BUTTON)
-        self.button_log_save.set_image(self.button_log_pause_image)
+        self.button_log_save.set_image(self.button_log_save_image)
         #self.button_log_save.connect('toggled', self._save_log)
 
         self.hbox_log.pack_start(self.button_log_clear, False, False, 4)

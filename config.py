@@ -92,7 +92,6 @@ else:
     if os.environ.get('HOME'):
         save_path = os.path.join(os.environ.get('HOME'), '.itaka')
 
-print save_path
 #: Default HTML headers and footers for the server.
 # Putting <meta http-equiv="Refresh" content="5; url=/"> is very useful for debugging
 head_html = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
