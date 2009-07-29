@@ -549,7 +549,7 @@ class Gui:
         self.vbox_preferences_items.set_border_width(2)
         
         # Create our Hboxes
-        for n in xrange(1, 11+1):
+        for n in xrange(1, 12+1):
             setattr(self, 'hbox_preferences_%d' % (n), gtk.HBox(False, 0))
 
         self.frame_preference_settings = gtk.Frame()
@@ -592,9 +592,13 @@ class Gui:
             self.label_preferences_screenshot.set_alignment(0, 0.50)
 
         if self.itaka_globals.notify_available: 
-            self.label_preferences_notifications = gtk.Label(_('Notifications'))
+            self.label_preferences_notifications = gtk.Label(_('Desktop notifications'))
             self.label_preferences_notifications.set_justify(gtk.JUSTIFY_LEFT)
             self.label_preferences_notifications.set_alignment(0, 0.50)
+            
+        self.label_preferences_notifications_sound = gtk.Label(_('Audio notifications'))
+        self.label_preferences_notifications_sound.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_preferences_notifications_sound.set_alignment(0, 0.50)
 
         self.label_preferences_timestamp = gtk.Label(_('Show timestamp in log'))
         self.label_preferences_timestamp.set_justify(gtk.JUSTIFY_LEFT)
@@ -663,6 +667,12 @@ class Gui:
 ##        else: 
 ##            self.check_preferences_notifications.set_active(0)
 
+        self.check_preferences_notifications_sound = gtk.CheckButton()
+##        if self.configuration['log']['timestamp']:
+##            self.check_preferences_notifications.set_active(1)
+##        else: 
+##            self.check_preferences_notifications.set_active(0)
+
         if not self.itaka_globals.system == 'nt':
             self.combo_preferences_screenshot = gtk.combo_box_new_text()
             self.combo_preferences_screenshot.append_text(_('Fullscreen'))
@@ -702,11 +712,14 @@ class Gui:
             self.hbox_preferences_9.pack_start(self.label_preferences_notifications, False, False, 12)
             self.hbox_preferences_9.pack_end(self.check_preferences_notifications, False, False, 7)
 
-        self.hbox_preferences_10.pack_start(self.label_preferences_timestamp, False, False, 12)
-        self.hbox_preferences_10.pack_end(self.check_preferences_timestamp, False, False, 7)
+        self.hbox_preferences_10.pack_start(self.label_preferences_notifications_sound, False, False, 12)
+        self.hbox_preferences_10.pack_end(self.check_preferences_notifications_sound, False, False, 7)
 
-        self.hbox_preferences_11.pack_start(self.button_preferences_about, False, False, 7)
-        self.hbox_preferences_11.pack_end(self.button_preferences_close, False, False, 7)
+        self.hbox_preferences_11.pack_start(self.label_preferences_timestamp, False, False, 12)
+        self.hbox_preferences_11.pack_end(self.check_preferences_timestamp, False, False, 7)
+
+        self.hbox_preferences_12.pack_start(self.button_preferences_about, False, False, 7)
+        self.hbox_preferences_12.pack_end(self.button_preferences_close, False, False, 7)
 
         self.vbox_preferences_items.pack_start(self.hbox_preferences_1, False, False, 0)
         self.vbox_preferences_items.pack_start(self.hbox_preferences_2, False, False, 0)
@@ -724,10 +737,11 @@ class Gui:
             self.vbox_preferences_items.pack_start(self.hbox_preferences_9, False, False, 0)
 
         self.vbox_preferences_items.pack_start(self.hbox_preferences_10, False, False, 0)
+        self.vbox_preferences_items.pack_start(self.hbox_preferences_11, False, False, 0)
 
         self.frame_preference_settings.add(self.vbox_preferences_items)
         self.vbox_preferences.pack_start(self.frame_preference_settings, False, False, 0)
-        self.vbox_preferences.pack_start(self.hbox_preferences_11, False, False, 4)
+        self.vbox_preferences.pack_start(self.hbox_preferences_12, False, False, 4)
 
         self.window.add(self.vbox)
         self.window.show_all()

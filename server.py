@@ -487,6 +487,31 @@ class ScreenshotResource(resource.Resource):
             n.set_timeout(1500)
             n.attach_to_status_icon(self.gui.status_icon)
             n.show()
+        # if self.configuration['server']['notifysound']
+        if self.itaka_globals.platform == 'Windows':
+            import winsound
+            # ASYNC lets the program continue and does not wait for end of play.
+            winsound.PlaySound(os.path.join(self.itaka_globals.sound_dir, "snap.wav"), winsound.SND_FILENAME|winsound.SND_ASYNC)
+        elif self.itaka_globals.platform == 'Linux':
+               from wave import open as waveOpen
+               from ossaudiodev import open as ossOpen
+               s = waveOpen(os.path.join(self.itaka_globals.sound_dir, "snap.wav"),'rb')
+               (nc,sw,fr,nf,comptype, compname) = s.getparams( )
+               dsp = ossOpen('/dev/dsp','w')
+               try:
+                 from ossaudiodev import AFMT_S16_NE
+               except ImportError:
+                 if byteorder == "little":
+                   AFMT_S16_NE = ossaudiodev.AFMT_S16_LE
+                 else:
+                   AFMT_S16_NE = ossaudiodev.AFMT_S16_BE
+               dsp.setparameters(AFMT_S16_NE, nc, fr)
+               data = s.readframes(nf)
+               s.close()
+               dsp.write(data)
+               dsp.close()
+
+        
         self.gui.update_gui(self.counter, self.ip, self.time)
 
     def render_GET(self, request):

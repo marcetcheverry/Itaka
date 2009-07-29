@@ -26,6 +26,7 @@ __version__ = '0.3'
 __revision__ = '$Rev$'
 
 import os
+import platform
 import sys
 import ConfigParser
 import shutil
@@ -47,7 +48,11 @@ except ImportError:
 
 config_instance = ConfigParser.ConfigParser()
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'share/images/')
+sound_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), 'share/sounds/')
 system = os.name
+# We need something more specific 
+platform = platform.system()
+
 #: Minimum screen height to display all panes of Itaka
 min_screen_height = 800
 
@@ -74,11 +79,20 @@ console_verbosity = {'normal': False, 'debug': False, 'quiet': False}
 #: Globally acessable configuration values
 configuration_values = {}
 
-if os.environ.get('HOME'):
-    save_path = os.path.join(os.environ.get('HOME'), '.itaka')
-else:
-    save_path = os.environ.get('TMP') or os.environ.get('TEMP')
+# Second best choice, TMP/TEMP on most systems
+save_path = os.environ.get('TMP') or os.environ.get('TEMP')
 
+# Try APPDATA on Windows or $HOME on POSIX
+if (system == 'nt'):
+    if os.environ.get('APPDATA'):
+                save_path = os.path.join(os.environ.get('APPDATA'), 'itaka')
+    elif os.environ.get('HOME'):
+                save_path = os.path.join(os.environ.get('HOME'), 'itaka')
+else:
+    if os.environ.get('HOME'):
+        save_path = os.path.join(os.environ.get('HOME'), '.itaka')
+
+print save_path
 #: Default HTML headers and footers for the server.
 # Putting <meta http-equiv="Refresh" content="5; url=/"> is very useful for debugging
 head_html = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -162,10 +176,10 @@ class ConfigParser:
             else:
                 self.config_file = os.path.join(os.environ['HOME'], '.itaka/itaka.conf')
         elif (system == 'nt'):
-            if not (os.path.exists(os.path.join(os.environ['APPDATA'], 'itaka/itaka.ini'))):
-                self.create(os.path.join(os.environ['APPDATA'], 'itaka/itaka.ini'))
+            if not (os.path.exists(os.path.join(os.environ['APPDATA'], 'Itaka/config.ini'))):
+                self.create(os.path.join(os.environ['APPDATA'], 'Itaka/config.ini'))
             else:
-                self.config_file = os.path.join(os.environ['APPDATA'], 'itaka/itaka.ini')
+                self.config_file = os.path.join(os.environ['APPDATA'], 'Itaka/config.ini')
         else:
             # Generic path
             if not os.path.exists(self.config_file): 
