@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=Itaka Screenshot Server
 Name[es]=Servidor de pantallas Itaka
 Exec=itaka
@@ -8,7 +7,7 @@ GenericName[es]=Servidor de pantallas por demanda
 Comment=Screenshot server
 Comment[es]=Servidor de capturas de pantalla
 StartupNotify=true
-Icon=itaka.png
+Icon=itaka
 Terminal=false
 Type=Application
-Categories=GNOME;Application;Network;
+Categories=Network;Monitor;GTK;
