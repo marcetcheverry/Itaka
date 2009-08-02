@@ -1,3 +1,6 @@
+0.2.2:
+ * Fixed a fatal bug with some recent versions of Python/PyGTK affecting most distributions
+
 0.2.1: 
  * Fixed a serious security bug in which /screenshot prompted no auth. Also
  fixed sending the wrong Content-Lenght for the screenshot. Report Itaka

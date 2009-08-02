@@ -366,7 +366,7 @@ class Gui:
 
         self.box.pack_start(self.itakaLogo, False, False, 35)
 
-        self.buttonStartstop = gtk.ToggleButton('Start', gtk.STOCK_PREFERENCES)
+        self.buttonStartstop = gtk.ToggleButton('Start')
         self.startstopimage = gtk.Image()
 
         self.startstopimage.set_from_stock(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_BUTTON)
