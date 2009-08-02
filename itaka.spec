@@ -25,7 +25,7 @@ It features the following:
  * Basic HTTP authentication.
  * Simple manipulation of the screenshot through scaling and quality 
    adjustments.
- * Very polished GUI with notifications using Libnotify.
+ * Desktop notifications.
 
 %prep
 %setup -q
