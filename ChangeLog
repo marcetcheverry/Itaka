@@ -3,7 +3,6 @@
  * Added timestamps and enhanced error reporting to the log
  * Added a favicon to the server
  * Switch to GPLv3
- * Fixed a fatal bug with some recent versions of Python/PyGTK affecting most distributions
  * Fixed preference pane issues for low resolution displays and some minor issues with popular GTK themes
  * Fixed a bug where screenshot files would be saved under the wrong extension and not erased after quitting
  * Fixed duplication of Twisted reactor
@@ -11,6 +10,9 @@
  * Don't check for system compatibility of Libnotify
  * Code cleanup towards PEP-8 compliance
  * Simplified and improved Makefile
+
+0.2.2:
+ * Fixed a fatal bug with Python 2.6/PyGTK 2.14
 
 0.2.1:
  * Fixed a serious security bug in which /screenshot prompted no auth. Also

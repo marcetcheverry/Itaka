@@ -1,13 +1,21 @@
-itaka (1.0-1) unstable; urgency=low
+itaka (0.2.2-1) unstable; urgency=high
 
-  * Pulled 1.0 from upstream.
+  * Pulled 0.2.2 from upstream
 
- -- Marc E. <santusmarc@users.sourceforge.net>  Tue,  27 Jun 2007 18:01:13 -0700
+ -- Marc E. <santusmarc@users.sourceforge.net>  Sat, 01 Aug 2009 19:06:15 -0700
+
+itaka (0.2.1-1) unstable; urgency=high
+
+  * Pulled 0.2.1 from upstream.
+
+ -- Marc E. <santusmarc@users.sourceforge.net>  Thu, 19 Jul 2007 09:12:13 -0700
+
 itaka (0.2-1) unstable; urgency=low
 
   * Pulled 0.2 from upstream.
 
  -- Marc E. <santusmarc@users.sourceforge.net>  Tue,  27 Jun 2007 18:01:13 -0700
+
 itaka (0.1-1) unstable; urgency=low
 
   * Initial release

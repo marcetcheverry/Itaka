@@ -42,6 +42,8 @@ To uninstall, once again as root type 'make uninstall'
 To create the Debian package simply do:
 
     # Make sure you have your gpg keys and debian development environment correctly setup
+    # You must also package the itaka source as a tarball per debian guidelines.
+
     debuild
 
 4. DOCUMENTATION:
