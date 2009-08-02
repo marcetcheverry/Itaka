@@ -15,7 +15,7 @@
 # along with Itaka; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Copyright 2003-2007 Marc E.
+# Copyright 2003-2009 Marc E.
 # http://itaka.jardinpresente.com.ar
 #
 # $Id$
@@ -933,10 +933,10 @@ class Gui:
         self.aboutdialog.set_transient_for(self.window)
         self.aboutdialog.set_name('Itaka')
         self.aboutdialog.set_version(self.itakaglobals.version)
-        self.aboutdialog.set_copyright(u'© 2003-2007 Marc E.')
+        self.aboutdialog.set_copyright(u'© 2003-2009 Marc E.')
         self.aboutdialog.set_comments('Screenshooting de mercado.')
         self.aboutdialog.set_authors(['Marc E. <santusmarc@users.sourceforge.net>', 'Kurt Erickson <psychogenicshk@users.sourceforge.net> (Packaging)'])
-        self.aboutdialog.set_artists(['Marc E. <santusmarc@gmail.com>', 'Tango Project (http://tango.freedesktop.org)'])
+        self.aboutdialog.set_artists(['Marc E. <santusmarc@users.sourceforge.net>', 'Tango Project (http://tango.freedesktop.org)'])
         self.aboutdialog.set_license('''Itaka is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or

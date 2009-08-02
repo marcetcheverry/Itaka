@@ -1,9 +1,9 @@
 Source: itaka
 Section: web
 Priority: extra
-Maintainer: Marc E. <santusmarc@gmail.com>
+Maintainer: Marc E. <santusmarc@users.sourceforge.net>
 Build-Depends: imagemagick, docbook-to-man, python, debhelper (>= 5.0.37.2)
-Standards-Version: 3.7.2
+Standards-Version: 3.8.0
 
 Package: itaka
 Architecture: all

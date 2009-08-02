@@ -1,8 +1,8 @@
 ?package(itaka): \
     needs="X11" \
-    section="Apps/Net" \
+    section="Applications/Network/Monitoring" \
     title="Itaka" \
     command="/usr/bin/itaka" \
     hints="screenshooting" \
-    icon="/usr/share/pixmaps/itaka.xpm" \
+    icon32x32="/usr/share/pixmaps/itaka.xpm" \
     icon16x16="/usr/share/pixmaps/itaka16x16.xpm"
