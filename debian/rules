@@ -53,7 +53,7 @@ install: build
 
 	# And other miscellaneous tasks
 	/usr/bin/convert share/images/itaka32x32.png debian/itaka/usr/share/pixmaps/itaka.xpm
-	/usr/bin/convert share/images/itaka.png -resize 16x16 debian/itaka/usr/share/pixmaps/itaka16x16.xpm
+	/usr/bin/convert share/images/itaka16x16.png debian/itaka/usr/share/pixmaps/itaka16x16.xpm
 
 # Build architecture-independent files here.
 binary-arch: build install

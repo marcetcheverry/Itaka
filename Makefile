@@ -1,4 +1,3 @@
-PYTHON ?= python2.4
 INSTALL ?= install
 RM ?= rm
 MSGFMT ?= msgfmt
