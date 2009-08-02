@@ -1,20 +1,19 @@
 Summary: On-demand screenshooting server
 Name: itaka
-Version: 0.2.2
-Release: 1
+Version: 0.2.1
+Release: 2
 License: GPL
 Group: Applications/Communications
 URL: http://www.jardinpresente.com.ar/trac/itaka/
 
 Packager: Kurt Erickson <psychogenicshk@users.sourceforge.net>
 
-Source: http://internap.dl.sourceforge.net/sourceforge/itaka/itaka-0.2.2.tar.bz2
+Source: http://internap.dl.sourceforge.net/sourceforge/itaka/itaka-0.2.1.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 Requires: python >= 2.3
 Requires: pygtk2 >= 2.10
 Requires: python-twisted
-Requires: notify-python
 
 %description
 Itaka is a on-demand screenshooting server based on the HTTP protocol.
@@ -42,12 +41,11 @@ cd $RPM_BUILD_ROOT%{_prefix}/bin
 ln -s ../lib/itaka/itaka.py ./itaka
 
 %clean
-# Might want to add a make clean, since I've added it.
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS BUGS ChangeLog COPYING COPYRIGHT DOCUMENTATION HACKING README README.Debian TODO
+%doc AUTHORS BUGS ChangeLog COPYING COPYRIGHT DOCUMENTATION HACKING README README.Debian README.Windows TODO
 
 %{_prefix}/bin/itaka
 %{_prefix}/share/man/man1/itaka.1.gz
@@ -83,10 +81,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/lib/itaka/screenshot.pyc
 %{_prefix}/lib/itaka/console.pyc
 
-
 %changelog
-* Thu Aug  1 2009 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.2-1
-- Pulled 0.2.2 from upstream.
+* Thu Jul 20 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.1-2
+- Removed notify-python dependancy (it's optional).
 
-* Thu Jul  19 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.1-1
+* Thu Jul 19 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.1-1
 - Pulled 0.2.1 from upstream.
+
+* Wed Jul  4 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2-1
+- Initial package release.
