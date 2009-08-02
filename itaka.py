@@ -15,7 +15,7 @@
 # along with Itaka; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# Copyright 2003-2007 Marc E.
+# Copyright 2003-2009 Marc E.
 # http://itaka.jardinpresente.com.ar
 #
 # $Id$ 

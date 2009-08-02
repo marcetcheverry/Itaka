@@ -11,7 +11,7 @@ setup (
     	description = 'On-demand screenshooting server',
     	version = '0.1',
     	author='Marc E.',
-    	author_email='santusmarc@gmail.com',
+    	author_email='santusmarc@users.sourceforge.net',
     	url='http://itaka.sourceforge.net',
 	
 	options = {

@@ -1,16 +1,14 @@
-This package was debianized by Marc E. <santusmarc@gmail.com> on
-Tue,  5 Jun 2007 18:01:13 -0700.
+This package was downloaded from from http://itaka.jardinpresente.com.ar
 
-It was downloaded from http://itaka.jardinpresente.com.ar
+Upstream Author: Marc E. <santusmarc@users.sourceforge.net>
+Debian Packager: Marc E. <santusmarc@users.sourceforge.net>
 
-Upstream Author: Marc E. <santusmarc@gmail.com>
-
-Copyright: 2003-2007 by Marc E.
+Copyright: 2003-2009 by Marc E.
 
 Released under the GNU GPL.
 Please see /usr/share/common-licenses/GPL for the full license.
 
-The Debian packaging is (C) 2007, Marc E. <santusmarc@gmail.com> and
+The Debian packaging is (C) 2009, Marc E. <santusmarc@users.sourceforge.net> and
 is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
 
 The icons included here are modified icons from the Tango Project and follow their 
