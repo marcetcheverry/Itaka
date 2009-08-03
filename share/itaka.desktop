@@ -1,12 +1,13 @@
 [Desktop Entry]
 Name=Itaka Screenshot Server
 Name[es]=Servidor de pantallas Itaka
+Name[fr]=Serveur de captures d'écran Itaka
 Exec=itaka
 GenericName=Itaka on-demand screenshot server
-GenericName[es]=Servidor de pantallas por demanda
+GenericName[es]=Servidor de pantallas por demanda Itaka
 GenericName[fr]=Itaka, serveur de captures d'écran à la demande
-Comment=Screenshot server
-Comment[es]=Servidor de capturas de pantalla
+Comment=Share your screen on-demand
+Comment[es]=Comparte tu pantalla
 Comment[fr]=Serveur de captures d'écran
 StartupNotify=true
 Icon=itaka
