@@ -25,14 +25,25 @@ REPLACELOCALEDIR = $(PREFIX)/share/itaka/locale/
 PYFILES := $(shell $(FIND) . -name "*.py" -print)
 
 install: 
+	# Replace images and locales directory
 	mv config.py config.py.old
 	mv itaka.py itaka.py.old
 	sed -e "s|/usr/share/itaka/images/|$(REPLACEIMAGESDIR)|g" config.py.old > config.py
 	sed -e "s|/usr/share/locale/|$(REPLACELOCALEDIR)|g" itaka.py.old > itaka.py
+	mv config.py.old config.py
+	mv itaka.py.old itaka.py
+	
 	$(INSTALL) -m 755 -d $(BINDIR) $(DATADIR) $(LIBDIR) $(IMAGESDIR) $(APPLICATIONSDIR) $(ICONDIR) $(MANDIR)
 	$(INSTALL) -m 755 *.py $(LIBDIR)
-	$(INSTALL) -m 644 share/images/* $(IMAGESDIR)
-	$(INSTALL) -m 644 share/images/itaka.png $(ICONDIR)
+
+	# We only need a few images
+	$(INSTALL) -m 644 share/images/itaka.png $(IMAGESDIR)
+	$(INSTALL) -m 644 share/images/itaka-take.png $(IMAGESDIR)
+	$(INSTALL) -m 644 share/images/itaka16x16-take.png $(IMAGESDIR)
+	$(INSTALL) -m 644 share/images/itaka64x64.png $(IMAGESDIR)
+
+	ln -sf share/images/itaka.png $(ICONDIR)/itaka.png
+
 	$(INSTALL) -m 644 share/itaka.desktop $(APPLICATIONSDIR)
 	gzip -9 -c share/itaka.1 > share/itaka.1.gz
 	$(INSTALL) -m 644 share/itaka.1.gz $(MANDIR)
@@ -40,8 +51,6 @@ install:
 	ln -sf  $(LIBDIR)/itaka.py $(BINDIR)/itaka
 	echo $( ls $(BINDIR)/itaka )
 	chmod +x $(BINDIR)/itaka
-	mv config.py.old config.py
-	mv itaka.py.old itaka.py
 	
 	for lang in locale/*; do 
 	    if [[ -e $lang/LC_MESSAGES/itaka.po ]]; then 
