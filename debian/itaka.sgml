@@ -46,6 +46,26 @@
 
   </refsect1>
   <refsect1>
+      <title>OPTIONS</title>
+      <para>Itaka follows the usual GNU command line syntax, with long options starting with two dashes (`-'). A summary of options is included below.</para>
+      <para>
+          <emphasis role="bold">-h, --help</emphasis>
+          Show summary of options.
+      </para>
+      <para>
+          <emphasis role="bold">-v, --version</emphasis>
+          Show the version of the program.
+      </para>
+      <para>
+          <emphasis role="bold">-r, --revision</emphasis>
+          Show the revision of the progam.
+      </para>
+      <para>
+          <emphasis role="strong">-d, --debug</emphasis>
+          Start in debug mode.
+      </para>
+    </refsect1>
+  <refsect1>
     <title>SEE ALSO</title>
 
     <para>/usr/share/doc/itaka/README.gz</para>
@@ -53,7 +73,7 @@
   <refsect1>
     <title>AUTHOR</title>
 
-    <para>Itaka was written by: Marc E. &dhemail;.</para>
+    <para>Itaka was written by: Marc E. <&dhemail>;.</para>
 
     <para>This manual page was written by &dhusername; &dhemail; for
       the &debian; system (but may be used by others).  Permission is
