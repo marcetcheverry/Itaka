@@ -36,7 +36,10 @@ install:
 	# We only need a few images
 	$(INSTALL) -m 644 share/images/itaka.png $(IMAGESDIR)
 	$(INSTALL) -m 644 share/images/itaka-take.png $(IMAGESDIR)
+	$(INSTALL) -m 644 share/images/itaka-secure.png $(IMAGESDIR)
+	$(INSTALL) -m 644 share/images/itaka-secure-take.png $(IMAGESDIR)
 	$(INSTALL) -m 644 share/images/itaka16x16-take.png $(IMAGESDIR)
+	$(INSTALL) -m 644 share/images/itaka16x16-secure-take.png $(IMAGESDIR)
 	$(INSTALL) -m 644 share/images/itaka64x64.png $(IMAGESDIR)
 
 	ln -sf $(IMAGESDIR)/itaka.png $(ICONDIR)/itaka.png
