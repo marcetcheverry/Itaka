@@ -420,7 +420,11 @@ class ScreenshotResource(resource.Resource):
 
         if self.configuration['server']['notify'] and self.itaka_globals.notifyavailable:
             import pynotify
-            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
+
+            if self.configuration['server']['authentication']:
+                uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-secure-take.png")) 
+            else:
+                uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
 
             n = pynotify.Notification('Screenshot taken', '%s requested screenshot' % (self.ip), uri)
 

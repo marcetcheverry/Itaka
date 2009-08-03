@@ -317,6 +317,7 @@ class Gui:
             self.statusIcon.set_from_pixbuf(gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure.png')))
         else:
             self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
+
         self.statusIcon.set_tooltip('Itaka')
         self.statusIcon.set_visible(True)
         self.statusIcon.connect('activate', self.statusicon_activate)
@@ -1290,10 +1291,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         
         if self.configuration['server']['authentication']:
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka-secure.png"))            
+            self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure.png'))
         else:
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, "itaka.png"))
+            self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka.png'))
 
-        self.statusIcon.set_from_pixbuf(self.icon_pixbuf)
         # Only run this event once
         return False
 
@@ -1316,7 +1318,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         self.ip = ip
         self.time = time
 
-        self.log.detailed_message('Screenshot served to %s' % (self.ip), 'Screenshot number %d served to %s' % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
+        if self.configuration['server']['authentication']:
+            self.log.detailed_message('Screenshot served to %s' % (self.ip), 'Screenshot number %d served to %s' % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-secure-take.png"))])
+        else:
+            self.log.detailed_message('Screenshot served to %s' % (self.ip), 'Screenshot number %d served to %s' % (self.counter, self.ip), ['pixbuf', gtk.gdk.pixbuf_new_from_file(os.path.join(self.itakaglobals.image_dir, "itaka16x16-take.png"))])
 
         self.labelServed.set_text('<b>Served</b>: %d' % (self.counter))
         self.labelServed.set_use_markup(True)
@@ -1327,9 +1332,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA''')
         # Show the camera image on tray and interface for 1.5 seconds
         if self.configuration['server']['authentication']:
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure-take.png'))
+            self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-secure-take.png'))
         else:
             self.itakaLogo.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
-        self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
+            self.statusIcon.set_from_file(os.path.join(self.itakaglobals.image_dir, 'itaka-take.png'))
         gobject.timeout_add(1500, self.set_standard_images)
 
         # Call the update timer function, and add a timer to update the GUI of its

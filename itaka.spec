@@ -1,14 +1,14 @@
 Summary: On-demand screenshooting server
 Name: itaka
-Version: 0.2.1
-Release: 2
+Version: 0.2.2
+Release: 1
 License: GPL
 Group: Applications/Communications
 URL: http://www.jardinpresente.com.ar/trac/itaka/
 
 Packager: Kurt Erickson <psychogenicshk@users.sourceforge.net>
 
-Source: http://internap.dl.sourceforge.net/sourceforge/itaka/itaka-0.2.1.tar.bz2
+Source: http://internap.dl.sourceforge.net/sourceforge/itaka/itaka-0.2.2.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 Requires: python >= 2.3
@@ -50,21 +50,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/bin/itaka
 %{_prefix}/share/man/man1/itaka.1.gz
 %{_prefix}/share/applications/itaka.desktop
-%{_prefix}/share/itaka/images/itaka16x16.png
-%{_prefix}/share/itaka/images/itaka-take.png
-%{_prefix}/share/itaka/images/itaka32x32.png
-%{_prefix}/share/itaka/images/itaka-secure-take.png
-%{_prefix}/share/itaka/images/itaka64x64-take.png
-%{_prefix}/share/itaka/images/itaka16x16-take.png
-%{_prefix}/share/itaka/images/itaka512x512-take.png
-%{_prefix}/share/itaka/images/itaka-secure.svg
-%{_prefix}/share/itaka/images/itaka.psd
-%{_prefix}/share/itaka/images/itaka64x64.png
-%{_prefix}/share/itaka/images/itaka512x512.png
 %{_prefix}/share/itaka/images/itaka.png
-%{_prefix}/share/itaka/images/itaka.svg
+%{_prefix}/share/itaka/images/itaka-take.png
 %{_prefix}/share/itaka/images/itaka-secure.png
-%{_prefix}/share/itaka/images/itaka-logo.png
+%{_prefix}/share/itaka/images/itaka-secure-take.png
+%{_prefix}/share/itaka/images/itaka16x16-take.png
+%{_prefix}/share/itaka/images/itaka16x16-secure-take.png
+%{_prefix}/share/itaka/images/itaka64x64.png
 %{_prefix}/share/pixmaps/itaka.png
 %{_prefix}/lib/itaka/uigtk.py
 %{_prefix}/lib/itaka/config.py
