@@ -70,9 +70,9 @@ clean:
 
 help:
 	@echo Usage:
-    	@echo make clean                - delete built modules and object files
-    	@echo make install              - install binaries into the official directories
-    	@echo make uninstall            - uninstall binaries from the official directories
-    	@echo make help                 - prints this help
-    	@echo
+	@echo make clean                - delete built modules and object files
+	@echo make install              - install binaries into the official directories
+	@echo make uninstall            - uninstall binaries from the official directories
+	@echo make help                 - prints this help
+	@echo
 
