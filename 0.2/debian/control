@@ -9,7 +9,7 @@ Standards-Version: 3.8.2
 
 Package: itaka
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-gtk2 (>= 2.10), python-twisted-web
+Depends: python (>= 2.3), python-gtk2 (>= 2.10), python-twisted-web
 Recommends: python-libnotify
 Description: On-demand screenshooting server
  Itaka is a on-demand screenshooting server based on the HTTP protocol.
