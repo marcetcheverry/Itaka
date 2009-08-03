@@ -56,7 +56,7 @@ uninstall:
 
 clean:
 	find . -name '*.pyc' -o -name '*.pyo' -exec rm {} \;
-	rm share/itaka.1.gz
+	if [ -a share/itaka.1.gz ]; then rm share/itaka.1.gz; fi
 
 help:
 	@echo Usage:
