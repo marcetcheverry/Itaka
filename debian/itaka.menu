@@ -2,6 +2,7 @@
     needs="X11" \
     section="Applications/Network/Monitoring" \
     title="Itaka" \
+    longtitle="Itaka Screenshot Server"
     command="/usr/bin/itaka" \
     hints="screenshooting" \
     icon32x32="/usr/share/pixmaps/itaka.xpm" \
