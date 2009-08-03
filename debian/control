@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Marc E. <santusmarc@users.sourceforge.net>
 Build-Depends: imagemagick, docbook-to-man, python, debhelper (>= 5.0.37.2)
 Build-Depends-Indep: python-support
-Homepage: http://itaka.sourceforge.net/
+Homepage: http://itaka.jardinpresente.com.ar
 Standards-Version: 3.8.2
 
 Package: itaka
