@@ -4,7 +4,7 @@ Version: 0.2.2
 Release: 1
 License: GPL
 Group: Applications/Communications
-URL: http://www.jardinpresente.com.ar/trac/itaka/
+URL: http://itaka.jardinpresente.com.ar/
 
 Packager: Kurt Erickson <psychogenicshk@users.sourceforge.net>
 
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/lib/itaka/console.pyc
 
 %changelog
+* Mon Aug  3 2009 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.2-1
+- Pulled 0.2.2 from upstream.
+
 * Thu Jul 20 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.1-2
 - Removed notify-python dependancy (it's optional).
 
