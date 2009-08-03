@@ -479,8 +479,12 @@ class ScreenshotResource(resource.Resource):
 
         if self.configuration['server']['notify'] and self.itaka_globals.notify_available:
             import pynotify
+
             # 48x48 image by default looks bad in Ubuntu
-            uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
+            if self.configuration['server']['authentication']:
+                uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-secure-take.png")) 
+            else:
+                uri = "file://" + (os.path.join(self.itaka_globals.image_dir, "itaka-take.png")) 
             
             n = pynotify.Notification(_('Screenshot taken'), _('%s captured the screen' % (self.ip)), uri)
 
@@ -493,6 +497,7 @@ class ScreenshotResource(resource.Resource):
             # ASYNC lets the program continue and does not wait for end of play.
             winsound.PlaySound(os.path.join(self.itaka_globals.sound_dir, "snap.wav"), winsound.SND_FILENAME|winsound.SND_ASYNC)
         elif self.itaka_globals.platform == 'Linux':
+                """
                from wave import open as waveOpen
                from ossaudiodev import open as ossOpen
                s = waveOpen(os.path.join(self.itaka_globals.sound_dir, "snap.wav"),'rb')
@@ -510,7 +515,7 @@ class ScreenshotResource(resource.Resource):
                s.close()
                dsp.write(data)
                dsp.close()
-
+               """
         
         self.gui.update_gui(self.counter, self.ip, self.time)
 
