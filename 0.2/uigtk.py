@@ -660,10 +660,10 @@ class Gui:
             self.configuration['screenshot']['format'] = 'jpeg'
 
         # Delete stale old screenshot
-        if (self.current_configuration['screenshot']['format'] != self.configuration['screenshot']['format']):
-            if os.path.exists(os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format']))): 
-                os.remove(os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format'])))
-                if self.itaka_globals.console_verbosity['debug']: print_m(_("Deleting stale screenshot file '%s'" % ((os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format']))))))
+        if (self.currentconfiguration['screenshot']['format'] != self.configuration['screenshot']['format']):
+            if os.path.exists(os.path.join(self.currentconfiguration['screenshot']['path'], 'itakashot.%s' % (self.currentconfiguration['screenshot']['format']))): 
+                os.remove(os.path.join(self.currentconfiguration['screenshot']['path'], 'itakashot.%s' % (self.currentconfiguration['screenshot']['format'])))
+                if self.itaka_globals.console_verbosity['debug']: print_m(_("Deleting stale screenshot file '%s'" % ((os.path.join(self.currentconfiguration['screenshot']['path'], 'itakashot.%s' % (self.currentconfiguration['screenshot']['format']))))))
 
         if self.itakaglobals.notifyavailable:
             notifyvalue = self.preferencesChecknotifications.get_active()
