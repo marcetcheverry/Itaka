@@ -4,7 +4,6 @@
  * Added a favicon to the server
  * Switch to GPLv3
  * Fixed preference pane issues for low resolution displays and some minor issues with popular GTK themes
- * Fixed a bug where screenshot files would be saved under the wrong extension and not erased after quitting
  * Fixed duplication of Twisted reactor
  * Better console help and handling of SIGINT
  * Don't check for system compatibility of Libnotify
@@ -14,6 +13,7 @@
  * Fixed a fatal bug with Python 2.6/PyGTK 2.14
  * Fixed an issue with the right images showing up in notifications
  * Fixed an fatal issue with starting Itaka from unexistant directories
+ * Fixed a bug where screenshot files would be saved under the wrong extension and not erased after quitting
  * Vastly improved Makefile to support installation on different PREFIX
 
 0.2.1:
