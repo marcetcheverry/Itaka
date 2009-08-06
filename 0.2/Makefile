@@ -5,7 +5,7 @@ MSGMERGE ?= msgmerge
 XGETTEXT ?= xgettext
 FIND ?= find
 
-PREFIX = /usr
+PREFIX = /usr/local
 # When debian builds it, it passes its own DESTDIR
 DESTDIR = $(PREFIX)
 
@@ -25,8 +25,7 @@ PYFILES := $(shell $(FIND) . -name "*.py" -print)
 install: 
 	# Replace images directory
 	mv config.py config.py.old
-	sed -e "s|/usr/share/itaka/images/|$(REPLACEIMAGESDIR)|g" config.py.old > config.py
-	mv config.py.old config.py
+	sed "s|/usr/local/share/itaka/images/|$(REPLACEIMAGESDIR)|g" config.py.old > config.py
 
 	gzip -9 -c share/itaka.1 > share/itaka.1.gz
 
@@ -47,15 +46,23 @@ install:
 	$(INSTALL) -m 644 share/itaka.desktop $(APPLICATIONSDIR)
 	$(INSTALL) -m 644 share/itaka.1.gz $(MANDIR)
 	if test -f $(BINDIR)/itaka; then rm $(BINDIR)/itaka; fi	
+
+	# Create our binary directory for the symlink
+	if test ! -d $(BINDIR); then mkdir $(BINDIR); fi
 	ln -sf  $(LIBDIR)/itaka.py $(BINDIR)/itaka
-	echo $( ls $(BINDIR)/itaka )
+
+	#echo $( ls $(BINDIR)/itaka )
 	chmod +x $(BINDIR)/itaka
 	
+	# Clean up
+	# Get our pre-modified config.py back
+	mv config.py.old config.py
+
 uninstall:
 	rm -r $(BINDIR)/itaka $(DATADIR) $(LIBDIR) $(ICONDIR)/itaka.png $(APPLICATIONSDIR)/itaka.desktop $(MANDIR)/itaka.1.gz
 
 clean:
-	find . -type f  \( -regex '.+\.py[co]' -o -name 'itaka.1.gz' \) -exec rm {} \;
+	find . -type f  \( -regex '.+\.py[co]' -o -name 'itaka.1.gz' \) -exec rm -f {} \;
 
 help:
 	@echo Usage:
