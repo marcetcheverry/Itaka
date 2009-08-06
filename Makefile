@@ -1,24 +1,21 @@
 INSTALL ?= install
 RM ?= rm
-MSGFMT ?= msgfmt
-MSGMERGE ?= msgmerge
-XGETTEXT ?= xgettext
 FIND ?= find
 
 PREFIX = /usr/local
-# When debian builds it, it passes its own DESTDIR
-DESTDIR = $(PREFIX)
+# This is for debian
+REAL_PREFIX = $(PREFIX)
 
-LIBDIR = $(DESTDIR)/lib/itaka
-BINDIR = $(DESTDIR)/bin
-DATADIR = $(DESTDIR)/share/itaka
+LIBDIR = $(PREFIX)/lib/itaka
+BINDIR = $(PREFIX)/bin
+DATADIR = $(PREFIX)/share/itaka
 IMAGESDIR = $(DATADIR)/images
-APPLICATIONSDIR = $(DESTDIR)/share/applications
-ICONDIR = $(DESTDIR)/share/pixmaps
-MANDIR = $(DESTDIR)/share/man/man1
+APPLICATIONSDIR = $(PREFIX)/share/applications
+ICONDIR = $(PREFIX)/share/pixmaps
+MANDIR = $(PREFIX)/share/man/man1
 
 # For debian compatibility, these are hardcoded
-REPLACEIMAGESDIR = $(PREFIX)/share/itaka/images/
+REPLACEIMAGESDIR = $(REAL_PREFIX)/share/itaka/images/
 
 PYFILES := $(shell $(FIND) . -name "*.py" -print)
 

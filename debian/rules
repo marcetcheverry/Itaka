@@ -43,7 +43,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/itaka.
-	$(MAKE) DESTDIR=$(CURDIR)/debian/itaka/usr install
+	$(MAKE) REAL_PREFIX=/usr PREFIX=$(CURDIR)/debian/itaka/usr install
 
 	# And other miscellaneous tasks
 	/usr/bin/convert share/images/itaka.png -resize 32x32 debian/itaka/usr/share/pixmaps/itaka.xpm
