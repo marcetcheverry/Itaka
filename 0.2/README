@@ -85,20 +85,18 @@ See COPYING file for further license information.
 
 8. PROGRAM CREDITS:
 
-Special thanks to James Henstridge for the excellent Python-GTK bindings and 
-their equally excellent documentation.
+Special thanks to James Henstridge for the excellent Python-GTK bindings and their equally excellent documentation.
 
 Thanks to the #pygtk and #gtk+ channels on irc.gimp.org and the #python and #twisted channels on irc.freenode.net for their help.
 
 Thanks to Kurt Erickson for the RPM packages and to Nicoleau Fabien for including Itaka in Fedora.
 
-Thanks to Nahuel M. for his continuing support and inspiration.
+Thanks to Nahuel and Ezequiel for his continuing support and inspiration.
 
 Itaka's icon is based upon the work of the Tango Project and is follows their licensing.
 
 This README file and the Makefile are based on the works of the BloGTK project (http://blogtk.sourceforge.net)
 
-Thanks to all Itaka users for bug reports, feature requests, and their support 
-of this application.
+Thanks to all Itaka users for bug reports, feature requests, and their support of this application.
 
 See AUTHORS and COPYRIGHT files for further credit information.
