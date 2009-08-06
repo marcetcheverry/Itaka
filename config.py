@@ -57,7 +57,7 @@ platform = platform.system()
 min_screen_height = 800
 
 #: To be changed on install to specify where the installed files actually are
-image_prefix = '/usr/share/itaka/images/'
+image_prefix = '/usr/local/share/itaka/images/'
 if os.path.exists(image_prefix):
     image_dir = image_prefix
 
@@ -66,7 +66,10 @@ if not os.path.exists(image_dir):
     sys.exit(1)
 
 #: Save path for screenshots (system-specific specified later on)
-save_path = os.getcwd()
+try:
+    save_path = os.getcwd()
+except:
+    print "[*] WARNING: Could not get current directory"
 
 """ Console output verbosity
 'normal' is for all normal operation mesages and warnings (not including errors)

@@ -35,6 +35,8 @@ Switch to the newly created directory and type 'make install' as root and the
 Makefile will copy the files to the correct location in your system. You do not 
 need to configure or compile Itaka as it is written in interpreted Python code.
 
+By default itaka will be installed in /usr/local/, if you want to use another location, add PREFIX=/usr/mylocation before every make command, including unnstall.
+
 To uninstall, once again as root type 'make uninstall'
 
 3. DEBIAN PACKAGE:

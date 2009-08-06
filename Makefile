@@ -5,7 +5,7 @@ MSGMERGE ?= msgmerge
 XGETTEXT ?= xgettext
 FIND ?= find
 
-PREFIX = /usr
+PREFIX = /usr/local
 # When debian builds it, it passes its own DESTDIR
 DESTDIR = $(PREFIX)
 
@@ -28,10 +28,8 @@ install:
 	# Replace images and locales directory
 	mv config.py config.py.old
 	mv itaka.py itaka.py.old
-	sed -e "s|/usr/share/itaka/images/|$(REPLACEIMAGESDIR)|g" config.py.old > config.py
-	sed -e "s|/usr/share/locale/|$(REPLACELOCALEDIR)|g" itaka.py.old > itaka.py
-	mv config.py.old config.py
-	mv itaka.py.old itaka.py
+	sed "s|/usr/local/share/itaka/images/|$(REPLACEIMAGESDIR)|g" config.py.old > config.py
+	sed "s|/usr/share/locale/|$(REPLACELOCALEDIR)|g" itaka.py.old > itaka.py
 	
 	$(INSTALL) -m 755 -d $(BINDIR) $(DATADIR) $(LIBDIR) $(IMAGESDIR) $(APPLICATIONSDIR) $(ICONDIR) $(MANDIR)
 	$(INSTALL) -m 755 *.py $(LIBDIR)
@@ -51,8 +49,12 @@ install:
 	gzip -9 -c share/itaka.1 > share/itaka.1.gz
 	$(INSTALL) -m 644 share/itaka.1.gz $(MANDIR)
 	if test -f $(BINDIR)/itaka; then rm $(BINDIR)/itaka; fi	
+
+	# Create our binary directory for the symlink
+	if test ! -d $(BINDIR); then mkdir $(BINDIR); fi
 	ln -sf  $(LIBDIR)/itaka.py $(BINDIR)/itaka
-	echo $( ls $(BINDIR)/itaka )
+
+	#echo $( ls $(BINDIR)/itaka )
 	chmod +x $(BINDIR)/itaka
 	
 	for lang in locale/*; do 
@@ -63,11 +65,15 @@ install:
 	    fi;
 	done
 
+	# Clean up
+	mv config.py.old config.py
+	mv itaka.py.old itaka.py
+
 uninstall:
 	rm -r $(BINDIR)/itaka $(DATADIR) $(LIBDIR) $(ICONDIR)/itaka.png $(APPLICATIONSDIR)/itaka.desktop $(MANDIR)/itaka.1.gz
 
 clean:
-	find . -type f  \( -regex '.+\.py[co]' -o -name 'itaka.1.gz' \) -exec rm {} \;
+	find . -type f  \( -regex '.+\.py[co]' -o -name 'itaka.1.gz' \) -exec rm -f {} \;
 	rm locale/*/LC_MESSAGES/*.mo
 
 help:
