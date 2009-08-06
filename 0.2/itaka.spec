@@ -74,7 +74,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/lib/itaka/console.pyc
 
 %changelog
-* Mon Aug  3 2009 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.2-1
+* Mon Aug  6 2009 Marc E. <santusmarc@users.sourceforge.net> - 0.2.2-1
 - Pulled 0.2.2 from upstream.
 
 * Thu Jul 20 2007 Kurt Erickson <psychogenicshk@users.sourceforge.net> - 0.2.1-2

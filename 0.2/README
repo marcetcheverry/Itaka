@@ -73,29 +73,22 @@ Any questions should be emailed to me directly.
 
 7. RELEASE NOTES:
 
-This is the second release of Itaka. 
+See the ChangeLog for more detailed information.
 
-See ChangeLog for more detailed information.
-
-Donations for this software would be greatly appreciated. This software is 
-totally free, but sending a few dollars via PayPal would bring you good karma,
-and it'll also mean you'll get extra Developer Suck-Up and support.
-Plus, it will ensure that I have enough caffeine to develop new 
-versions.
+Donations for this software would be greatly appreciated. This software is totally free, but sending a few dollars via PayPal would be nice.
 
 Please visit http://itaka.jardinpresente.com.ar to donate.
 
-This program was developed under Ubuntu GNU/Linux and is released under the GPL license.
+This program is released under the GNU/GPL License version 3.
 
-See COPYING file for further license information
+See COPYING file for further license information.
 
 8. PROGRAM CREDITS:
 
 Special thanks to James Henstridge for the excellent Python-GTK bindings and 
 their equally excellent documentation.
 
-Thanks to the #pygtk and #gtk+ channels on irc.gimp.org and the #python and #twisted channels on 
-irc.freenode.net for their help.
+Thanks to the #pygtk and #gtk+ channels on irc.gimp.org and the #python and #twisted channels on irc.freenode.net for their help.
 
 Thanks to Kurt Erickson for the RPM packages and to Nicoleau Fabien for including Itaka in Fedora.
 
