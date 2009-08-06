@@ -65,10 +65,15 @@ try:
 except:
     print "[*] WARNING: Could not get current directory"
 
-if os.environ.get('HOME'):
-    save_path = os.path.join(os.environ.get('HOME'), ".itaka")
+# Try APPDATA on Windows or $HOME on POSIX
+if (system == 'nt'):
+    if os.environ.get('APPDATA'):
+                save_path = os.path.join(os.environ.get('APPDATA'), 'itaka')
+    elif os.environ.get('HOME'):
+                save_path = os.path.join(os.environ.get('HOME'), 'itaka')
 else:
-    save_path = os.environ.get('TMP') or os.environ.get('TEMP')
+    if os.environ.get('HOME'):
+        save_path = os.path.join(os.environ.get('HOME'), '.itaka')
 
 #: Availability of libnotify
 notifyavailable = False
