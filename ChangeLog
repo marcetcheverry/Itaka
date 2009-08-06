@@ -13,7 +13,8 @@
  * Fixed a fatal bug with Python 2.6/PyGTK 2.14
  * Fixed an issue with the right images showing up in notifications
  * Fixed an fatal issue with starting Itaka from unexistant directories
- * Fixed a bug where screenshot files would be saved under the wrong extension and not erased after quitting
+ * Fixed a bug where screenshot files would be saved under the wrong
+ extension/path and not erased after quitting
  * Vastly improved Makefile to support installation on different PREFIX
 
 0.2.1:
