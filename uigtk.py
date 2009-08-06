@@ -1061,7 +1061,7 @@ class Gui:
         self.about_dialog.set_version(self.itaka_globals.__version__)
         self.about_dialog.set_copyright(u'© 2003-2009 Marc E.')
         self.about_dialog.set_comments('Screenshooting de mercado.')
-        self.about_dialog.set_authors(['Marc E. <santusmarc@users.sourceforge.net>', 'Kurt Erickson <psychogenicshk@users.sourceforge.net>'])
+        self.about_dialog.set_authors(['Marc E. <santusmarc@users.sourceforge.net>', 'Kurt Erickson <psychogenicshk@users.sourceforge.net>', 'Nicoleau Fabien <nicoleau.fabien@gmail.com> (Fedora mantainer)'])
         self.about_dialog.set_artists(['Marc E. <santusmarc@users.sourceforge.net>', 'Tango Project (http://tango.freedesktop.org)'])
         self.about_dialog.set_license('''Itaka is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
