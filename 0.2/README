@@ -67,7 +67,7 @@ epydoc --html -o doc -n Itaka -u "http://itaka.jardinpresente.com.ar" *.py
 
 6. HACKING
 
-If you intend to change Itaka source coude, please read the HACKING file.
+If you intend to change Itaka source code, please read the HACKING file.
 
 Any questions should be emailed to me directly.
 
