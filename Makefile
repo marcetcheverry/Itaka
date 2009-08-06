@@ -67,9 +67,8 @@ uninstall:
 	rm -r $(BINDIR)/itaka $(DATADIR) $(LIBDIR) $(ICONDIR)/itaka.png $(APPLICATIONSDIR)/itaka.desktop $(MANDIR)/itaka.1.gz
 
 clean:
-	find . -name '*.pyc' -o -name '*.pyo' -exec rm {} \;
+	find . -type f  \( -regex '.+\.py[co]' -o -name 'itaka.1.gz' \) -exec rm {} \;
 	rm locale/*/LC_MESSAGES/*.mo
-	rm share/itaka.1.gz
 
 help:
 	@echo Usage:
