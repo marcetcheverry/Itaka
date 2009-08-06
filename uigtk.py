@@ -770,7 +770,6 @@ class Gui:
                 os.remove(os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format'])))
                 if self.itaka_globals.console_verbosity['debug']: print_m(_("Deleting stale screenshot file '%s'" % ((os.path.join(self.current_configuration['screenshot']['path'], 'itakashot.%s' % (self.current_configuration['screenshot']['format']))))))
 
-
         if self.itaka_globals.notify_available:
             self.notify_value = self.check_preferences_notifications.get_active()
 
