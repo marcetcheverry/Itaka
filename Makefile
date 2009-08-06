@@ -38,7 +38,8 @@ install:
 	$(INSTALL) -m 644 share/images/itaka16x16-secure-take.png $(IMAGESDIR)
 	$(INSTALL) -m 644 share/images/itaka64x64.png $(IMAGESDIR)
 
-	ln -sf $(IMAGESDIR)/itaka.png $(ICONDIR)/itaka.png
+	# Would symlink but it fails
+	cp $(IMAGESDIR)/itaka.png $(ICONDIR)/itaka.png
 
 	$(INSTALL) -m 644 share/itaka.desktop $(APPLICATIONSDIR)
 	$(INSTALL) -m 644 share/itaka.1.gz $(MANDIR)
