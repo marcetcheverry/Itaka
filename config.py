@@ -50,7 +50,7 @@ if (sys.platform.startswith("darwin")): platform = "darwin"
 #: Images directory
 image_dir = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "share/images/")
 #: To be changed on install to specify where the installed files actually are
-prefix = "/usr/share/itaka/images"
+prefix = "/usr/local/share/itaka/images/"
 if os.path.exists(prefix):
     image_dir = prefix
 
@@ -60,7 +60,10 @@ if not os.path.exists(image_dir):
     sys.exit(1)
 
 #: Save path for screenshots (system-specific specified later on)
-save_path = os.getcwd()
+try:
+    save_path = os.getcwd()
+except:
+    print "[*] WARNING: Could not get current directory"
 
 if os.environ.get('HOME'):
     save_path = os.path.join(os.environ.get('HOME'), ".itaka")
