@@ -99,7 +99,7 @@ class Screenshot:
         self.configuration = self.gui.configuration
 
         #: Final absolute path to the screenshot file
-        self.shot_file = os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))
+        self.shotFile = os.path.join(self.configuration['screenshot']['path'], 'itakashot.%s' % (self.configuration['screenshot']['format']))
 
         if self.configuration['screenshot']['currentwindow'] and not self.itakaglobals.system == 'nt':
             try:
