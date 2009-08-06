@@ -45,7 +45,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS BUGS ChangeLog COPYING COPYRIGHT DOCUMENTATION HACKING README README.Debian README.Windows TODO
+%doc AUTHORS BUGS ChangeLog COPYING COPYRIGHT DOCUMENTATION HACKING README TODO
 
 %{_prefix}/bin/itaka
 %{_prefix}/share/man/man1/itaka.1.gz
